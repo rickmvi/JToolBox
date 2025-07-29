@@ -47,10 +47,10 @@ Adicione ao seu `pom.xml`:
 
 ```xml
 <dependency>
-    <groupId>com.github.rickmvi</groupId>
-    <artifactId>console-api</artifactId>
-    <version>1.0.0</version>
-</dependency>
+  <groupId>com.github.rickmvi</groupId>
+  <artifactId>jtoolbox</artifactId>
+  <version>1.0.0</version>
+</dependency> 
 ```
 
 ### Gradle
