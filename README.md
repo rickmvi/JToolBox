@@ -62,6 +62,7 @@ dependencies {
     implementation 'com.github.rickmvi:console-api:1.0.0'
 }
 ```
+___
 
 ## Como Usar
 ### Formatação de Strings
@@ -157,6 +158,7 @@ public class Example {
     }
 }
 ```
+___
 
 ## Padrões de Uso Recomendados
 
@@ -200,5 +202,7 @@ Você pode usá-lo em projetos comerciais e fechados, desde que preserve os term
 
 🔗 [Leia a licença completa aqui](https://www.gnu.org/licenses/lgpl-3.0.html)
 
+
 **Desenvolvido por Rick M. Viana**
+
 Contato: rickmviana.dev@outlook.com
