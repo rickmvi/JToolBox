@@ -59,7 +59,7 @@ Adicione no seu `build.gradle`:
 
 ```gradle
 dependencies {
-    implementation 'com.github.rickmvi:console-api:1.0.0'
+    implementation 'com.github.rickmvi:jtoolbox:1.0.0'
 }
 ```
 ___
