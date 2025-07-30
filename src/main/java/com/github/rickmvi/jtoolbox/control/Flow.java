@@ -19,9 +19,11 @@ package com.github.rickmvi.jtoolbox.control;
 
 import org.jetbrains.annotations.NotNull;
 
+import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
 import java.util.function.BooleanSupplier;
 import java.util.function.IntConsumer;
+import java.util.function.Predicate;
 import java.util.function.Supplier;
 import java.util.Map;
 
@@ -70,6 +72,109 @@ public class Flow {
      */
     public void ifFalse(boolean condition, Runnable action) {
         if (!condition) action.run();
+    }
+
+    /**
+     * Executes the given supplier and returns its result if the condition is true,
+     * otherwise returns null.
+     *
+     * @param condition the condition to evaluate
+     * @param supplier  the supplier to execute if true
+     * @param <T>       the return type
+     * @return the supplier result if true, otherwise null
+     */
+    public <T> T ifTrueReturn(boolean condition, Supplier<T> supplier) {
+        return condition ? supplier.get() : null;
+    }
+
+    /**
+     * Executes the given supplier and returns its result if the condition is false,
+     * otherwise returns null.
+     *
+     * @param condition the condition to evaluate
+     * @param supplier  the supplier to execute if false
+     * @param <T>       the return type
+     * @return the supplier result if false, otherwise null
+     */
+    public <T> T ifFalseReturn(boolean condition, Supplier<T> supplier) {
+        return !condition ? supplier.get() : null;
+    }
+
+    /**
+     * Executes {@code whenTrue} if {@code condition} is true, otherwise executes {@code orElse},
+     * returning the produced value.
+     *
+     * @param condition the condition to evaluate
+     * @param whenTrue supplier executed when the condition is true
+     * @param orElse supplier executed when the condition is false
+     * @param <R> return type
+     * @return the value produced by the selected supplier
+     */
+    public <R> R supplyIfTrueElse(boolean condition, @NotNull Supplier<R> whenTrue, @NotNull Supplier<R> orElse) {
+        return condition ? whenTrue.get() : orElse.get();
+    }
+
+    /**
+     * Executes {@code whenFalse} if {@code condition} is false, otherwise executes {@code orElse},
+     * returning the produced value.
+     *
+     * @param condition the condition to evaluate
+     * @param whenFalse supplier executed when the condition is false
+     * @param orElse supplier executed when the condition is true
+     * @param <R> return type
+     * @return the value produced by the selected supplier
+     */
+    public <R> R supplyIfFalseElse(boolean condition, @NotNull Supplier<R> whenFalse, @NotNull Supplier<R> orElse) {
+        return !condition ? whenFalse.get() : orElse.get();
+    }
+
+    /**
+     * Executes {@code whenTrue} if {@code condition} is true and returns {@link Optional#ofNullable(Object)}
+     * of its result; otherwise returns {@link Optional#empty()}.
+     *
+     * @param condition the condition to evaluate
+     * @param whenTrue supplier executed when the condition is true
+     * @param <R> return type
+     * @return optional containing the value if executed, otherwise empty
+     */
+    public <R> Optional<R> optionalIfTrue(boolean condition, @NotNull Supplier<R> whenTrue) {
+        return condition ? Optional.ofNullable(whenTrue.get()) : Optional.empty();
+    }
+
+    /**
+     * Executes {@code whenFalse} if {@code condition} is false and returns {@link Optional#ofNullable(Object)}
+     * of its result; otherwise returns {@link Optional#empty()}.
+     *
+     * @param condition the condition to evaluate
+     * @param whenFalse supplier executed when the condition is false
+     * @param <R> return type
+     * @return optional containing the value if executed, otherwise empty
+     */
+    public <R> Optional<R> optionalIfFalse(boolean condition, @NotNull Supplier<R> whenFalse) {
+        return !condition ? Optional.ofNullable(whenFalse.get()) : Optional.empty();
+    }
+
+    /**
+     * Executes the given supplier and returns one of two possible values depending on the condition.
+     *
+     * @param condition the condition to evaluate
+     * @param trueSupplier  the supplier executed if true
+     * @param falseSupplier the supplier executed if false
+     * @param <T>       the return type
+     * @return the supplier result depending on condition
+     */
+    public <T> T supplyByCondition(boolean condition, Supplier<T> trueSupplier, Supplier<T> falseSupplier) {
+        return condition ? trueSupplier.get() : falseSupplier.get();
+    }
+
+    /**
+     * Throws a RuntimeException provided by the exceptionSupplier if the given condition is true.
+     *
+     * @param condition a boolean value that determines whether the exception should be thrown
+     * @param exceptionSupplier a Supplier that provides the RuntimeException to be thrown
+     */
+    public void ifTrueThrow(boolean condition, Supplier<? extends RuntimeException> exceptionSupplier) {
+        if (condition) throw exceptionSupplier.get();
     }
 
     /**
@@ -136,6 +241,35 @@ public class Flow {
      */
     public void doWhile(@NotNull BooleanSupplier condition, @NotNull Runnable action) {
         do action.run(); while (condition.getAsBoolean());
+    }
+
+    /**
+     * Executes an action at least once and keeps repeating it while the
+     * condition over the last result remains true. Returns the last result.
+     *
+     * <p>Typical usage: read input until it becomes valid and get the final value.</p>
+     *
+     * <pre>{@code
+     * int option = Flow.doWhile(
+     *     () -> {
+     *         Out.printFormatted("Enter 0 for {} or 1 for {}: ", "exit", "continue");
+     *         return ScannerUtils.nextInt();
+     *     },
+     *     opt -> opt != 0 && opt != 1 // continue while invalid
+     * );
+     * }</pre>
+     *
+     * @param action the action to execute each iteration, producing a result
+     * @param continueCondition the condition that, given the last result, determines whether to continue
+     * @param <T> the result type
+     * @return the last result produced by {@code action}
+     */
+    public <T> T doWhile(@NotNull Supplier<T> action, @NotNull Predicate<T> continueCondition) {
+        T result;
+        do {
+            result = action.get();
+        } while (continueCondition.test(result));
+        return result;
     }
 
     /**

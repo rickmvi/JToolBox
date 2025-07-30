@@ -21,6 +21,8 @@ import com.github.rickmvi.jtoolbox.console.convert.StringToBoolean;
 import com.github.rickmvi.jtoolbox.console.convert.StringToNumber;
 import com.github.rickmvi.jtoolbox.console.Location;
 
+import static com.github.rickmvi.jtoolbox.debug.SLogger.warn;
+import com.github.rickmvi.jtoolbox.control.Flow;
 import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
 
@@ -211,6 +213,7 @@ public class ScannerHandler implements InputScanner {
         try {
             return next();
         } catch (Exception e) {
+            warn("nextSafe() failed. Returning empty string. Cause: {}", e, e.getMessage());
             return "";
         }
     }
@@ -231,7 +234,7 @@ public class ScannerHandler implements InputScanner {
      * @throws IllegalStateException if the scanner is not present
      */
     private void validate() {
-        if (scanner.isEmpty())
-            throw new IllegalStateException("Mistake: Scanner not initialized. Call ScannerUtils.init() first.");
+        Flow.ifTrueThrow(scanner.isEmpty(), () ->
+                new IllegalStateException("Mistake: Scanner not initialized. Call ScannerUtils.init() first."));
     }
 }
