@@ -1,5 +1,5 @@
 /*
- * Console API - Biblioteca utilitária para entrada, saída e formatação no console.
+ * Console API - Utilitarian library for input, output and formatting on the console.
  * Copyright (C) 2025  Rick M. Viana
  *
  * This library is free software; you can redistribute it and/or modify
@@ -15,11 +15,14 @@
  * You should have received a copy of the GNU Lesser General Public License
  * along with this library. If not, see <https://www.gnu.org/licenses/>.
  */
-package com.github.rickmvi.console;
+package com.github.rickmvi.jtoolbox.console.debug;
 
-public enum Location {
-    US,
-    PTBR,
-    ROOT,
-    DEFAULT
+public enum LogLevel {
+    TRACE,
+    DEBUG,
+    INFO,
+    WARN,
+    ERROR,
+    FATAL,
+    OFF;
 }

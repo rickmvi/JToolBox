@@ -1,5 +1,5 @@
 /*
- * Console API - Biblioteca utilitária para entrada, saída e formatação no console.
+ * Console API - Utilitarian library for input, output and formatting on the console.
  * Copyright (C) 2025  Rick M. Viana
  *
  * This library is free software; you can redistribute it and/or modify
@@ -17,6 +17,7 @@
  */
 package com.github.rickmvi.console.convert;
 
+import com.github.rickmvi.jtoolbox.template.TryConvert;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -27,34 +28,18 @@ import java.util.function.Supplier;
 public class StringToBoolean {
 
     public boolean toBoolean(@Nullable String value) {
-        try {
-            return Boolean.parseBoolean(value);
-        } catch (Exception e) {
-            return false;
-        }
+        return TryConvert.convert(value, Boolean::parseBoolean).orElse(false);
     }
 
     public boolean toBoolean(@Nullable String value, boolean fallback) {
-        try {
-            return value != null ? Boolean.parseBoolean(value) : fallback;
-        } catch (Exception e) {
-            return fallback;
-        }
+        return TryConvert.convert(value, Boolean::parseBoolean).orElse(fallback);
     }
 
     public boolean toBoolean(@Nullable String value, @NotNull Supplier<Boolean> fallback) {
-        try {
-            return value != null ? Boolean.parseBoolean(value) : fallback.get();
-        } catch (Exception e) {
-            return fallback.get();
-        }
+        return TryConvert.convert(value, Boolean::parseBoolean).orElseGet(fallback);
     }
 
     public Optional<Boolean> toBooleanOptional(@Nullable String value) {
-        try {
-            return value != null ? Optional.of(Boolean.parseBoolean(value)) : Optional.empty();
-        } catch (Exception e) {
-            return Optional.empty();
-        }
+        return TryConvert.convert(value, Boolean::parseBoolean);
     }
 }

@@ -1,5 +1,5 @@
 /*
- * Console API - Biblioteca utilitária para entrada, saída e formatação no console.
+ * Console API - Utilitarian library for input, output and formatting on the console.
  * Copyright (C) 2025  Rick M. Viana
  *
  * This library is free software; you can redistribute it and/or modify
@@ -17,10 +17,10 @@
  */
 package com.github.rickmvi.console.internal;
 
-import com.github.rickmvi.console.InputScanner;
-import com.github.rickmvi.console.Location;
 import com.github.rickmvi.console.convert.StringToBoolean;
 import com.github.rickmvi.console.convert.StringToNumber;
+import com.github.rickmvi.console.Location;
+
 import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
 
@@ -92,7 +92,7 @@ public class ScannerHandler implements InputScanner {
     @Override
     @Contract(pure = true)
     public int nextInt() {
-        return StringToNumber.toInt(nextSafe(), 0);
+        return StringToNumber.toInt(nextSafe());
     }
 
     @Override

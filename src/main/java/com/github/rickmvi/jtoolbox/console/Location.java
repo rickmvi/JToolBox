@@ -1,5 +1,5 @@
 /*
- * Console API - Biblioteca utilitária para entrada, saída e formatação no console.
+ * Console API - Utilitarian library for input, output and formatting on the console.
  * Copyright (C) 2025  Rick M. Viana
  *
  * This library is free software; you can redistribute it and/or modify
@@ -17,37 +17,9 @@
  */
 package com.github.rickmvi.console;
 
-import org.jetbrains.annotations.NotNull;
-
-public interface InputScanner {
-
-    void init();
-
-    void init(@NotNull java.util.Scanner scanner);
-
-    void locale(@NotNull Location location);
-
-    boolean hasNext();
-
-    boolean hasNextLine();
-
-    String next();
-
-    String next(@NotNull String pattern);
-
-    String nextLine();
-
-    int nextInt();
-
-    long nextLong();
-
-    float nextFloat();
-
-    double nextDouble();
-
-    boolean nextBoolean();
-
-    String nextSafe();
-
-    void close();
+public enum Location {
+    US,
+    PTBR,
+    ROOT,
+    DEFAULT
 }

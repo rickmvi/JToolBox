@@ -1,5 +1,5 @@
 /*
- * Console API - Biblioteca utilitária para entrada, saída e formatação no console.
+ * Console API - Utilitarian library for input, output and formatting on the console.
  * Copyright (C) 2025  Rick M. Viana
  *
  * This library is free software; you can redistribute it and/or modify
@@ -17,7 +17,7 @@
  */
 package com.github.rickmvi.console.convert;
 
-import com.github.rickmvi.template.ConversionScope;
+import com.github.rickmvi.jtoolbox.template.TryConvert;
 import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -33,7 +33,7 @@ public final class TypeConverter {
 
     @SuppressWarnings("unchecked")
     public <T> Optional<T> convertTo(@Nullable String value, @NotNull Class<T> type) {
-        return ConversionScope.convertSafely(value, v -> {
+        return TryConvert.convert(value, v -> {
             if (type == Integer.class)  return (T) Integer.valueOf(v);
             if (type == Long.class)     return (T) Long.valueOf(v);
             if (type == Double.class)   return (T) Double.valueOf(v);
@@ -45,7 +45,7 @@ public final class TypeConverter {
     }
 
     public Optional<?> convertTo(@Nullable String value, @NotNull PrimitiveType type) {
-        return ConversionScope.convertSafely(value, v -> switch (type) {
+        return TryConvert.convert(value, v -> switch (type) {
            case INT ->     Integer.valueOf(v);
            case LONG ->    Long.valueOf(v);
            case DOUBLE ->  Double.valueOf(v);
@@ -57,7 +57,7 @@ public final class TypeConverter {
 
     @Contract("null, _, _ -> null")
     public Object convert(@Nullable String value, @NotNull PrimitiveType type, @Nullable Object fallback) {
-        return ConversionScope.convertSafely(value, s -> switch (type) {
+        return TryConvert.convert(value, s -> switch (type) {
            case INT ->     StringToNumber.toInt      (s, (Integer) fallback);
            case LONG ->    StringToNumber.toLong     (s, (Long)    fallback);
            case DOUBLE ->  StringToNumber.toDouble   (s, (Double)  fallback);
