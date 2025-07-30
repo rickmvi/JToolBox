@@ -49,7 +49,7 @@ Adicione ao seu `pom.xml`:
 <dependency>
   <groupId>com.github.rickmvi</groupId>
   <artifactId>jtoolbox</artifactId>
-  <version>1.0.0</version>
+  <version>1.0.1</version>
 </dependency> 
 ```
 
@@ -59,7 +59,7 @@ Adicione no seu `build.gradle`:
 
 ```gradle
 dependencies {
-    implementation 'com.github.rickmvi:jtoolbox:1.0.0'
+    implementation 'com.github.rickmvi:jtoolbox:1.0.1'
 }
 ```
 ___
