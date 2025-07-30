@@ -87,6 +87,39 @@ public class MapUtils {
     }
 
     /**
+     * Replaces all occurrences of the given keys in the target string with their corresponding values.
+     *
+     * @param target       the original string to apply replacements on
+     * @param replacements the map of keys and their replacement values
+     * @return the resulting string after all replacements
+     */
+    public @NotNull String replace(@NotNull String target, @NotNull Map<String, String> replacements) {
+        for (Map.Entry<String, String> entry : replacements.entrySet()) {
+            target = target.replace(entry.getKey(), entry.getValue());
+        }
+        return target;
+    }
+
+    /**
+     * Replaces all occurrences of the keys in the specified map with their corresponding values within the target string.
+     * Each key and value is converted to a string before performing the replacements.
+     *
+     * @param target       the original string on which the replacements are to be performed
+     * @param replacements a map containing the keys to find and their corresponding values to replace them with
+     * @param <T>          the type of keys in the map
+     * @param <R>          the type of values in the map
+     * @return a new string with all the replacements applied
+     */
+    public static <T, R> @NotNull String replaceAll(@NotNull String target, @NotNull Map<T, R> replacements) {
+        for (Map.Entry<T, R> entry : replacements.entrySet()) {
+            String key = String.valueOf(entry.getKey());
+            String value = String.valueOf(entry.getValue());
+            target = target.replace(key, value);
+        }
+        return target;
+    }
+
+    /**
      * Checks whether the map contains a key that matches the given string (case-insensitive).
      *
      * @param map the map to search

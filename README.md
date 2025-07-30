@@ -49,7 +49,7 @@ Adicione ao seu `pom.xml`:
 <dependency>
   <groupId>com.github.rickmvi</groupId>
   <artifactId>jtoolbox</artifactId>
-  <version>1.0.1</version>
+  <version>1.1.2</version>
 </dependency> 
 ```
 
@@ -59,7 +59,7 @@ Adicione no seu `build.gradle`:
 
 ```gradle
 dependencies {
-    implementation 'com.github.rickmvi:jtoolbox:1.0.1'
+    implementation 'com.github.rickmvi:jtoolbox:1.1.2'
 }
 ```
 ___
@@ -76,10 +76,15 @@ import java.util.Map;
 Map<String, String> values = new HashMap<>();
 values.put("name", "John");
 values.put("age", "30");
-String result = Formatted.replace("Hello {{name}}, you are {{age}} years old", values);
+String result = Formatted.replace("Hello {name}, you are {age} years old", values);
 
 // Placeholders genéricos
 String formatted = Formatted.format("Hello {}, you are {} years old", "John", 30);
+
+// Placeholders & Tokens(%n, %t, %r, %d)
+Out.printFormatted("Test %rHello%d{}, you're {} years old%n", "John", 30)
+// Console -> "Hello John, you're 30 years old"
+// 
 
 // Tokens de formatação
 String tokenFormatted = Formatted.formatTokens("Name: %s, Age: %i", "John", "30");
@@ -163,6 +168,7 @@ public class Example {
 
 - [Pacote `template`](/src/main/java/com/github/rickmvi/jtoolbox/template/README.md): Utilitários para formatação dinâmica de strings e conversão segura com Optional.
 - [Pacote `debug`](/src/main/java/com/github/rickmvi/jtoolbox/debug/README.md): Sistema de log extensível com múltiplos níveis (`INFO`, `DEBUG`, `ERROR`, etc), suporte a cores ANSI, mensagens com placeholders, controle dinâmico de visibilidade e tratamento de exceções — ideal para debugging detalhado e visual.
+- [Pacote `control`](src/main/java/com/github/rickmvi/jtoolbox/console/convert/ToString.java): Conjunto de utilitários para controle de fluxo com métodos funcionais e fluentes — inclui ifTrue, switch, repeat, while, e variantes assíncronas usando CompletableFuture. Permite escrita mais expressiva, segura e reutilizável de estruturas de controle, com suporte para cancelamento, encadeamento e mapeamento de retorno.
 
 ___
 

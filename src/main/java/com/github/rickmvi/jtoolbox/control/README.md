@@ -22,75 +22,50 @@ Parte do pacote [`control`](../control), essa classe é totalmente estática e p
 
 ### 🔀 Condicionais
 
-* `ifTrue(boolean condition, Runnable action)`
-
-    Executa `action` se `condition` for `true`. Substitui `if (cond) {}`.
+* `ifTrue(boolean condition, Runnable action)` Executa `action` se `condition` for `true`. Substitui `if (cond) {}`.
  
 
-* `ifFalse(boolean condition, Runnable action)`
-
-    Executa `action` se `condition` for `false`. Útil para evitar `if (!cond)`.
+* `ifFalse(boolean condition, Runnable action)` Executa `action` se `condition` for `false`. Útil para evitar `if (!cond)`.
 
 <br>
 
 ### 🔄 Switch funcional
 
-* `switchOn(K key, Map<K, Runnable> cases, Runnable defaultCase)`
+* `switchOn(K key, Map<K, Runnable> cases, Runnable defaultCase)` Executa o `Runnable` correspondente à chave no mapa `cases`, ou `defaultCase` se não existir. Alternativa fluente ao `switch-case`.
 
-  Executa o `Runnable` correspondente à chave no mapa `cases`, ou `defaultCase` se não existir. Alternativa fluente ao `switch-case`.
+* `<T> switchReturn(K key, Map<K, Supplier<T>> cases, Supplier<T> defaultCase)` Retorna o valor do `Supplier` associado à chave no mapa, ou do `defaultCase`. Substitui `switch-case` que retorna valor.
 
-* `<T> switchReturn(K key, Map<K, Supplier<T>> cases, Supplier<T> defaultCase)`
-  Retorna o valor do `Supplier` associado à chave no mapa, ou do `defaultCase`. Substitui `switch-case` que retorna valor.
-
-* `<T> switchReturnAsync(K key, Map<K, Supplier<T>> cases, Supplier<T> defaultCase)`
-  Versão assíncrona de `switchReturn`, retornando um `CompletableFuture<T>`.
+* `<T> switchReturnAsync(K key, Map<K, Supplier<T>> cases, Supplier<T> defaultCase)` Versão assíncrona de `switchReturn`, retornando um `CompletableFuture<T>`.
 
 <br>
 
 ### 🔁 Repetição com contador
 
-* `repeat(int times, IntConsumer action) `
-
-    Executa `action` de 0 até `times - 1`. Similar ao `for (int i = 0; i < times; i++)`.
+* `repeat(int times, IntConsumer action)` Executa `action` de 0 até `times - 1`. Similar ao `for (int i = 0; i < times; i++)`.
  
-* `repeatDescending(int times, IntConsumer action)`
+* `repeatDescending(int times, IntConsumer action)` Executa `action` de `times - 1` até 0. Útil para iterações regressivas.
 
-    Executa `action` de `times - 1` até 0. Útil para iterações regressivas.
+* `repeatAsync(int times, IntConsumer action)` Versão assíncrona de repeat que retorna CompletableFuture<Void>.
 
-* `repeatAsync(int times, IntConsumer action)`
-
-    Versão assíncrona de repeat que retorna CompletableFuture<Void>.
-
-* `repeatCancelable(int times, IntConsumer action, BooleanSupplier cancelCondition)`
-Executa o loop até o cancelamento externo (quando `cancelCondition.getAsBoolean()` for `true`).
+* `repeatCancelable(int times, IntConsumer action, BooleanSupplier cancelCondition)` Executa o loop até o cancelamento externo (quando `cancelCondition.getAsBoolean()` for `true`).
 
 <br>
 
 ### 📐 Intervalos personalizados
 
-* `forRange(int start, int end, IntConsumer action)`
+* `forRange(int start, int end, IntConsumer action)` Executa `action` de `start` até `end - 1`. Permite definir faixas personalizadas crescentes.
 
-    Executa `action` de `start` até `end - 1`. Permite definir faixas personalizadas crescentes.
-
-* `forRangeDescending(int start, int end, IntConsumer action)`
-
-    Executa `action` de `start` até `end + 1`, regressivamente. Para faixas decrescentes.
+* `forRangeDescending(int start, int end, IntConsumer action)` Executa `action` de `start` até `end + 1`, regressivamente. Para faixas decrescentes.
 
 <br>
 
 ### 🔁 Loops condicionais
 
-* `whileTrue(BooleanSupplier condition, Runnable action)`
+* `whileTrue(BooleanSupplier condition, Runnable action)` Executa `action` enquanto `condition` for `true`. Alternativa funcional ao `while`.
 
-    Executa `action` enquanto `condition` for `true`. Alternativa funcional ao `while`.
+* `doWhile(BooleanSupplier condition, Runnable action)` Executa `action` ao menos uma vez e repete enquanto `condition` for `true`. Equivalente ao `do { } while ()`.
 
-* `doWhile(BooleanSupplier condition, Runnable action)`
-
-    Executa `action` ao menos uma vez e repete enquanto `condition` for `true`. Equivalente ao `do { } while ()`.
-
-* `whileTrueAsync(BooleanSupplier condition, Runnable action)`
-
-    Versão assíncrona de `whileTrue`, executando em um `CompletableFuture<Void>`.
+* `whileTrueAsync(BooleanSupplier condition, Runnable action)` Versão assíncrona de `whileTrue`, executando em um `CompletableFuture<Void>`.
 ___
 
 ## ✅ Exemplos de Uso

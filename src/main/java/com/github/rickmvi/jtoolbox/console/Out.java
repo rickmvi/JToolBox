@@ -142,7 +142,7 @@ public class Out {
      * @param args     the arguments to replace placeholders in the template
      */
     public void printFormatted(@NotNull String template, Object... args) {
-        Flow.ifTrue(!template.isEmpty(), () -> printf(Formatted.format(template, args)));
+        Flow.ifTrue(!template.isEmpty(), () -> print(Formatted.format(template, args)));
     }
 
     /**
@@ -155,7 +155,7 @@ public class Out {
      * @param args     the arguments to replace token placeholders in the template
      */
     public void printTokenFormatted(@NotNull String template, Object... args) {
-        Flow.ifTrue(!template.isEmpty(), () -> printf(Formatted.formatTokens(template, args)));
+        Flow.ifTrue(!template.isEmpty(), () -> print(Formatted.formatTokens(template, args)));
     }
 
     /**
@@ -170,7 +170,7 @@ public class Out {
      */
     public void printNamedFormatted(@NotNull String template, @NotNull Map<String, ?> values, boolean failIfMissing) {
         Flow.ifTrue(!template.isEmpty() && !values.isEmpty(),
-                () -> printf(Formatted.formatNamed(template, values, failIfMissing)));
+                () -> print(Formatted.formatNamed(template, values, failIfMissing)));
     }
 
     /**

@@ -56,6 +56,12 @@ public enum FormatToken {
             return String.valueOf(args1);
         }
     },
+    SPACE("n"){
+      @Override
+      public String format(Object value) {
+          return String.valueOf(value).replace("%n", System.lineSeparator());
+      }
+    },
     INT("i") {
         @Override
         public String format(Object value) {
@@ -80,7 +86,7 @@ public enum FormatToken {
             return String.format(Locale.US, "%.2e", ObjectToNumber.toDouble(value));
         }
     },
-    NUMBER("n") {
+    NUMBER("dn") {
         private final DecimalFormat format = new DecimalFormat("#,##0.00");
         @Override
         public String format(Object value) {

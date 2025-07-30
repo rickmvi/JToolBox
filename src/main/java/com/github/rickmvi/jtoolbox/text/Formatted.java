@@ -17,6 +17,7 @@
  */
 package com.github.rickmvi.jtoolbox.text;
 
+import com.github.rickmvi.jtoolbox.collections.MapUtils;
 import com.github.rickmvi.jtoolbox.template.TemplateFormatter;
 import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
@@ -46,9 +47,16 @@ import java.util.regex.Matcher;
 @lombok.experimental.UtilityClass
 public final class Formatted {
 
-    private final Pattern PLACEHOLDER_PATTERN = Pattern.compile("\\{\\{(.*?)}}");
+    private final Pattern PLACEHOLDER_PATTERN = Pattern.compile("\\{(.*?)}");
     private final Pattern GENERIC_PATTERN = Pattern.compile("\\{\\}");
-    private final Pattern TOKEN_PATTERN = Pattern.compile("%(s|i|l|#d|ed|n|u|lc|c|b)");
+    private final Pattern TOKEN_PATTERN = Pattern.compile("%(s|i|l|#d|ed|dn|nu|lc|c|b)");
+
+    private final Map<String, String> TOKENS = Map.of(
+            "%n", System.lineSeparator(), // Line break, jump line "\n"
+            "%t", "\t",                   // Horizontal tab "value:\t1" -> "value:  1"
+            "%r", "\r",                   // Car return (back cursor) "Halo \r, Ich bin der Rick" -> ", Ich bin..."
+            "b", " "                          // Blank "Ich%bkomma aus Braziliane" -> "Ich komma..."
+    );
 
     /**
      * Replaces all occurrences of placeholders in the form {{key}} within the given template
@@ -62,7 +70,7 @@ public final class Formatted {
      */
     public @NotNull String replace(@NotNull String template, @NotNull Map<String, String> values) {
         for (Map.Entry<String, String> entry : values.entrySet()) {
-            String placeholder = "{{" + entry.getKey() + "}}";
+            String placeholder = "{" + entry.getKey() + "}";
             template = template.replace(placeholder, entry.getValue());
         }
         return template;
@@ -79,6 +87,7 @@ public final class Formatted {
      * @return the formatted string with placeholders replaced by argument values
      */
     public @NotNull String format(@NotNull String template, Object @NotNull ... args) {
+        template = MapUtils.replace(template, TOKENS);
         for (Object arg : args) {
             template = GENERIC_PATTERN
                     .matcher(template)
