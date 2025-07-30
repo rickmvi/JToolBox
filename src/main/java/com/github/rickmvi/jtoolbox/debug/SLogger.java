@@ -1,97 +1,274 @@
-/*
- * Console API - Utilitarian library for input, output and formatting on the console.
- * Copyright (C) 2025  Rick M. Viana
- *
- * This library is free software; you can redistribute it and/or modify
- * it under the terms of the GNU Lesser General Public License as published by
- * the Free Software Foundation; either version 3 of the License, or
- * (at your option) any later version.
- *
- * This library is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
- * GNU Lesser General Public License for more details.
- *
- * You should have received a copy of the GNU Lesser General Public License
- * along with this library. If not, see <https://www.gnu.org/licenses/>.
- */
-package com.github.rickmvi.jtoolbox.console.debug;
+package com.github.rickmvi.jtoolbox.debug;
 
-import com.github.rickmvi.jtoolbox.console.formatter.Formatted;
 import com.github.rickmvi.jtoolbox.console.Out;
-
+import com.github.rickmvi.jtoolbox.debug.log.LogLevel;
+import com.github.rickmvi.jtoolbox.text.Formatted;
 import org.jetbrains.annotations.Contract;
 
-import java.time.format.DateTimeFormatter;
 import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.EnumSet;
 import java.util.Set;
 
+/**
+ * A simple logging utility class that provides colored console output with timestamp and log level information.
+ * <p>
+ * This logger supports different log levels (TRACE, DEBUG, INFO, WARN, ERROR, FATAL) and allows enabling/disabling
+ * specific levels. It can format messages with ANSI colors (when enabled) and supports parameterized messages
+ * and exception logging.
+ * </p>
+ *
+ * @author Rick M. Viana
+ * @since 1.0
+ */
 @lombok.experimental.UtilityClass
 public class SLogger {
 
     private static final DateTimeFormatter FORMATTER = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
     private static final Set<LogLevel> ENABLED_LEVELS = EnumSet.complementOf(EnumSet.of(LogLevel.OFF));
 
+    /**
+     * Gets whether ANSI color output is enabled for log messages.
+     */
     @lombok.Getter(value = lombok.AccessLevel.PUBLIC, onMethod_ = @Contract(pure = true))
     @lombok.Setter(value = lombok.AccessLevel.PUBLIC)
     private static boolean useAnsiColor = false;
 
+    /**
+     * Applies ANSI color to the given message if color output is enabled.
+     *
+     * @param message the message to colorize
+     * @param color the ANSI color code to apply
+     * @return the colorized message if enabled, or the original message otherwise
+     */
     @Contract(pure = true)
     private String colorize(String message, String color) {
         return useAnsiColor ? color + message + AnsiColor.RESET.getAnsiCode() : message;
     }
 
+    /**
+     * Logs a message at the specified log level.
+     *
+     * @param level the log level for this message
+     * @param message the message to log
+     */
     public void log(LogLevel level, String message) {
         if (!ENABLED_LEVELS.contains(level) || level == LogLevel.OFF) return;
 
         String time = FORMATTER.format(LocalDateTime.now());
         String coloredLevel = colorize(level.name(), AnsiColor.getColor(level));
+
         String output = Formatted.format("[{}] [{}] {}", time, coloredLevel, message);
         Out.printLine(output);
     }
 
+    /**
+     * Logs a formatted message at the specified log level.
+     *
+     * @param level the log level for this message
+     * @param template the message template with placeholders
+     * @param args the arguments to substitute into the template
+     */
+    public void log(LogLevel level, String template, Object... args) {
+        if (!ENABLED_LEVELS.contains(level) || level == LogLevel.OFF) return;
+
+        String time = FORMATTER.format(LocalDateTime.now());
+        String coloredLevel = colorize(level.name(), AnsiColor.getColor(level));
+        String message = Formatted.format(template, args);
+
+        String output = Formatted.format("[{}] [{}] {}", time, coloredLevel, message);
+        Out.printLine(output);
+    }
+
+    /**
+     * Logs a message and throwable at the specified log level.
+     *
+     * @param level the log level for this message
+     * @param message the message to log
+     * @param t the throwable to log (stack trace will be printed)
+     */
     public void log(LogLevel level, String message, Throwable t) {
         log(level, message);
         if (ENABLED_LEVELS.contains(level) && level != LogLevel.OFF && t != null)
             t.printStackTrace(System.out);
     }
 
-    public void trace(String message) {
-        log(LogLevel.TRACE, message);
+    /**
+     * Logs a formatted message and throwable at the specified log level.
+     *
+     * @param level the log level for this message
+     * @param template the message template with placeholders
+     * @param t the throwable to log (stack trace will be printed)
+     * @param args the arguments to substitute into the template
+     */
+    public void log(LogLevel level, String template, Throwable t, Object... args) {
+        log(level, Formatted.format(template, args));
+        if (ENABLED_LEVELS.contains(level) && level != LogLevel.OFF && t != null)
+            t.printStackTrace(System.out);
     }
 
-    public void debug(String message) {
-        log(LogLevel.DEBUG, message);
-    }
+    /**
+     * Logs a message at TRACE level.
+     *
+     * @param message the message to log
+     */
+    public void trace(String message)   { log(LogLevel.TRACE, message); }
 
-    public void info(String message) {
-        log(LogLevel.INFO, message);
-    }
+    /**
+     * Logs a message at DEBUG level.
+     *
+     * @param message the message to log
+     */
+    public void debug(String message)   { log(LogLevel.DEBUG, message); }
 
-    public void warn(String message) {
-        log(LogLevel.WARN, message);
-    }
+    /**
+     * Logs a message at INFO level.
+     *
+     * @param message the message to log
+     */
+    public void info(String message)    { log(LogLevel.INFO, message); }
 
-    public void error(String message) {
-        log(LogLevel.ERROR, message);
-    }
+    /**
+     * Logs a message at WARN level.
+     *
+     * @param message the message to log
+     */
+    public void warn(String message)    { log(LogLevel.WARN, message); }
 
-    public void fatal(String message) {
-        log(LogLevel.FATAL, message);
-    }
+    /**
+     * Logs a message at ERROR level.
+     *
+     * @param message the message to log
+     */
+    public void error(String message)   { log(LogLevel.ERROR, message); }
 
-    public void warn(String message, Throwable t)  { log(LogLevel.WARN, message, t); }
+    /**
+     * Logs a message at FATAL level.
+     *
+     * @param message the message to log
+     */
+    public void fatal(String message)   { log(LogLevel.FATAL, message); }
 
-    public void error(String message, Throwable t) { log(LogLevel.ERROR, message, t); }
+    /**
+     * Logs a formatted message at TRACE level.
+     *
+     * @param template the message template with placeholders
+     * @param args the arguments to substitute into the template
+     */
+    public void trace(String template, Object... args)  { log(LogLevel.TRACE, template, args); }
 
-    public void fatal(String message, Throwable t) { log(LogLevel.FATAL, message, t); }
+    /**
+     * Logs a formatted message at DEBUG level.
+     *
+     * @param template the message template with placeholders
+     * @param args the arguments to substitute into the template
+     */
+    public void debug(String template, Object... args)  { log(LogLevel.DEBUG, template, args); }
 
-    public void enable(LogLevel level)   { ENABLED_LEVELS.add(level); }
+    /**
+     * Logs a formatted message at INFO level.
+     *
+     * @param template the message template with placeholders
+     * @param args the arguments to substitute into the template
+     */
+    public void info(String template,  Object... args)  { log(LogLevel.INFO, template, args); }
 
-    public void disable(LogLevel level)  { ENABLED_LEVELS.remove(level); }
+    /**
+     * Logs a formatted message at WARN level.
+     *
+     * @param template the message template with placeholders
+     * @param args the arguments to substitute into the template
+     */
+    public void warn(String template,  Object... args)  { log(LogLevel.WARN, template, args); }
 
-    public void enableAll()              { ENABLED_LEVELS.clear(); ENABLED_LEVELS.addAll(EnumSet.complementOf(EnumSet.of(LogLevel.OFF))); }
+    /**
+     * Logs a formatted message at ERROR level.
+     *
+     * @param template the message template with placeholders
+     * @param args the arguments to substitute into the template
+     */
+    public void error(String template, Object... args)  { log(LogLevel.ERROR, template, args); }
 
-    public void disableAll()             { ENABLED_LEVELS.clear(); }
+    /**
+     * Logs a formatted message at FATAL level.
+     *
+     * @param template the message template with placeholders
+     * @param args the arguments to substitute into the template
+     */
+    public void fatal(String template, Object... args)  { log(LogLevel.FATAL, template, args); }
+
+    /**
+     * Logs a message and throwable at WARN level.
+     *
+     * @param message the message to log
+     * @param t the throwable to log (stack trace will be printed)
+     */
+    public void warn(String message,  Throwable t)  { log(LogLevel.WARN, message, t); }
+
+    /**
+     * Logs a message and throwable at ERROR level.
+     *
+     * @param message the message to log
+     * @param t the throwable to log (stack trace will be printed)
+     */
+    public void error(String message, Throwable t)  { log(LogLevel.ERROR, message, t); }
+
+    /**
+     * Logs a message and throwable at FATAL level.
+     *
+     * @param message the message to log
+     * @param t the throwable to log (stack trace will be printed)
+     */
+    public void fatal(String message, Throwable t)  { log(LogLevel.FATAL, message, t); }
+
+    /**
+     * Logs a formatted message and throwable at WARN level.
+     *
+     * @param template the message template with placeholders
+     * @param t the throwable to log (stack trace will be printed)
+     * @param args the arguments to substitute into the template
+     */
+    public void warn(String template,  Throwable t, Object... args) { log(LogLevel.WARN, template, t, args); }
+
+    /**
+     * Logs a formatted message and throwable at ERROR level.
+     *
+     * @param template the message template with placeholders
+     * @param t the throwable to log (stack trace will be printed)
+     * @param args the arguments to substitute into the template
+     */
+    public void error(String template, Throwable t, Object... args) { log(LogLevel.ERROR, template, t, args); }
+
+    /**
+     * Logs a formatted message and throwable at FATAL level.
+     *
+     * @param template the message template with placeholders
+     * @param t the throwable to log (stack trace will be printed)
+     * @param args the arguments to substitute into the template
+     */
+    public void fatal(String template, Throwable t, Object... args) { log(LogLevel.FATAL, template, t, args); }
+
+    /**
+     * Enables logging for the specified log level.
+     *
+     * @param level the log level to enable
+     */
+    public void enable(LogLevel level)  { ENABLED_LEVELS.add(level); }
+
+    /**
+     * Disables logging for the specified log level.
+     *
+     * @param level the log level to disable
+     */
+    public void disable(LogLevel level) { ENABLED_LEVELS.remove(level); }
+
+    /**
+     * Enables logging for all levels (except OFF).
+     */
+    public void enableAll()             { ENABLED_LEVELS.clear(); ENABLED_LEVELS.addAll(EnumSet.complementOf(EnumSet.of(LogLevel.OFF))); }
+
+    /**
+     * Disables logging for all levels.
+     */
+    public void disableAll()            { ENABLED_LEVELS.clear(); }
 }

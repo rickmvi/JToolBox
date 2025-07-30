@@ -15,7 +15,7 @@
  * You should have received a copy of the GNU Lesser General Public License
  * along with this library. If not, see <https://www.gnu.org/licenses/>.
  */
-package com.github.rickmvi.console.convert;
+package com.github.rickmvi.jtoolbox.console.convert;
 
 import com.github.rickmvi.jtoolbox.template.TryConvert;
 import org.jetbrains.annotations.NotNull;
@@ -24,21 +24,73 @@ import org.jetbrains.annotations.Nullable;
 import java.util.Optional;
 import java.util.function.Supplier;
 
+/**
+ * Utility class for safely converting {@link String} values to {@code boolean} primitives or {@link Boolean} objects.
+ * <p>
+ * This class provides convenient methods to parse strings into boolean values with support for:
+ * <ul>
+ *     <li>Default fallback values when the input is {@code null} or invalid.</li>
+ *     <li>Lazy evaluation of fallback values via {@link Supplier}.</li>
+ *     <li>Returning the conversion result wrapped in {@link Optional} for functional-style handling.</li>
+ * </ul>
+ * <p>
+ * All conversions internally use {@link TryConvert} to handle conversion exceptions gracefully,
+ * preventing runtime errors and facilitating robust input parsing from unreliable sources.
+ * <p>
+ * Typical use cases include parsing user input, configuration values, or environment variables where boolean semantics are needed.
+ */
 @lombok.experimental.UtilityClass
 public class StringToBoolean {
 
+    /**
+     * Converts the given {@link String} to a primitive {@code boolean}.
+     * <p>
+     * If the input is {@code null} or cannot be parsed, this method returns {@code false} as the default fallback.
+     *
+     * @param value the string value to convert, may be {@code null}
+     * @return the boolean value parsed from the string, or {@code false} if input is {@code null} or invalid
+     */
     public boolean toBoolean(@Nullable String value) {
         return TryConvert.convert(value, Boolean::parseBoolean).orElse(false);
     }
 
+    /**
+     * Converts the given {@link String} to a primitive {@code boolean}.
+     * <p>
+     * If the input is {@code null} or cannot be parsed, this method returns the specified {@code fallback} value.
+     *
+     * @param value    the string value to convert, may be {@code null}
+     * @param fallback the fallback boolean value to return if input is {@code null} or invalid
+     * @return the boolean value parsed from the string, or the provided fallback value on failure
+     */
     public boolean toBoolean(@Nullable String value, boolean fallback) {
         return TryConvert.convert(value, Boolean::parseBoolean).orElse(fallback);
     }
 
+    /**
+     * Converts the given {@link String} to a primitive {@code boolean}.
+     * <p>
+     * If the input is {@code null} or cannot be parsed, this method returns the value
+     * supplied by the given {@link Supplier} {@code fallback}.
+     * <p>
+     * This allows lazy evaluation of the fallback value.
+     *
+     * @param value    the string value to convert, may be {@code null}
+     * @param fallback a supplier that provides the fallback boolean value if input is {@code null} or invalid, must not be {@code null}
+     * @return the boolean value parsed from the string, or the supplied fallback value on failure
+     */
     public boolean toBoolean(@Nullable String value, @NotNull Supplier<Boolean> fallback) {
         return TryConvert.convert(value, Boolean::parseBoolean).orElseGet(fallback);
     }
 
+    /**
+     * Converts the given {@link String} to an {@link Optional} {@link Boolean}.
+     * <p>
+     * Returns an empty {@code Optional} if the input is {@code null} or conversion fails.
+     *
+     * @param value the string value to convert, may be {@code null}
+     * @return an {@code Optional} containing the boolean value if conversion succeeds; otherwise, an empty {@code Optional}
+     */
     public Optional<Boolean> toBooleanOptional(@Nullable String value) {
         return TryConvert.convert(value, Boolean::parseBoolean);
     }

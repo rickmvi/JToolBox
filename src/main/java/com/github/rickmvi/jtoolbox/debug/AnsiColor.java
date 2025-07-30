@@ -15,11 +15,22 @@
  * You should have received a copy of the GNU Lesser General Public License
  * along with this library. If not, see <https://www.gnu.org/licenses/>.
  */
-package com.github.rickmvi.jtoolbox.console.debug;
+package com.github.rickmvi.jtoolbox.debug;
+
+import com.github.rickmvi.jtoolbox.debug.log.LogLevel;
 
 import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
 
+/**
+ * AnsiColor is an enumeration that represents ANSI escape codes for coloring and formatting console output.
+ * These color codes are commonly used for adding color and styles to text output in terminal applications.
+ * The enum provides a variety of standard colors, as well as bold and reset formatting options.
+ * <p>
+ * Each color is associated with its respective ANSI code, which can be used to apply formatting to strings.
+ * It also includes utility methods for retrieving colors by ordinal, resolving colors by ANSI code,
+ * and mapping log levels to specific colors.
+ */
 @lombok.RequiredArgsConstructor(access = lombok.AccessLevel.PRIVATE)
 public enum AnsiColor {
     BLACK   ("\u001B[30m"),
@@ -37,25 +48,45 @@ public enum AnsiColor {
     private final String ansiCode;
     private static final AnsiColor[] VALUES = values();
 
+    /**
+     * Retrieves an {@code AnsiColor} by its ordinal index.
+     *
+     * @param ordinal the ordinal index of the enum constant
+     * @return the {@code AnsiColor} at the specified index
+     * @throws IndexOutOfBoundsException if the ordinal is invalid
+     */
     @Contract(pure = true)
     public static @NotNull AnsiColor valueOf(int ordinal) {
         if (ordinal < 0 || ordinal >= VALUES.length) throw new IndexOutOfBoundsException("Invalid ordinal: " + ordinal);
         return VALUES[ordinal];
     }
 
+    /**
+     * Retrieves the appropriate ANSI color code based on the specified log level.
+     *
+     * @param level the {@link LogLevel}
+     * @return the ANSI escape code associated with the level, or empty string if OFF
+     */
     public static @NotNull String getColor(@NotNull LogLevel level) {
         if (level == LogLevel.OFF) return "";
         return switch (level) {
             case TRACE -> MAGENTA.getAnsiCode();
             case DEBUG -> CYAN.getAnsiCode();
-            case INFO -> GREEN.getAnsiCode();
-            case WARN -> YELLOW.getAnsiCode();
+            case INFO ->  GREEN.getAnsiCode();
+            case WARN ->  YELLOW.getAnsiCode();
             case ERROR -> RED.getAnsiCode();
             case FATAL -> BOLD.getAnsiCode() + RED.getAnsiCode();
-            default -> RESET.getAnsiCode();
+            default ->    RESET.getAnsiCode();
         };
     }
 
+    /**
+     * Finds the corresponding {@code AnsiColor} enum from a raw ANSI escape code.
+     *
+     * @param ansiCode the ANSI escape code
+     * @return the corresponding {@code AnsiColor}
+     * @throws IllegalArgumentException if no matching color is found
+     */
     @NotNull
     public static AnsiColor of(@NotNull String ansiCode) {
         for (AnsiColor color : values()) {

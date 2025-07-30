@@ -15,7 +15,7 @@
  * You should have received a copy of the GNU Lesser General Public License
  * along with this library. If not, see <https://www.gnu.org/licenses/>.
  */
-package com.github.rickmvi.jtoolbox.console.debug;
+package com.github.rickmvi.jtoolbox.debug.log;
 
 public enum LogLevel {
     TRACE,
@@ -24,5 +24,5 @@ public enum LogLevel {
     WARN,
     ERROR,
     FATAL,
-    OFF;
+    OFF
 }

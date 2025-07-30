@@ -15,7 +15,7 @@
  * You should have received a copy of the GNU Lesser General Public License
  * along with this library. If not, see <https://www.gnu.org/licenses/>.
  */
-package com.github.rickmvi.console.convert;
+package com.github.rickmvi.jtoolbox.console.convert;
 
 import com.github.rickmvi.jtoolbox.template.TryConvert;
 import org.jetbrains.annotations.Contract;
@@ -24,13 +24,50 @@ import org.jetbrains.annotations.Nullable;
 
 import java.util.Optional;
 
+/**
+ * Utility class for converting strings to primitive Java types or their wrapper objects.
+ * <p>
+ * This class provides a unified API for safely converting string inputs to well-known types
+ * such as {@code int}, {@code long}, {@code float}, {@code double}, {@code boolean}, and {@code String}.
+ * <p>
+ * It supports:
+ * <ul>
+ *   <li>Type-safe conversion using {@link Class} objects.</li>
+ *   <li>Conversion using a {@link PrimitiveType} enum.</li>
+ *   <li>Fallback support in case of nulls or parsing errors.</li>
+ * </ul>
+ * All conversion operations return {@link Optional} to prevent {@code NullPointerException}s
+ * and enforce explicit handling of absent or invalid values.
+ */
 @lombok.experimental.UtilityClass
 public final class TypeConverter {
 
+    /**
+     * Enum representing supported primitive or wrapper types for conversion.
+     */
     public enum PrimitiveType {
         INT, LONG, DOUBLE, FLOAT, BOOLEAN, STRING
     }
 
+    /**
+     * Converts a string to a target type represented by a {@link Class} object.
+     * <p>
+     * The following target types are supported:
+     * <ul>
+     *   <li>{@code Integer.class}</li>
+     *   <li>{@code Long.class}</li>
+     *   <li>{@code Double.class}</li>
+     *   <li>{@code Float.class}</li>
+     *   <li>{@code Boolean.class}</li>
+     *   <li>{@code String.class}</li>
+     * </ul>
+     *
+     * @param value the string value to convert, may be {@code null}
+     * @param type  the target class type to convert to
+     * @param <T>   the generic target type
+     * @return an {@link Optional} containing the converted value, or empty if conversion fails
+     * @throws IllegalArgumentException if the type is not supported
+     */
     @SuppressWarnings("unchecked")
     public <T> Optional<T> convertTo(@Nullable String value, @NotNull Class<T> type) {
         return TryConvert.convert(value, v -> {
@@ -40,30 +77,51 @@ public final class TypeConverter {
             if (type == Float.class)    return (T) Float.valueOf(v);
             if (type == Boolean.class)  return (T) Boolean.valueOf(v);
             if (type == String.class)   return (T) v;
-            throw new IllegalArgumentException("Type not supported" + type);
+            throw new IllegalArgumentException("Type not supported: " + type);
         });
     }
 
+    /**
+     * Converts a string to a primitive value using a {@link PrimitiveType} enum.
+     * <p>
+     * The returned value is wrapped in an {@link Optional}, and may be empty if
+     * the input is null or invalid for the specified type.
+     *
+     * @param value the string value to convert, may be {@code null}
+     * @param type  the type to convert the string into
+     * @return an {@link Optional} containing the converted value, or empty if conversion fails
+     */
     public Optional<?> convertTo(@Nullable String value, @NotNull PrimitiveType type) {
         return TryConvert.convert(value, v -> switch (type) {
-           case INT ->     Integer.valueOf(v);
-           case LONG ->    Long.valueOf(v);
-           case DOUBLE ->  Double.valueOf(v);
-           case FLOAT ->   Float.valueOf(v);
-           case BOOLEAN -> Boolean.valueOf(v);
-           case STRING ->  v;
+            case INT ->     Integer.valueOf(v);
+            case LONG ->    Long.valueOf(v);
+            case DOUBLE ->  Double.valueOf(v);
+            case FLOAT ->   Float.valueOf(v);
+            case BOOLEAN -> Boolean.valueOf(v);
+            case STRING ->  v;
         });
     }
 
+    /**
+     * Converts a string to a primitive value using a {@link PrimitiveType} and returns a fallback
+     * value if the input is null or conversion fails.
+     * <p>
+     * This method is useful when you want to guarantee a non-null result, even if the input is invalid.
+     *
+     * @param value    the input string to convert, may be {@code null}
+     * @param type     the target type to convert to
+     * @param fallback the fallback value to return if conversion fails
+     * @return the converted value, or {@code fallback} if conversion is unsuccessful
+     */
     @Contract("null, _, _ -> null")
     public Object convert(@Nullable String value, @NotNull PrimitiveType type, @Nullable Object fallback) {
         return TryConvert.convert(value, s -> switch (type) {
-           case INT ->     StringToNumber.toInt      (s, (Integer) fallback);
-           case LONG ->    StringToNumber.toLong     (s, (Long)    fallback);
-           case DOUBLE ->  StringToNumber.toDouble   (s, (Double)  fallback);
-           case FLOAT ->   StringToNumber.toFloat    (s, (Float)   fallback);
-           case BOOLEAN -> StringToBoolean.toBoolean (s, (Boolean) fallback);
-           case STRING ->  s != null ? s : fallback;
+            case INT ->     StringToNumber.toInt      (s, (Integer) fallback);
+            case LONG ->    StringToNumber.toLong     (s, (Long)    fallback);
+            case DOUBLE ->  StringToNumber.toDouble   (s, (Double)  fallback);
+            case FLOAT ->   StringToNumber.toFloat    (s, (Float)   fallback);
+            case BOOLEAN -> StringToBoolean.toBoolean (s, (Boolean) fallback);
+            case STRING ->  s != null ? s : fallback;
         });
     }
 }

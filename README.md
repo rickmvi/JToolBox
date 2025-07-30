@@ -158,6 +158,12 @@ public class Example {
     }
 }
 ```
+
+### 📦 Outros Módulos
+
+- [Pacote `template`](/src/main/java/com/github/rickmvi/jtoolbox/template/README.md): Utilitários para formatação dinâmica de strings e conversão segura com Optional.
+- [Pacote `debug`](/src/main/java/com/github/rickmvi/jtoolbox/debug/README.md): Sistema de log extensível com múltiplos níveis (`INFO`, `DEBUG`, `ERROR`, etc), suporte a cores ANSI, mensagens com placeholders, controle dinâmico de visibilidade e tratamento de exceções — ideal para debugging detalhado e visual.
+
 ___
 
 ## Padrões de Uso Recomendados
