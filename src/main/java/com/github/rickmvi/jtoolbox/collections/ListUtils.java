@@ -84,7 +84,7 @@ public class ListUtils {
      * @return an Optional containing the first element, or empty
      */
     public <T> @NotNull Optional<T> first(@NotNull List<T> list) {
-        return list.isEmpty() ? Optional.empty() : Optional.ofNullable(list.get(0));
+        return list.isEmpty() ? Optional.empty() : Optional.ofNullable(list.getFirst());
     }
 
     /**
@@ -96,7 +96,7 @@ public class ListUtils {
      * @return an Optional containing the last element, or empty
      */
     public <T> @NotNull Optional<T> last(@NotNull List<T> list) {
-        return list.isEmpty() ? Optional.empty() : Optional.ofNullable(list.get(list.size() - 1));
+        return list.isEmpty() ? Optional.empty() : Optional.ofNullable(list.getLast());
     }
 
     /**
