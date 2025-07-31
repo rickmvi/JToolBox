@@ -49,7 +49,7 @@ Adicione ao seu `pom.xml`:
 
 ```xml
 <dependency>
-  <groupId>io.githuv.rickmvi</groupId>
+  <groupId>io.github.rickmvi</groupId>
   <artifactId>jtoolbox</artifactId>
   <version>1.3.3</version>
 </dependency> 
