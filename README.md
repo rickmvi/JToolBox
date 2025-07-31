@@ -43,6 +43,8 @@ Ela foi projetada para simplificar operações comuns de I/O no console, oferece
 
 ### Maven
 
+[![Maven Central](https://img.shields.io/maven-central/v/io.github.rickmvi/jtoolbox.svg?label=Maven%20Central)](https://central.sonatype.com/artifact/io.github.rickmvi/jtoolbox)
+
 Adicione ao seu `pom.xml`:
 
 ```xml
@@ -62,8 +64,6 @@ dependencies {
     implementation 'com.github.rickmvi:jtoolbox:1.1.2'
 }
 ```
-
-[![Maven Central](https://img.shields.io/maven-central/v/io.github.rickmvi/jtoolbox.svg?label=Maven%20Central)](https://central.sonatype.com/artifact/io.github.rickmvi/jtoolbox)
 ___
 
 ## Como Usar
