@@ -62,6 +62,8 @@ dependencies {
     implementation 'com.github.rickmvi:jtoolbox:1.1.2'
 }
 ```
+
+[![Maven Central](https://img.shields.io/maven-central/v/io.github.rickmvi/jtoolbox.svg?label=Maven%20Central)](https://central.sonatype.com/artifact/io.github.rickmvi/jtoolbox)
 ___
 
 ## Como Usar
