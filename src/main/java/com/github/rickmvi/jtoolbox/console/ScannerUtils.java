@@ -41,7 +41,6 @@ import java.util.Scanner;
 @lombok.experimental.UtilityClass
 public class ScannerUtils {
 
-
     /**
      * A private, final, and static instance of {@link ScannerHandler} designed
      * to manage the internal handling of {@link Scanner} operations.

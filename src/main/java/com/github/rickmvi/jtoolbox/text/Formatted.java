@@ -68,7 +68,7 @@ public final class Formatted {
      * @param values   the map of placeholder keys to replacement strings, not null
      * @return the resulting string after replacement
      */
-    public @NotNull String replace(@NotNull String template, @NotNull Map<String, String> values) {
+    public static @NotNull String replace(@NotNull String template, @NotNull Map<String, String> values) {
         for (Map.Entry<String, String> entry : values.entrySet()) {
             String placeholder = "{" + entry.getKey() + "}";
             template = template.replace(placeholder, entry.getValue());
@@ -86,7 +86,7 @@ public final class Formatted {
      * @param args     the arguments to replace placeholders, not null
      * @return the formatted string with placeholders replaced by argument values
      */
-    public @NotNull String format(@NotNull String template, Object @NotNull ... args) {
+    public static @NotNull String format(@NotNull String template, Object @NotNull ... args) {
         template = MapUtils.replace(template, TOKENS);
         for (Object arg : args) {
             template = GENERIC_PATTERN
@@ -109,7 +109,7 @@ public final class Formatted {
      * @return a new string with all tokens replaced by formatted argument values
      */
     @Contract("_,_ -> new")
-    public @NotNull String formatTokens(@NotNull String template, Object... args) {
+    public static @NotNull String formatTokens(@NotNull String template, Object... args) {
         return TemplateFormatter.format(template, TOKEN_PATTERN, (matcher, index) -> {
             if (index >= args.length) return "";
             String tokenCode = matcher.group(1);
@@ -133,7 +133,7 @@ public final class Formatted {
      * @throws IllegalArgumentException if a key is missing and {@code failIfMissing} is true
      */
     @Contract("_,_, _ -> new")
-    public @NotNull String formatNamed(@NotNull String template,
+    public static @NotNull String formatNamed(@NotNull String template,
                                        @NotNull Map<String, ?> values,
                                        boolean failIfMissing) {
         return TemplateFormatter.format(template, PLACEHOLDER_PATTERN, (matcher, index) -> {
@@ -157,7 +157,7 @@ public final class Formatted {
      * @return a new {@link Formatter} instance
      */
     @Contract("_ -> new")
-    public @NotNull Formatter builder(@NotNull String template) {
+    public static @NotNull Formatter builder(@NotNull String template) {
         return new Formatter(template);
     }
 

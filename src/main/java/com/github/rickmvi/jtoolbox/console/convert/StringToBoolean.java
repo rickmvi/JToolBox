@@ -50,7 +50,7 @@ public class StringToBoolean {
      * @param value the string value to convert, may be {@code null}
      * @return the boolean value parsed from the string, or {@code false} if input is {@code null} or invalid
      */
-    public boolean toBoolean(@Nullable String value) {
+    public static boolean toBoolean(@Nullable String value) {
         return TryConvert.convert(value, Boolean::parseBoolean).orElse(false);
     }
 
@@ -63,7 +63,7 @@ public class StringToBoolean {
      * @param fallback the fallback boolean value to return if input is {@code null} or invalid
      * @return the boolean value parsed from the string, or the provided fallback value on failure
      */
-    public boolean toBoolean(@Nullable String value, boolean fallback) {
+    public static boolean toBoolean(@Nullable String value, boolean fallback) {
         return TryConvert.convert(value, Boolean::parseBoolean).orElse(fallback);
     }
 
@@ -79,7 +79,7 @@ public class StringToBoolean {
      * @param fallback a supplier that provides the fallback boolean value if input is {@code null} or invalid, must not be {@code null}
      * @return the boolean value parsed from the string, or the supplied fallback value on failure
      */
-    public boolean toBoolean(@Nullable String value, @NotNull Supplier<Boolean> fallback) {
+    public static boolean toBoolean(@Nullable String value, @NotNull Supplier<Boolean> fallback) {
         return TryConvert.convert(value, Boolean::parseBoolean).orElseGet(fallback);
     }
 
@@ -91,7 +91,7 @@ public class StringToBoolean {
      * @param value the string value to convert, may be {@code null}
      * @return an {@code Optional} containing the boolean value if conversion succeeds; otherwise, an empty {@code Optional}
      */
-    public Optional<Boolean> toBooleanOptional(@Nullable String value) {
+    public static Optional<Boolean> toBooleanOptional(@Nullable String value) {
         return TryConvert.convert(value, Boolean::parseBoolean);
     }
 }

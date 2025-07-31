@@ -32,7 +32,7 @@ public class Out {
      *
      * @param text the text to print, may be {@code null} or empty
      */
-    public void print(@Nullable String text) {
+    public static void print(@Nullable String text) {
         Conditionals.ifTrue(text != null && !text.isEmpty(), () -> System.out.print(text));
     }
 
@@ -43,7 +43,7 @@ public class Out {
      *
      * @param text the text to print, may be {@code null} or empty
      */
-    public void printLine(@Nullable String text) {
+    public static void printLine(@Nullable String text) {
         Conditionals.ifTrue(text != null && !text.isEmpty(), () -> System.out.println(text));
     }
 
@@ -55,14 +55,14 @@ public class Out {
      * @param format the format string (as in {@link String#format}), must not be empty
      * @param args   the arguments referenced by the format specifiers in the format string
      */
-    public void printf(@NotNull String format, Object... args) {
+    public static void printf(@NotNull String format, Object... args) {
         Conditionals.ifTrue(!format.isEmpty(), () -> System.out.printf(format, args));
     }
 
     /**
      * Prints an empty line to the console.
      */
-    public void emptyLine() {
+    public static void emptyLine() {
         System.out.println();
     }
 
@@ -73,7 +73,7 @@ public class Out {
      *
      * @param obj the object to print, may be {@code null}
      */
-    public void printObject(@Nullable Object obj) {
+    public static void printObject(@Nullable Object obj) {
         Conditionals.ifTrue(obj != null, () -> System.out.print(obj));
     }
 
@@ -84,7 +84,7 @@ public class Out {
      *
      * @param obj the object to print, may be {@code null}
      */
-    public void printLineObject(@Nullable Object obj) {
+    public static void printLineObject(@Nullable Object obj) {
         Conditionals.ifTrue(obj != null, () -> System.out.println(obj));
     }
 
@@ -97,7 +97,7 @@ public class Out {
      * @param format the format string or object, may be {@code null}
      * @param args   the arguments referenced by the format specifiers, may be {@code null}
      */
-    public void printfObject(@Nullable Object format, @Nullable Object... args) {
+    public static void printfObject(@Nullable Object format, @Nullable Object... args) {
         Conditionals.ifTrue(format != null && args != null, () -> System.out.printf(format.toString(), args));
     }
 
@@ -108,7 +108,7 @@ public class Out {
      *
      * @param obj the debug message object, may be {@code null}
      */
-    public void printDebug(@Nullable Object obj) {
+    public static void printDebug(@Nullable Object obj) {
         Conditionals.ifTrue(obj != null, () -> System.out.println("[DEBUG] " + obj));
     }
 
@@ -119,7 +119,7 @@ public class Out {
      *
      * @param t the throwable whose stack trace is to be printed, may be {@code null}
      */
-    public void printStackTrace(@Nullable Throwable t) {
+    public static void printStackTrace(@Nullable Throwable t) {
         Conditionals.ifTrue(t != null, () -> t.printStackTrace(System.out));
     }
 
@@ -128,7 +128,7 @@ public class Out {
      *
      * @param action a consumer that accepts the system standard output stream
      */
-    public void withOut(@NotNull Consumer<PrintStream> action) {
+    public static void withOut(@NotNull Consumer<PrintStream> action) {
         action.accept(System.out);
     }
 
@@ -141,7 +141,7 @@ public class Out {
      * @param template the formatting template string, must not be empty
      * @param args     the arguments to replace placeholders in the template
      */
-    public void printFormatted(@NotNull String template, Object... args) {
+    public static void printFormatted(@NotNull String template, Object... args) {
         Conditionals.ifTrue(!template.isEmpty(), () -> print(Formatted.format(template, args)));
     }
 
@@ -154,7 +154,7 @@ public class Out {
      * @param template the token-based formatting template string, must not be empty
      * @param args     the arguments to replace token placeholders in the template
      */
-    public void printTokenFormatted(@NotNull String template, Object... args) {
+    public static void printTokenFormatted(@NotNull String template, Object... args) {
         Conditionals.ifTrue(!template.isEmpty(), () -> print(Formatted.formatTokens(template, args)));
     }
 
@@ -168,7 +168,7 @@ public class Out {
      * @param values        a map of placeholder names to replacement values, must not be empty
      * @param failIfMissing if {@code true}, formatting fails if a placeholder is missing in the map
      */
-    public void printNamedFormatted(@NotNull String template, @NotNull Map<String, ?> values, boolean failIfMissing) {
+    public static void printNamedFormatted(@NotNull String template, @NotNull Map<String, ?> values, boolean failIfMissing) {
         Conditionals.ifTrue(!template.isEmpty() && !values.isEmpty(),
                 () -> print(Formatted.formatNamed(template, values, failIfMissing)));
     }
@@ -180,7 +180,7 @@ public class Out {
      * @param template the named placeholder template string, must not be empty
      * @param values   a map of placeholder names to replacement values, must not be empty
      */
-    public void printNamedFormatted(@NotNull String template, @NotNull Map<String, ?> values) {
+    public static void printNamedFormatted(@NotNull String template, @NotNull Map<String, ?> values) {
         printNamedFormatted(template, values, false);
     }
 }

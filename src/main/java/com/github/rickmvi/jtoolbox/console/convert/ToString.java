@@ -10,15 +10,24 @@ import java.util.Collection;
 import java.util.Map;
 
 /**
- * Utility class for safely converting objects to string representations.
- * Handles nulls, primitives, collections, arrays, enums, and fallbacks.
+ * A utility class providing methods for generating a string representation of various objects.
+ * The methods in this class are designed to safely handle {@code null} inputs, collections, arrays,
+ * maps, and other object types. Default values are provided to replace {@code null} when needed.
  */
 @lombok.experimental.UtilityClass
 public class ToString {
 
     /**
-     * Converts the given object to a safe string representation.
-     * Returns "null" if the object is null.
+     * Converts the given object to a string representation.
+     * <p>
+     * If the given object is {@code null}, the string "null" is returned.
+     * For non-null objects, the method attempts to call the {@code toString()}
+     * method of the object to get its string representation,
+     * falling back to default representations for special cases (e.g., arrays, collections).
+     *
+     * @param o the object to be converted to a string, may be {@code null}
+     * @return a non-null string representation of the object, or "null" if the object is {@code null}
+     * @throws RuntimeException if any exception occurs during the string conversion process
      */
     @Contract("null -> !null")
     public static @NotNull String toString(@Nullable Object o) {
@@ -26,8 +35,19 @@ public class ToString {
     }
 
     /**
-     * Converts the given object to a safe string representation.
-     * Returns the default value if the object is null.
+     * Converts the given object to its string representation, or uses the specified default value
+     * if the object is {@code null}.
+     *
+     * The method handles various object types including strings, numbers, booleans, characters,
+     * enums, collections, maps, arrays, and exceptions. If none of these types are matched, the
+     * object's {@code toString()} method is used. If an error occurs during conversion, a generic
+     * error message is returned.
+     *
+     * @param o the object to be converted to a string; may be {@code null}
+     * @param defaultValue the default string to return if {@code o} is {@code null}; must not be {@code null}
+     * @return a non-null string representation of the object, or the specified {@code defaultValue}
+     *         if the object is {@code null}
+     * @throws NullPointerException if {@code defaultValue} is {@code null}
      */
     @Contract("null,_-> param2")
     public static @NotNull String toString(@Nullable Object o, @NotNull String defaultValue) {

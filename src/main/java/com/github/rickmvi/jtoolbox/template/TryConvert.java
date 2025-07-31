@@ -18,6 +18,7 @@
 package com.github.rickmvi.jtoolbox.template;
 
 import com.github.rickmvi.jtoolbox.debug.SLogger;
+import org.jetbrains.annotations.Contract;
 
 import java.util.Optional;
 import java.util.function.Function;
@@ -62,7 +63,8 @@ public class TryConvert {
      * @param converter a function that converts the input value to the target type
      * @return an {@link Optional} containing the converted result, or empty if input is {@code null} or conversion fails
      */
-    public <T, R> Optional<R> convert(T value, Function<T, R> converter) {
+    @Contract("null, _ -> !null")
+    public static <T, R> Optional<R> convert(T value, Function<T, R> converter) {
         if (value == null) return Optional.empty();
         try {
             return Optional.ofNullable(converter.apply(value));

@@ -31,7 +31,7 @@ public class DoWhile {
      * @param condition the condition to evaluate after each iteration
      * @param action    the action to execute
      */
-    public void doWhile(@NotNull BooleanSupplier condition, @NotNull Runnable action) {
+    public static void doWhile(@NotNull BooleanSupplier condition, @NotNull Runnable action) {
         do action.run(); while (condition.getAsBoolean());
     }
 
@@ -56,7 +56,7 @@ public class DoWhile {
      * @param <T> the result type
      * @return the last result produced by {@code action}
      */
-    public <T> T doWhile(@NotNull Supplier<T> action, @NotNull Predicate<T> continueCondition) {
+    public static <T> T doWhile(@NotNull Supplier<T> action, @NotNull Predicate<T> continueCondition) {
         T result;
         do {
             result = action.get();

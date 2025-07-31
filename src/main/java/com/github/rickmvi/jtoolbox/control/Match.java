@@ -17,6 +17,7 @@
  */
 package com.github.rickmvi.jtoolbox.control;
 
+import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.Map;
@@ -33,7 +34,7 @@ public class Match {
      * @param defaultCase the action to run if no match is found
      * @param <T>         the type of the input value
      */
-    public <T> void on(T value, @NotNull Map<T, Runnable> cases, Runnable defaultCase) {
+    public static <T> void on(T value, @NotNull Map<T, Runnable> cases, Runnable defaultCase) {
         cases.getOrDefault(value, defaultCase).run();
     }
 
@@ -47,7 +48,7 @@ public class Match {
      * @param <R>         the return type
      * @return the result from the matching case or the default supplier
      */
-    public <T, R> R returning(T value, @NotNull Map<T, Supplier<R>> cases, Supplier<R> defaultCase) {
+    public static <T, R> R returning(T value, @NotNull Map<T, Supplier<R>> cases, Supplier<R> defaultCase) {
         return cases.getOrDefault(value, defaultCase).get();
     }
 
@@ -60,7 +61,8 @@ public class Match {
      * @param <T>         the type of the input and return values
      * @return a {@link CompletableFuture} with the result of the matched case or default
      */
-    public <T> CompletableFuture<T> returnAsync(T value, Map<T, Supplier<T>> cases, Supplier<T> defaultCase) {
+    @Contract("_, _, _ -> new")
+    public static <T> @NotNull CompletableFuture<T> returnAsync(T value, Map<T, Supplier<T>> cases, Supplier<T> defaultCase) {
         return CompletableFuture.supplyAsync(() -> returning(value, cases, defaultCase));
     }
 }

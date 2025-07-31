@@ -52,7 +52,7 @@ public class ListUtils {
      * @param <T>  the type of elements
      * @return a new list containing the elements in reverse order
      */
-    public <T> @NotNull List<T> reverse(@NotNull List<T> list) {
+    public static <T> @NotNull List<T> reverse(@NotNull List<T> list) {
         List<T> reversed = new ArrayList<>(list);
         Collections.reverse(reversed);
         return reversed;
@@ -65,7 +65,7 @@ public class ListUtils {
      * @param <T>   the type of elements
      * @return a new reversed array
      */
-    public <T> @NotNull T[] reverseArray(@NotNull T[] array) {
+    public static <T> @NotNull T @NotNull [] reverseArray(@NotNull T[] array) {
         T[] result = Arrays.copyOf(array, array.length);
         for (int i = 0; i < array.length / 2; i++) {
             T temp = result[i];
@@ -83,7 +83,7 @@ public class ListUtils {
      * @param <T>  the type of elements
      * @return an Optional containing the first element, or empty
      */
-    public <T> @NotNull Optional<T> first(@NotNull List<T> list) {
+    public static <T> @NotNull Optional<T> first(@NotNull List<T> list) {
         return list.isEmpty() ? Optional.empty() : Optional.ofNullable(list.getFirst());
     }
 
@@ -95,7 +95,7 @@ public class ListUtils {
      * @param <T>  the type of elements
      * @return an Optional containing the last element, or empty
      */
-    public <T> @NotNull Optional<T> last(@NotNull List<T> list) {
+    public static <T> @NotNull Optional<T> last(@NotNull List<T> list) {
         return list.isEmpty() ? Optional.empty() : Optional.ofNullable(list.getLast());
     }
 
@@ -106,7 +106,7 @@ public class ListUtils {
      * @param <T>  the type of elements (must be {@link Comparable})
      * @return a new sorted list
      */
-    public <T extends Comparable<T>> @NotNull List<T> sort(@NotNull List<T> list) {
+    public static <T extends Comparable<T>> @NotNull List<T> sort(@NotNull List<T> list) {
         List<T> sorted = new ArrayList<>(list);
         sorted.sort(Comparator.naturalOrder());
         return sorted;
@@ -119,7 +119,7 @@ public class ListUtils {
      * @param <T>  the type of elements (must be {@link Comparable})
      * @return a new sorted list in descending order
      */
-    public <T extends Comparable<T>> @NotNull List<T> sortDescending(@NotNull List<T> list) {
+    public static <T extends Comparable<T>> @NotNull List<T> sortDescending(@NotNull List<T> list) {
         List<T> sorted = new ArrayList<>(list);
         sorted.sort(Comparator.reverseOrder());
         return sorted;
@@ -132,7 +132,7 @@ public class ListUtils {
      * @param <T>  the type of elements (must be {@link Comparable})
      * @return an Optional containing the maximum element, or empty
      */
-    public <T extends Comparable<T>> @NotNull Optional<T> max(@NotNull List<T> list) {
+    public static <T extends Comparable<T>> @NotNull Optional<T> max(@NotNull List<T> list) {
         return list.stream().max(Comparator.naturalOrder());
     }
 
@@ -143,7 +143,7 @@ public class ListUtils {
      * @param <T>  the type of elements (must be {@link Comparable})
      * @return an Optional containing the minimum element, or empty
      */
-    public <T extends Comparable<T>> @NotNull Optional<T> min(@NotNull List<T> list) {
+    public static <T extends Comparable<T>> @NotNull Optional<T> min(@NotNull List<T> list) {
         return list.stream().min(Comparator.naturalOrder());
     }
 
@@ -153,7 +153,7 @@ public class ListUtils {
      * @param list the list to shuffle
      * @param <T>  the type of elements
      */
-    public <T> void shuffle(@NotNull List<T> list) {
+    public static <T> void shuffle(@NotNull List<T> list) {
         Collections.shuffle(list);
     }
 
@@ -166,7 +166,7 @@ public class ListUtils {
      * @param <T>   the type of elements
      * @return the index of the value, or -1 if not found
      */
-    public <T> int indexOf(@NotNull List<T> list, T value) {
+    public static <T> int indexOf(@NotNull List<T> list, T value) {
         return list.indexOf(value);
     }
 
@@ -178,7 +178,7 @@ public class ListUtils {
      * @param <T>       the type of elements
      * @return a new filtered list
      */
-    public <T> @NotNull List<T> filter(@NotNull List<T> list, @NotNull Predicate<T> predicate) {
+    public static <T> @NotNull List<T> filter(@NotNull List<T> list, @NotNull Predicate<T> predicate) {
         List<T> result = new ArrayList<>();
         for (T t : list) {
             if (predicate.test(t)) result.add(t);
@@ -195,7 +195,7 @@ public class ListUtils {
      * @param <K>        the type of keys
      * @return a map where each key is a group and the value is the list of elements in that group
      */
-    public <T, K> @NotNull Map<K, List<T>> groupBy(@NotNull List<T> list, @NotNull Function<T, K> classifier) {
+    public static <T, K> @NotNull Map<K, List<T>> groupBy(@NotNull List<T> list, @NotNull Function<T, K> classifier) {
         Map<K, List<T>> grouped = new HashMap<>();
         for (T t : list) {
             grouped.computeIfAbsent(classifier.apply(t), k -> new ArrayList<>()).add(t);
@@ -211,7 +211,7 @@ public class ListUtils {
      * @param <T>       the type of elements
      * @return the number of matching elements
      */
-    public <T> long count(@NotNull List<T> list, @NotNull Predicate<T> predicate) {
+    public static <T> long count(@NotNull List<T> list, @NotNull Predicate<T> predicate) {
         return list.stream().filter(predicate).count();
     }
 }

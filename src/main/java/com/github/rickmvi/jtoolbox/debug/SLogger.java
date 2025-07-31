@@ -42,7 +42,7 @@ public class SLogger {
      * @return the colorized message if enabled, or the original message otherwise
      */
     @Contract(pure = true)
-    private String colorize(String message, String color) {
+    private static String colorize(String message, String color) {
         return useAnsiColor ? color + message + AnsiColor.RESET.getAnsiCode() : message;
     }
 
@@ -52,7 +52,7 @@ public class SLogger {
      * @param level the log level for this message
      * @param message the message to log
      */
-    public void log(LogLevel level, String message) {
+    public static void log(LogLevel level, String message) {
         if (!ENABLED_LEVELS.contains(level) || level == LogLevel.OFF) return;
 
         String time = FORMATTER.format(LocalDateTime.now());
@@ -69,7 +69,7 @@ public class SLogger {
      * @param template the message template with placeholders
      * @param args the arguments to substitute into the template
      */
-    public void log(LogLevel level, String template, Object... args) {
+    public static void log(LogLevel level, String template, Object... args) {
         if (!ENABLED_LEVELS.contains(level) || level == LogLevel.OFF) return;
 
         String time = FORMATTER.format(LocalDateTime.now());
@@ -87,7 +87,7 @@ public class SLogger {
      * @param message the message to log
      * @param t the throwable to log (stack trace will be printed)
      */
-    public void log(LogLevel level, String message, Throwable t) {
+    public static void log(LogLevel level, String message, Throwable t) {
         log(level, message);
         if (ENABLED_LEVELS.contains(level) && level != LogLevel.OFF && t != null)
             t.printStackTrace(System.out);
@@ -101,7 +101,7 @@ public class SLogger {
      * @param t the throwable to log (stack trace will be printed)
      * @param args the arguments to substitute into the template
      */
-    public void log(LogLevel level, String template, Throwable t, Object... args) {
+    public static void log(LogLevel level, String template, Throwable t, Object... args) {
         log(level, Formatted.format(template, args));
         if (ENABLED_LEVELS.contains(level) && level != LogLevel.OFF && t != null)
             t.printStackTrace(System.out);
@@ -112,42 +112,42 @@ public class SLogger {
      *
      * @param message the message to log
      */
-    public void trace(String message)   { log(LogLevel.TRACE, message); }
+    public static void trace(String message)   { log(LogLevel.TRACE, message); }
 
     /**
      * Logs a message at DEBUG level.
      *
      * @param message the message to log
      */
-    public void debug(String message)   { log(LogLevel.DEBUG, message); }
+    public static void debug(String message)   { log(LogLevel.DEBUG, message); }
 
     /**
      * Logs a message at INFO level.
      *
      * @param message the message to log
      */
-    public void info(String message)    { log(LogLevel.INFO, message); }
+    public static void info(String message)    { log(LogLevel.INFO, message); }
 
     /**
      * Logs a message at WARN level.
      *
      * @param message the message to log
      */
-    public void warn(String message)    { log(LogLevel.WARN, message); }
+    public static void warn(String message)    { log(LogLevel.WARN, message); }
 
     /**
      * Logs a message at ERROR level.
      *
      * @param message the message to log
      */
-    public void error(String message)   { log(LogLevel.ERROR, message); }
+    public static void error(String message)   { log(LogLevel.ERROR, message); }
 
     /**
      * Logs a message at FATAL level.
      *
      * @param message the message to log
      */
-    public void fatal(String message)   { log(LogLevel.FATAL, message); }
+    public static void fatal(String message)   { log(LogLevel.FATAL, message); }
 
     /**
      * Logs a formatted message at TRACE level.
@@ -155,7 +155,7 @@ public class SLogger {
      * @param template the message template with placeholders
      * @param args the arguments to substitute into the template
      */
-    public void trace(String template, Object... args)  { log(LogLevel.TRACE, template, args); }
+    public static void trace(String template, Object... args)  { log(LogLevel.TRACE, template, args); }
 
     /**
      * Logs a formatted message at DEBUG level.
@@ -163,7 +163,7 @@ public class SLogger {
      * @param template the message template with placeholders
      * @param args the arguments to substitute into the template
      */
-    public void debug(String template, Object... args)  { log(LogLevel.DEBUG, template, args); }
+    public static void debug(String template, Object... args)  { log(LogLevel.DEBUG, template, args); }
 
     /**
      * Logs a formatted message at INFO level.
@@ -171,7 +171,7 @@ public class SLogger {
      * @param template the message template with placeholders
      * @param args the arguments to substitute into the template
      */
-    public void info(String template,  Object... args)  { log(LogLevel.INFO, template, args); }
+    public static void info(String template,  Object... args)  { log(LogLevel.INFO, template, args); }
 
     /**
      * Logs a formatted message at WARN level.
@@ -179,7 +179,7 @@ public class SLogger {
      * @param template the message template with placeholders
      * @param args the arguments to substitute into the template
      */
-    public void warn(String template,  Object... args)  { log(LogLevel.WARN, template, args); }
+    public static void warn(String template,  Object... args)  { log(LogLevel.WARN, template, args); }
 
     /**
      * Logs a formatted message at ERROR level.
@@ -187,7 +187,7 @@ public class SLogger {
      * @param template the message template with placeholders
      * @param args the arguments to substitute into the template
      */
-    public void error(String template, Object... args)  { log(LogLevel.ERROR, template, args); }
+    public static void error(String template, Object... args)  { log(LogLevel.ERROR, template, args); }
 
     /**
      * Logs a formatted message at FATAL level.
@@ -195,7 +195,7 @@ public class SLogger {
      * @param template the message template with placeholders
      * @param args the arguments to substitute into the template
      */
-    public void fatal(String template, Object... args)  { log(LogLevel.FATAL, template, args); }
+    public static void fatal(String template, Object... args)  { log(LogLevel.FATAL, template, args); }
 
     /**
      * Logs a message and throwable at WARN level.
@@ -203,7 +203,7 @@ public class SLogger {
      * @param message the message to log
      * @param t the throwable to log (stack trace will be printed)
      */
-    public void warn(String message,  Throwable t)  { log(LogLevel.WARN, message, t); }
+    public static void warn(String message,  Throwable t)  { log(LogLevel.WARN, message, t); }
 
     /**
      * Logs a message and throwable at ERROR level.
@@ -211,7 +211,7 @@ public class SLogger {
      * @param message the message to log
      * @param t the throwable to log (stack trace will be printed)
      */
-    public void error(String message, Throwable t)  { log(LogLevel.ERROR, message, t); }
+    public static void error(String message, Throwable t)  { log(LogLevel.ERROR, message, t); }
 
     /**
      * Logs a message and throwable at FATAL level.
@@ -219,7 +219,7 @@ public class SLogger {
      * @param message the message to log
      * @param t the throwable to log (stack trace will be printed)
      */
-    public void fatal(String message, Throwable t)  { log(LogLevel.FATAL, message, t); }
+    public static void fatal(String message, Throwable t)  { log(LogLevel.FATAL, message, t); }
 
     /**
      * Logs a formatted message and throwable at WARN level.
@@ -228,7 +228,7 @@ public class SLogger {
      * @param t the throwable to log (stack trace will be printed)
      * @param args the arguments to substitute into the template
      */
-    public void warn(String template,  Throwable t, Object... args) { log(LogLevel.WARN, template, t, args); }
+    public static void warn(String template,  Throwable t, Object... args) { log(LogLevel.WARN, template, t, args); }
 
     /**
      * Logs a formatted message and throwable at ERROR level.
@@ -237,7 +237,7 @@ public class SLogger {
      * @param t the throwable to log (stack trace will be printed)
      * @param args the arguments to substitute into the template
      */
-    public void error(String template, Throwable t, Object... args) { log(LogLevel.ERROR, template, t, args); }
+    public static void error(String template, Throwable t, Object... args) { log(LogLevel.ERROR, template, t, args); }
 
     /**
      * Logs a formatted message and throwable at FATAL level.
@@ -246,29 +246,29 @@ public class SLogger {
      * @param t the throwable to log (stack trace will be printed)
      * @param args the arguments to substitute into the template
      */
-    public void fatal(String template, Throwable t, Object... args) { log(LogLevel.FATAL, template, t, args); }
+    public static void fatal(String template, Throwable t, Object... args) { log(LogLevel.FATAL, template, t, args); }
 
     /**
      * Enables logging for the specified log level.
      *
      * @param level the log level to enable
      */
-    public void enable(LogLevel level)  { ENABLED_LEVELS.add(level); }
+    public static void enable(LogLevel level)  { ENABLED_LEVELS.add(level); }
 
     /**
      * Disables logging for the specified log level.
      *
      * @param level the log level to disable
      */
-    public void disable(LogLevel level) { ENABLED_LEVELS.remove(level); }
+    public static void disable(LogLevel level) { ENABLED_LEVELS.remove(level); }
 
     /**
      * Enables logging for all levels (except OFF).
      */
-    public void enableAll()             { ENABLED_LEVELS.clear(); ENABLED_LEVELS.addAll(EnumSet.complementOf(EnumSet.of(LogLevel.OFF))); }
+    public static void enableAll()  { ENABLED_LEVELS.clear(); ENABLED_LEVELS.addAll(EnumSet.complementOf(EnumSet.of(LogLevel.OFF))); }
 
     /**
      * Disables logging for all levels.
      */
-    public void disableAll()            { ENABLED_LEVELS.clear(); }
+    public static void disableAll() { ENABLED_LEVELS.clear(); }
 }

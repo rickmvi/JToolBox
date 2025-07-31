@@ -68,8 +68,9 @@ public final class TypeConverter {
      * @return an {@link Optional} containing the converted value, or empty if conversion fails
      * @throws IllegalArgumentException if the type is not supported
      */
+    @Contract("null, _ -> !null")
     @SuppressWarnings("unchecked")
-    public <T> Optional<T> convertTo(@Nullable String value, @NotNull Class<T> type) {
+    public static <T> Optional<T> convertTo(@Nullable String value, @NotNull Class<T> type) {
         return TryConvert.convert(value, v -> {
             if (type == Integer.class)  return (T) Integer.valueOf(v);
             if (type == Long.class)     return (T) Long.valueOf(v);
@@ -91,7 +92,8 @@ public final class TypeConverter {
      * @param type  the type to convert the string into
      * @return an {@link Optional} containing the converted value, or empty if conversion fails
      */
-    public Optional<?> convertTo(@Nullable String value, @NotNull PrimitiveType type) {
+    @Contract("null, _ -> !null")
+    public static Optional<?> convertTo(@Nullable String value, @NotNull PrimitiveType type) {
         return TryConvert.convert(value, v -> switch (type) {
             case INT ->     Integer.valueOf(v);
             case LONG ->    Long.valueOf(v);
@@ -113,8 +115,8 @@ public final class TypeConverter {
      * @param fallback the fallback value to return if conversion fails
      * @return the converted value, or {@code fallback} if conversion is unsuccessful
      */
-    @Contract("null, _, _ -> null")
-    public Object convert(@Nullable String value, @NotNull PrimitiveType type, @Nullable Object fallback) {
+    @Contract("null, _, _ -> !null")
+    public static Object convert(@Nullable String value, @NotNull PrimitiveType type, @Nullable Object fallback) {
         return TryConvert.convert(value, s -> switch (type) {
             case INT ->     StringToNumber.toInt      (s, (Integer) fallback);
             case LONG ->    StringToNumber.toLong     (s, (Long)    fallback);

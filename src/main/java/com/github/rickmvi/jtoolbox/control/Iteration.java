@@ -153,7 +153,7 @@ public final class Iteration {
      * @param action  the action to perform, receiving the current index
      * @param cancel  the supplier that determines if repetition should stop
      */
-    public void repeatCancelable(int times, IntConsumer action, Supplier<Boolean> cancel) {
+    public static void repeatCancelable(int times, IntConsumer action, Supplier<Boolean> cancel) {
         Conditionals.ifTrueThrow(action == null || cancel == null, NullPointerException::new);
         Conditionals.ifTrueThrow(times < 0, IllegalArgumentException::new);
         for (int i = 0; i < times && !cancel.get(); i++) action.accept(i);
@@ -167,7 +167,7 @@ public final class Iteration {
      * @return a {@link CompletableFuture} that completes when repetition is done
      */
     @Contract("_, _ -> new")
-    public @NotNull CompletableFuture<Void> repeatAsync(int times, IntConsumer action) {
+    public static @NotNull CompletableFuture<Void> repeatAsync(int times, IntConsumer action) {
         return CompletableFuture.runAsync(() -> repeat(times, action));
     }
 

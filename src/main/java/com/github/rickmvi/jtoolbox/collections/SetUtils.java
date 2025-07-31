@@ -76,7 +76,7 @@ public class SetUtils {
      * @param <R>    the type of resulting elements
      * @return a new set with mapped values
      */
-    public <T, R> Set<R> mapSet(@NotNull Set<T> set, @NotNull Function<T, R> mapper) {
+    public static <T, R> Set<R> mapSet(@NotNull Set<T> set, @NotNull Function<T, R> mapper) {
         return set.stream().map(mapper).collect(Collectors.toSet());
     }
 
@@ -88,7 +88,7 @@ public class SetUtils {
      * @param <T>       the type of elements
      * @return {@code true} if any element matches, {@code false} otherwise
      */
-    public <T> boolean anyInSet(@NotNull Set<T> set, Predicate<T> predicate) {
+    public static <T> boolean anyInSet(@NotNull Set<T> set, Predicate<T> predicate) {
         return set.stream().anyMatch(predicate);
     }
 
@@ -100,7 +100,7 @@ public class SetUtils {
      * @param <T>       the type of elements
      * @return {@code true} if all elements match, {@code false} otherwise
      */
-    public <T> boolean allInSet(@NotNull Set<T> set, Predicate<T> predicate) {
+    public static <T> boolean allInSet(@NotNull Set<T> set, Predicate<T> predicate) {
         return set.stream().allMatch(predicate);
     }
 
@@ -112,7 +112,7 @@ public class SetUtils {
      * @param <T>       the type of elements
      * @return an {@link Optional} containing the first matching element, or empty if none found
      */
-    public <T> Optional<T> findFirstInSet(@NotNull Set<T> set, Predicate<T> predicate) {
+    public static <T> @NotNull Optional<T> findFirstInSet(@NotNull Set<T> set, Predicate<T> predicate) {
         return set.stream().filter(predicate).findFirst();
     }
 
@@ -123,7 +123,7 @@ public class SetUtils {
      * @param <T> the type of elements
      * @return the first element or {@code null} if the set is empty
      */
-    public <T> T firstInSet(@NotNull Set<T> set) {
+    public static <T> T firstInSet(@NotNull Set<T> set) {
         return set.stream().findFirst().orElse(null);
     }
 
@@ -135,7 +135,7 @@ public class SetUtils {
      * @param <T> the type of elements
      * @return a new set containing the union of {@code a} and {@code b}
      */
-    public <T> Set<T> union(Set<T> a, Set<T> b) {
+    public static <T> @NotNull Set<T> union(Set<T> a, Set<T> b) {
         Set<T> result = new HashSet<>(a);
         result.addAll(b);
         return result;
@@ -149,7 +149,7 @@ public class SetUtils {
      * @param <T> the type of elements
      * @return a new set containing the elements common to both {@code a} and {@code b}
      */
-    public <T> Set<T> intersection(Set<T> a, Set<T> b) {
+    public static <T> @NotNull Set<T> intersection(Set<T> a, Set<T> b) {
         Set<T> result = new HashSet<>(a);
         result.retainAll(b);
         return result;
@@ -163,7 +163,7 @@ public class SetUtils {
      * @param <T> the type of elements
      * @return a new set containing elements from {@code a} excluding those in {@code b}
      */
-    public <T> Set<T> difference(Set<T> a, Set<T> b) {
+    public static <T> @NotNull Set<T> difference(Set<T> a, Set<T> b) {
         Set<T> result = new HashSet<>(a);
         result.removeAll(b);
         return result;

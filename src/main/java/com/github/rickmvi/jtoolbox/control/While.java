@@ -17,6 +17,7 @@
  */
 package com.github.rickmvi.jtoolbox.control;
 
+import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.concurrent.CompletableFuture;
@@ -31,7 +32,7 @@ public class While {
      * @param condition the condition to evaluate before each iteration
      * @param action    the action to execute
      */
-    public void whileTrue(@NotNull BooleanSupplier condition, Runnable action) {
+    public static void whileTrue(@NotNull BooleanSupplier condition, Runnable action) {
         while (condition.getAsBoolean()) action.run();
     }
 
@@ -46,7 +47,7 @@ public class While {
      *                  the loop is terminated immediately.
      * @throws NullPointerException if {@code condition} or {@code cancel} is {@code null}.
      */
-    public void whileTrueCancelable(@NotNull BooleanSupplier condition, Runnable action, @NotNull BooleanSupplier cancel) {
+    public static void whileTrueCancelable(@NotNull BooleanSupplier condition, Runnable action, @NotNull BooleanSupplier cancel) {
         while (condition.getAsBoolean() && !cancel.getAsBoolean()) action.run();
     }
 
@@ -57,7 +58,7 @@ public class While {
      * @param action    the action to execute
      * @param cancel    the supplier that determines if execution should be canceled
      */
-    public void whileTrueCancelable(@NotNull BooleanSupplier condition, Runnable action, Supplier<Boolean> cancel) {
+    public static void whileTrueCancelable(@NotNull BooleanSupplier condition, Runnable action, Supplier<Boolean> cancel) {
         while (condition.getAsBoolean() && !cancel.get()) action.run();
     }
 
@@ -68,7 +69,8 @@ public class While {
      * @param action    the action to execute
      * @return a {@link CompletableFuture} that completes when the loop ends
      */
-    public CompletableFuture<Void> whileTrueAsync(BooleanSupplier condition, Runnable action) {
+    @Contract("_, _ -> new")
+    public static @NotNull CompletableFuture<Void> whileTrueAsync(BooleanSupplier condition, Runnable action) {
         return CompletableFuture.runAsync(() -> whileTrue(condition, action));
     }
 }

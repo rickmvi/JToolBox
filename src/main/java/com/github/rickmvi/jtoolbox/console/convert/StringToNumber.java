@@ -19,6 +19,7 @@ package com.github.rickmvi.jtoolbox.console.convert;
 
 import com.github.rickmvi.jtoolbox.template.TryConvert;
 
+import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.Nullable;
 import org.jetbrains.annotations.NotNull;
 
@@ -54,7 +55,7 @@ public class StringToNumber {
      * @param value the string to convert, may be {@code null}
      * @return the parsed integer or 0 on failure
      */
-    public int toInt(@Nullable String value) {
+    public static int toInt(@Nullable String value) {
         return toInt(value, 0);
     }
 
@@ -65,7 +66,7 @@ public class StringToNumber {
      * @param fallback the fallback integer value if conversion fails
      * @return the parsed integer or the fallback value on failure
      */
-    public int toInt(@Nullable String value, int fallback) {
+    public static int toInt(@Nullable String value, int fallback) {
         return TryConvert.convert(value, Integer::parseInt).orElse(fallback);
     }
 
@@ -76,7 +77,7 @@ public class StringToNumber {
      * @param fallback the fallback supplier to provide an integer if conversion fails
      * @return the parsed integer or the fallback value supplied
      */
-    public int toInt(@Nullable String value, @NotNull Supplier<Integer> fallback) {
+    public static int toInt(@Nullable String value, @NotNull Supplier<Integer> fallback) {
         return TryConvert.convert(value, Integer::parseInt).orElseGet(fallback);
     }
 
@@ -86,7 +87,8 @@ public class StringToNumber {
      * @param value the string to convert, may be {@code null}
      * @return an {@link Optional} containing the parsed integer or empty if invalid
      */
-    public Optional<Integer> toIntOptional(@Nullable String value) {
+    @Contract("null -> !null")
+    public static Optional<Integer> toIntOptional(@Nullable String value) {
         return TryConvert.convert(value, Integer::parseInt);
     }
 
@@ -96,7 +98,7 @@ public class StringToNumber {
      * @param value the string to convert, may be {@code null}
      * @return the parsed long or 0L on failure
      */
-    public long toLong(@Nullable String value) {
+    public static long toLong(@Nullable String value) {
         return toLong(value, 0L);
     }
 
@@ -104,10 +106,10 @@ public class StringToNumber {
      * Converts a string to a {@code long}, returning the specified fallback if conversion fails.
      *
      * @param value    the string to convert, may be {@code null}
-     * @param fallback the fallback long value if conversion fails
+     * @param fallback the fallback-long value if conversion fails
      * @return the parsed long or the fallback value on failure
      */
-    public long toLong(@Nullable String value, long fallback) {
+    public static long toLong(@Nullable String value, long fallback) {
         return TryConvert.convert(value, Long::parseLong).orElse(fallback);
     }
 
@@ -118,7 +120,7 @@ public class StringToNumber {
      * @param fallback the fallback supplier to provide a long if conversion fails
      * @return the parsed long or the fallback value supplied
      */
-    public long toLong(@Nullable String value, @NotNull Supplier<Long> fallback) {
+    public static long toLong(@Nullable String value, @NotNull Supplier<Long> fallback) {
         return TryConvert.convert(value, Long::parseLong).orElseGet(fallback);
     }
 
@@ -128,7 +130,8 @@ public class StringToNumber {
      * @param value the string to convert, may be {@code null}
      * @return an {@link Optional} containing the parsed long or empty if invalid
      */
-    public Optional<Long> toLongOptional(@Nullable String value) {
+    @Contract("null -> !null")
+    public static Optional<Long> toLongOptional(@Nullable String value) {
         return TryConvert.convert(value, Long::parseLong);
     }
 
@@ -138,7 +141,7 @@ public class StringToNumber {
      * @param value the string to convert, may be {@code null}
      * @return the parsed double or 0.0 on failure
      */
-    public double toDouble(@Nullable String value) {
+    public static double toDouble(@Nullable String value) {
         return toDouble(value, 0.0);
     }
 
@@ -149,7 +152,7 @@ public class StringToNumber {
      * @param fallback the fallback double value if conversion fails
      * @return the parsed double or the fallback value on failure
      */
-    public double toDouble(@Nullable String value, double fallback) {
+    public static double toDouble(@Nullable String value, double fallback) {
         return TryConvert.convert(value, Double::parseDouble).orElse(fallback);
     }
 
@@ -160,7 +163,7 @@ public class StringToNumber {
      * @param fallback the fallback supplier to provide a double if conversion fails
      * @return the parsed double or the fallback value supplied
      */
-    public double toDouble(@Nullable String value, @NotNull Supplier<Double> fallback) {
+    public static double toDouble(@Nullable String value, @NotNull Supplier<Double> fallback) {
         return TryConvert.convert(value, Double::parseDouble).orElseGet(fallback);
     }
 
@@ -170,7 +173,8 @@ public class StringToNumber {
      * @param value the string to convert, may be {@code null}
      * @return an {@link Optional} containing the parsed double or empty if invalid
      */
-    public Optional<Double> toDoubleOptional(@Nullable String value) {
+    @Contract("null -> !null")
+    public static Optional<Double> toDoubleOptional(@Nullable String value) {
         return TryConvert.convert(value, Double::parseDouble);
     }
 
@@ -180,7 +184,7 @@ public class StringToNumber {
      * @param value the string to convert, may be {@code null}
      * @return the parsed float or 0.0f on failure
      */
-    public float toFloat(@Nullable String value) {
+    public static float toFloat(@Nullable String value) {
         return toFloat(value, 0.0f);
     }
 

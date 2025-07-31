@@ -48,7 +48,7 @@ public class MapUtils {
      * @param action the action to perform on each key-value pair; must not be null
      * @throws NullPointerException if the map or action is null
      */
-    public <K, V> void forEach(@NotNull Map<K, V> map, BiConsumer<K, V> action) {
+    public static <K, V> void forEach(@NotNull Map<K, V> map, BiConsumer<K, V> action) {
         map.forEach(action);
     }
 
@@ -61,7 +61,7 @@ public class MapUtils {
      * @param action the action to perform on each map entry; must not be null
      * @throws NullPointerException if the map or action is null
      */
-    public <K, V> void forEachEntry(@NotNull Map<K, V> map, Consumer<Map.Entry<K, V>> action) {
+    public static <K, V> void forEachEntry(@NotNull Map<K, V> map, Consumer<Map.Entry<K, V>> action) {
         for (Map.Entry<K, V> entry : map.entrySet()) {
             action.accept(entry);
         }
@@ -77,7 +77,7 @@ public class MapUtils {
      * @param <V>          the type of values
      * @return the associated value or the default
      */
-    public <K, V> V getOrDefault(@NotNull Map<K, V> map, K key, V defaultValue) {
+    public static <K, V> V getOrDefault(@NotNull Map<K, V> map, K key, V defaultValue) {
         return map.getOrDefault(key, defaultValue);
     }
 
@@ -90,7 +90,7 @@ public class MapUtils {
      * @param <V>       the type of values
      * @return a new map containing entries that satisfy the predicate
      */
-    public <K, V> Map<K, V> filterMap(@NotNull Map<K, V> map, BiPredicate<K, V> predicate) {
+    public static <K, V> Map<K, V> filterMap(@NotNull Map<K, V> map, BiPredicate<K, V> predicate) {
         return map.entrySet().stream()
                 .filter(e -> predicate.test(e.getKey(), e.getValue()))
                 .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
@@ -106,7 +106,7 @@ public class MapUtils {
      * @param <R>    the type of the result elements
      * @return a list containing the mapped results
      */
-    public <K, V, R> List<R> mapValues(@NotNull Map<K, V> map, BiFunction<K, V, R> mapper) {
+    public static <K, V, R> List<R> mapValues(@NotNull Map<K, V> map, BiFunction<K, V, R> mapper) {
         return map.entrySet().stream()
                 .map(e -> mapper.apply(e.getKey(), e.getValue()))
                 .collect(Collectors.toList());
@@ -119,7 +119,7 @@ public class MapUtils {
      * @param replacements the map of keys and their replacement values
      * @return the resulting string after all replacements
      */
-    public @NotNull String replace(@NotNull String target, @NotNull Map<String, String> replacements) {
+    public static @NotNull String replace(@NotNull String target, @NotNull Map<String, String> replacements) {
         for (Map.Entry<String, String> entry : replacements.entrySet()) {
             target = target.replace(entry.getKey(), entry.getValue());
         }
@@ -154,7 +154,7 @@ public class MapUtils {
      * @param <V> the type of values
      * @return true if a matching key is found, false otherwise
      */
-    public <K, V> boolean containsKeyIgnoreCase(@NotNull Map<K, V> map, String key) {
+    public static <K, V> boolean containsKeyIgnoreCase(@NotNull Map<K, V> map, String key) {
         return map.keySet().stream().anyMatch(k -> k.toString().equalsIgnoreCase(key));
     }
 
@@ -167,7 +167,7 @@ public class MapUtils {
      * @param <V>       the type of values
      * @return an Optional containing the found value, or empty if not found
      */
-    public <K, V> Optional<V> getFirstMatch(@NotNull Map<K, V> map, Predicate<Map.Entry<K, V>> predicate) {
+    public static <K, V> Optional<V> getFirstMatch(@NotNull Map<K, V> map, Predicate<Map.Entry<K, V>> predicate) {
         return map.entrySet().stream().filter(predicate).map(Map.Entry::getValue).findFirst();
     }
 
@@ -180,7 +180,7 @@ public class MapUtils {
      * @param <V>        the type of values
      * @return a sorted map based on keys
      */
-    public <K, V> Map<K, V> sortByKey(@NotNull Map<K, V> map, Comparator<K> comparator) {
+    public static <K, V> Map<K, V> sortByKey(@NotNull Map<K, V> map, Comparator<K> comparator) {
         return map.entrySet().stream()
                 .sorted(Map.Entry.comparingByKey(comparator))
                 .collect(Collectors.toMap(
@@ -200,7 +200,7 @@ public class MapUtils {
      * @param <V>        the type of values
      * @return a sorted map based on values
      */
-    public <K, V> Map<K, V> sortByValue(@NotNull Map<K, V> map, Comparator<V> comparator) {
+    public static <K, V> Map<K, V> sortByValue(@NotNull Map<K, V> map, Comparator<V> comparator) {
         return map.entrySet().stream()
                 .sorted(Map.Entry.comparingByValue(comparator))
                 .collect(Collectors.toMap(

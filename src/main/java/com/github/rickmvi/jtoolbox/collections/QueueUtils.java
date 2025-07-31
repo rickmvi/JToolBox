@@ -17,6 +17,7 @@
  */
 package com.github.rickmvi.jtoolbox.collections;
 
+import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.function.Predicate;
@@ -46,7 +47,7 @@ public class QueueUtils {
      * @param <T>       the type of elements in the queue
      * @return a new queue containing only the elements that match the predicate
      */
-    public <T> Queue<T> filterQueue(@NotNull Queue<T> queue, Predicate<T> predicate) {
+    public static <T> Queue<T> filterQueue(@NotNull Queue<T> queue, Predicate<T> predicate) {
         return queue.stream().filter(predicate).collect(Collectors.toCollection(LinkedList::new));
     }
 
@@ -59,7 +60,7 @@ public class QueueUtils {
      * @param <R>    the type of output elements
      * @return a new queue with the mapped elements
      */
-    public <T, R> Queue<R> mapQueue(@NotNull Queue<T> queue, Function<T, R> mapper) {
+    public static <T, R> Queue<R> mapQueue(@NotNull Queue<T> queue, Function<T, R> mapper) {
         return queue.stream().map(mapper).collect(Collectors.toCollection(LinkedList::new));
     }
 
@@ -70,7 +71,8 @@ public class QueueUtils {
      * @param <T>   the type of elements
      * @return the head element or null if the queue is empty
      */
-    public <T> T peekOrNull(@NotNull Queue<T> queue) {
+    @Contract(pure = true)
+    public static <T> T peekOrNull(@NotNull Queue<T> queue) {
         return queue.peek();
     }
 
@@ -82,7 +84,7 @@ public class QueueUtils {
      * @param <T>      the type of elements
      * @return the head of the queue or fallback
      */
-    public <T> T pollOrDefault(@NotNull Queue<T> queue, T fallback) {
+    public static <T> T pollOrDefault(@NotNull Queue<T> queue, T fallback) {
         return queue.isEmpty() ? fallback : queue.poll();
     }
 
@@ -94,7 +96,7 @@ public class QueueUtils {
      * @param <T>       the type of elements
      * @return true if any element matches the predicate, false otherwise
      */
-    public <T> boolean containsInQueue(@NotNull Queue<T> queue, Predicate<T> predicate) {
+    public static <T> boolean containsInQueue(@NotNull Queue<T> queue, Predicate<T> predicate) {
         return queue.stream().anyMatch(predicate);
     }
 
@@ -105,7 +107,7 @@ public class QueueUtils {
      * @param action the action to perform on each element
      * @param <T>    the type of elements
      */
-    public <T> void forEachQueue(@NotNull Queue<T> queue, Consumer<T> action) {
+    public static <T> void forEachQueue(@NotNull Queue<T> queue, Consumer<T> action) {
         queue.forEach(action);
     }
 }

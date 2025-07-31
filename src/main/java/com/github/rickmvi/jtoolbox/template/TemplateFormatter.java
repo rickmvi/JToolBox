@@ -57,7 +57,7 @@ public class TemplateFormatter {
      * @return a new string with all matches replaced by the resolver's results
      */
     @Contract("_,_, _ -> new")
-    public @NotNull String format(@NotNull String template,
+    public static @NotNull String format(@NotNull String template,
                                   @NotNull Pattern pattern,
                                   BiFunction<Matcher, Integer, String> resolver) {
         Matcher matcher = pattern.matcher(template);

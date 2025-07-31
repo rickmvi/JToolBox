@@ -49,7 +49,7 @@ public class ObjectToNumber {
      * @throws NumberFormatException if the string representation cannot be parsed as an integer
      */
     @SuppressWarnings("ConstantConditions")
-    public int toInt(Object o) {
+    public static int toInt(Object o) {
         if (o instanceof Number) return ((Number) o).intValue();
         return Integer.parseInt(String.valueOf(o));
     }
@@ -65,7 +65,7 @@ public class ObjectToNumber {
      * @throws NumberFormatException if the string representation cannot be parsed as a long
      */
     @SuppressWarnings("ConstantConditions")
-    public long toLong(Object o) {
+    public static long toLong(Object o) {
         if (o instanceof Number) return ((Number) o).longValue();
         return Long.parseLong(String.valueOf(o));
     }
@@ -81,7 +81,7 @@ public class ObjectToNumber {
      * @throws NumberFormatException if the string representation cannot be parsed as a float
      */
     @SuppressWarnings("ConstantConditions")
-    public float toFloat(Object o) {
+    public static float toFloat(Object o) {
         if (o instanceof Number) return ((Number) o).floatValue();
         return Float.parseFloat(String.valueOf(o));
     }
@@ -97,7 +97,7 @@ public class ObjectToNumber {
      * @throws NumberFormatException if the string representation cannot be parsed as a double
      */
     @SuppressWarnings("ConstantConditions")
-    public double toDouble(Object o) {
+    public static double toDouble(Object o) {
         if (o instanceof Number) return ((Number) o).doubleValue();
         return Double.parseDouble(String.valueOf(o));
     }
@@ -112,7 +112,7 @@ public class ObjectToNumber {
      * @return the boolean value represented by the object
      */
     @SuppressWarnings("ConstantConditions")
-    public boolean toBoolean(Object o) {
+    public static boolean toBoolean(Object o) {
         if (o instanceof Boolean) return (Boolean) o;
         return Boolean.parseBoolean(String.valueOf(o));
     }
