@@ -22,7 +22,7 @@ import com.github.rickmvi.jtoolbox.console.convert.StringToNumber;
 import com.github.rickmvi.jtoolbox.console.Location;
 
 import static com.github.rickmvi.jtoolbox.debug.SLogger.warn;
-import com.github.rickmvi.jtoolbox.control.Flow;
+import com.github.rickmvi.jtoolbox.control.Conditionals;
 import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
 
@@ -234,7 +234,7 @@ public class ScannerHandler implements InputScanner {
      * @throws IllegalStateException if the scanner is not present
      */
     private void validate() {
-        Flow.ifTrueThrow(scanner.isEmpty(), () ->
+        Conditionals.ifTrueThrow(scanner.isEmpty(), () ->
                 new IllegalStateException("Mistake: Scanner not initialized. Call ScannerUtils.init() first."));
     }
 }
