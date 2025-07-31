@@ -19,9 +19,7 @@ package com.github.rickmvi.jtoolbox.collections;
 
 import org.jetbrains.annotations.NotNull;
 
-import java.util.function.BiPredicate;
-import java.util.function.BiFunction;
-import java.util.function.Predicate;
+import java.util.function.*;
 import java.util.stream.Collectors;
 import java.util.LinkedHashMap;
 import java.util.Comparator;
@@ -42,6 +40,34 @@ import java.util.Map;
 public class MapUtils {
 
     /**
+     * Iterates over each entry in the provided map and applies the specified action to it.
+     *
+     * @param <K>    the type of keys in the map
+     * @param <V>    the type of values in the map
+     * @param map    the map whose entries are to be processed; must not be null
+     * @param action the action to perform on each key-value pair; must not be null
+     * @throws NullPointerException if the map or action is null
+     */
+    public <K, V> void forEach(@NotNull Map<K, V> map, BiConsumer<K, V> action) {
+        map.forEach(action);
+    }
+
+    /**
+     * Iterates over each entry in the provided map and performs the specified action on it.
+     *
+     * @param <K>    the type of keys in the map
+     * @param <V>    the type of values in the map
+     * @param map    the map whose entries are to be processed; must not be null
+     * @param action the action to perform on each map entry; must not be null
+     * @throws NullPointerException if the map or action is null
+     */
+    public <K, V> void forEachEntry(@NotNull Map<K, V> map, Consumer<Map.Entry<K, V>> action) {
+        for (Map.Entry<K, V> entry : map.entrySet()) {
+            action.accept(entry);
+        }
+    }
+
+    /**
      * Retrieves the value associated with the specified key or returns a default value if not found.
      *
      * @param map          the map to search
@@ -51,7 +77,7 @@ public class MapUtils {
      * @param <V>          the type of values
      * @return the associated value or the default
      */
-    public static <K, V> V getOrDefault(@NotNull Map<K, V> map, K key, V defaultValue) {
+    public <K, V> V getOrDefault(@NotNull Map<K, V> map, K key, V defaultValue) {
         return map.getOrDefault(key, defaultValue);
     }
 
