@@ -4,7 +4,7 @@ plugins {
 }
 
 group = "com.github.rickmvi"
-version = "1.1.2"
+version = "1.2.2"
 
 repositories {
     mavenCentral()
