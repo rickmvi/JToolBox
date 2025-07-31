@@ -1,6 +1,6 @@
 package com.github.rickmvi.jtoolbox.console;
 
-import com.github.rickmvi.jtoolbox.control.Flow;
+import com.github.rickmvi.jtoolbox.control.Conditionals;
 import com.github.rickmvi.jtoolbox.text.Formatted;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -14,7 +14,7 @@ import java.util.function.Consumer;
  * <p>
  * This class provides static methods to print text and objects to the standard output (console)
  * with built-in null and empty checks to avoid printing undesired empty or null values.
- * It also supports formatted output and conditional execution using the {@link Flow} utility.
+ * It also supports formatted output and conditional execution using the {@link Conditionals} utility.
  * <p>
  * The class is designed as a utility with static methods only, using Lombok's {@code @UtilityClass}
  * to prevent instantiation.
@@ -33,7 +33,7 @@ public class Out {
      * @param text the text to print, may be {@code null} or empty
      */
     public void print(@Nullable String text) {
-        Flow.ifTrue(text != null && !text.isEmpty(), () -> System.out.print(text));
+        Conditionals.ifTrue(text != null && !text.isEmpty(), () -> System.out.print(text));
     }
 
     /**
@@ -44,7 +44,7 @@ public class Out {
      * @param text the text to print, may be {@code null} or empty
      */
     public void printLine(@Nullable String text) {
-        Flow.ifTrue(text != null && !text.isEmpty(), () -> System.out.println(text));
+        Conditionals.ifTrue(text != null && !text.isEmpty(), () -> System.out.println(text));
     }
 
     /**
@@ -56,7 +56,7 @@ public class Out {
      * @param args   the arguments referenced by the format specifiers in the format string
      */
     public void printf(@NotNull String format, Object... args) {
-        Flow.ifTrue(!format.isEmpty(), () -> System.out.printf(format, args));
+        Conditionals.ifTrue(!format.isEmpty(), () -> System.out.printf(format, args));
     }
 
     /**
@@ -74,7 +74,7 @@ public class Out {
      * @param obj the object to print, may be {@code null}
      */
     public void printObject(@Nullable Object obj) {
-        Flow.ifTrue(obj != null, () -> System.out.print(obj));
+        Conditionals.ifTrue(obj != null, () -> System.out.print(obj));
     }
 
     /**
@@ -85,7 +85,7 @@ public class Out {
      * @param obj the object to print, may be {@code null}
      */
     public void printLineObject(@Nullable Object obj) {
-        Flow.ifTrue(obj != null, () -> System.out.println(obj));
+        Conditionals.ifTrue(obj != null, () -> System.out.println(obj));
     }
 
     /**
@@ -98,7 +98,7 @@ public class Out {
      * @param args   the arguments referenced by the format specifiers, may be {@code null}
      */
     public void printfObject(@Nullable Object format, @Nullable Object... args) {
-        Flow.ifTrue(format != null && args != null, () -> System.out.printf(format.toString(), args));
+        Conditionals.ifTrue(format != null && args != null, () -> System.out.printf(format.toString(), args));
     }
 
     /**
@@ -109,7 +109,7 @@ public class Out {
      * @param obj the debug message object, may be {@code null}
      */
     public void printDebug(@Nullable Object obj) {
-        Flow.ifTrue(obj != null, () -> System.out.println("[DEBUG] " + obj));
+        Conditionals.ifTrue(obj != null, () -> System.out.println("[DEBUG] " + obj));
     }
 
     /**
@@ -120,7 +120,7 @@ public class Out {
      * @param t the throwable whose stack trace is to be printed, may be {@code null}
      */
     public void printStackTrace(@Nullable Throwable t) {
-        Flow.ifTrue(t != null, () -> t.printStackTrace(System.out));
+        Conditionals.ifTrue(t != null, () -> t.printStackTrace(System.out));
     }
 
     /**
@@ -142,7 +142,7 @@ public class Out {
      * @param args     the arguments to replace placeholders in the template
      */
     public void printFormatted(@NotNull String template, Object... args) {
-        Flow.ifTrue(!template.isEmpty(), () -> print(Formatted.format(template, args)));
+        Conditionals.ifTrue(!template.isEmpty(), () -> print(Formatted.format(template, args)));
     }
 
     /**
@@ -155,7 +155,7 @@ public class Out {
      * @param args     the arguments to replace token placeholders in the template
      */
     public void printTokenFormatted(@NotNull String template, Object... args) {
-        Flow.ifTrue(!template.isEmpty(), () -> print(Formatted.formatTokens(template, args)));
+        Conditionals.ifTrue(!template.isEmpty(), () -> print(Formatted.formatTokens(template, args)));
     }
 
     /**
@@ -169,7 +169,7 @@ public class Out {
      * @param failIfMissing if {@code true}, formatting fails if a placeholder is missing in the map
      */
     public void printNamedFormatted(@NotNull String template, @NotNull Map<String, ?> values, boolean failIfMissing) {
-        Flow.ifTrue(!template.isEmpty() && !values.isEmpty(),
+        Conditionals.ifTrue(!template.isEmpty() && !values.isEmpty(),
                 () -> print(Formatted.formatNamed(template, values, failIfMissing)));
     }
 
