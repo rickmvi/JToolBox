@@ -17,6 +17,7 @@
  */
 package com.github.rickmvi.jtoolbox.collections;
 
+import com.github.rickmvi.jtoolbox.control.Iteration;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.function.Predicate;
@@ -67,11 +68,11 @@ public class ListUtils {
      */
     public static <T> @NotNull T @NotNull [] reverseArray(@NotNull T[] array) {
         T[] result = Arrays.copyOf(array, array.length);
-        for (int i = 0; i < array.length / 2; i++) {
+        Iteration.half(array, i -> {
             T temp = result[i];
             result[i] = result[array.length - 1 - i];
             result[array.length - 1 - i] = temp;
-        }
+        });
         return result;
     }
 

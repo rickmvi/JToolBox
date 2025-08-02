@@ -17,6 +17,7 @@
  */
 package com.github.rickmvi.jtoolbox.collections;
 
+import com.github.rickmvi.jtoolbox.collections.utils.ArrayUtils;
 import com.github.rickmvi.jtoolbox.control.Conditionals;
 import com.github.rickmvi.jtoolbox.control.Iteration;
 
@@ -35,7 +36,7 @@ import java.util.List;
 import java.util.Set;
 
 @lombok.experimental.UtilityClass
-public class ArraysUtils {
+public class Array extends ArrayUtils {
 
     /* ==================================== CONCAT METHOD ========================================= */
 
@@ -67,14 +68,23 @@ public class ArraysUtils {
      *         or -1 if the element is not found.
      * @throws NullPointerException If the provided array is null.
      */
-    @Contract(pure = true)
     public static <T> int indexOf(T @NotNull [] array, T element) {
-        for (int i = 0; i < array.length; i++) {
-            if (Objects.equals(array[i], element)) {
-                return i;
-            }
-        }
-        return -1;
+        return Iteration.repeatFindIndex(array.length, i -> Objects.equals(array[i], element));
+    }
+
+    /**
+     * Returns the index of the last occurrence of the specified element in the given array.
+     * If the element is not found, it returns -1.
+     *
+     * @param <T>    the type of elements in the array
+     * @param array  the array to search, must not be null
+     * @param element the element to find in the array, can be null
+     * @return the index of the last occurrence of the specified element in the array,
+     *         or -1 if the element is not found
+     * @throws NullPointerException if the array is null
+     */
+    public static <T> int lastIndexOf(T @NotNull [] array, T element) {
+        return Iteration.repeatFindLastIndex(array.length, i -> Objects.equals(array[i], element));
     }
 
     /* ==================================== CONTAINS METHOD ========================================= */
@@ -280,9 +290,7 @@ public class ArraysUtils {
      */
     public static <T, R> R[] map(T @NotNull [] array, @NotNull Function<T, R> mapper, @NotNull IntFunction<R[]> generator) {
         R[] result = generator.apply(array.length);
-        for (int i = 0; i < array.length; i++) {
-            result[i] = mapper.apply(array[i]);
-        }
+        Iteration.repeat(array.length, i -> result[i] = mapper.apply(array[i]));
         return result;
     }
     /* ================================== DISTINCT METHOD ======================================= */
@@ -413,11 +421,7 @@ public class ArraysUtils {
      */
     @Contract(pure = true)
     public static int sum(int @NotNull [] array) {
-        int sum = 0;
-        for (int i : array) {
-            sum += i;
-        }
-        return sum;
+        return Iteration.sum(array);
     }
 
     /**
@@ -429,11 +433,7 @@ public class ArraysUtils {
      */
     @Contract(pure = true)
     public static long sum(long @NotNull [] array) {
-        long sum = 0;
-        for (long i : array) {
-            sum += i;
-        }
-        return sum;
+        return Iteration.sum(array);
     }
 
     /**
@@ -445,11 +445,7 @@ public class ArraysUtils {
      */
     @Contract(pure = true)
     public static double sum(double @NotNull [] array) {
-        double sum = 0;
-        for (double i : array) {
-            sum += i;
-        }
-        return sum;
+        return Iteration.sum(array);
     }
 
     /**
@@ -461,11 +457,7 @@ public class ArraysUtils {
      */
     @Contract(pure = true)
     public static float sum(float @NotNull [] array) {
-        float sum = 0;
-        for (float i : array) {
-            sum += i;
-        }
-        return sum;
+        return Iteration.sum(array);
     }
 
     /* ==================================== REPEAT METHOD ========================================= */

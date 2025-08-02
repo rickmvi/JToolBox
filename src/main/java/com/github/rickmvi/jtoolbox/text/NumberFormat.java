@@ -1,6 +1,6 @@
 package com.github.rickmvi.jtoolbox.text;
 
-import com.github.rickmvi.jtoolbox.console.convert.ObjectToNumber;
+import com.github.rickmvi.jtoolbox.console.utils.convert.ObjectToNumber;
 import com.github.rickmvi.jtoolbox.text.internal.NumberFormatStyle;
 import com.github.rickmvi.jtoolbox.text.internal.NumberFormatter;
 import org.jetbrains.annotations.Contract;
