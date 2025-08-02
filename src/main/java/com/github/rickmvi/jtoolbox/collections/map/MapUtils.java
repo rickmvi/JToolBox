@@ -17,18 +17,11 @@
  */
 package com.github.rickmvi.jtoolbox.collections.map;
 
-import com.github.rickmvi.jtoolbox.console.utils.convert.StringToNumber;
 import com.github.rickmvi.jtoolbox.console.utils.convert.ToString;
-import com.github.rickmvi.jtoolbox.control.Conditionals;
-import com.github.rickmvi.jtoolbox.control.While;
-import com.github.rickmvi.jtoolbox.text.Formatted;
-import org.jetbrains.annotations.ApiStatus;
+import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
 
-import java.text.DecimalFormat;
 import java.util.function.*;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 import java.util.LinkedHashMap;
 import java.util.Comparator;
@@ -131,16 +124,35 @@ public class MapUtils {
      */
     public static @NotNull String replace(
             @NotNull String target,
-            @NotNull Map<String, Object> replacements,
-            Object... formatArgs) {
+            @NotNull Map<String, Object> replacements) {
 
         for (Map.Entry<String, Object> entry : replacements.entrySet()) {
             String key = entry.getKey();
             Object value = entry.getValue();
-
-            target = replaceIndexedOccurrences(target, key, value, formatArgs);
+            target = target.replace(key, ToString.valueOf(value));
         }
 
+        return target;
+    }
+
+    /**
+     * Replaces all occurrences of keys in the given map with their corresponding
+     * values within the target string. Each key in the map is replaced with the
+     * string representation of its associated value. This method is a simple
+     * implementation without additional formatting or validation logic.
+     *
+     * @param target       the string to perform replacements on; must not be null
+     * @param replacements a map containing the keys to find and their corresponding
+     *                      replacement values; must not be null
+     * @return the resulting string after replacing all occurrences of the keys
+     *         with their corresponding values
+     * @throws NullPointerException if the target string or the replacements map is null
+     */
+    @Contract("_, null -> fail")
+    public static @NotNull String getReplacement(@NotNull String target, @NotNull Map<String, Object> replacements) {
+        for (Map.Entry<String, Object> entry : replacements.entrySet()) {
+            target = target.replace(entry.getKey(), String.valueOf(entry.getValue()));
+        }
         return target;
     }
 
@@ -227,44 +239,5 @@ public class MapUtils {
                         (e1, e2) -> e1,
                         LinkedHashMap::new
                 ));
-    }
-
-    @ApiStatus.Internal
-    private static @NotNull String replaceIndexedOccurrences(
-            @NotNull String target,
-            @NotNull String key,
-            @NotNull Object value,
-            Object... formatArgs) {
-
-        Pattern indexedPattern = Pattern.compile(Pattern.quote(key) + "\\{(\\d+)}");
-        Matcher matcher = indexedPattern.matcher(target);
-
-        StringBuffer buffer = new StringBuffer();
-
-        While.whileTrue(matcher::find, () -> {
-            int index = StringToNumber.toInt(matcher.group(1));
-            String replacement = getReplacement(value, formatArgs, index);
-            matcher.appendReplacement(buffer, Matcher.quoteReplacement(replacement));
-        });
-
-        matcher.appendTail(buffer);
-        return buffer.toString();
-    }
-
-    @ApiStatus.Internal
-    private static @NotNull String getReplacement(
-            @NotNull Object value,
-            Object[] formatArgs,
-            int index) {
-
-        return Conditionals.supplyIfTrueElse(
-                value instanceof DecimalFormat && index < formatArgs.length,
-                () -> {
-                    assert value instanceof DecimalFormat;
-                    DecimalFormat format = (DecimalFormat) value;
-                    return format.format(formatArgs[index]);
-                },
-                () -> ToString.toString(value)
-        );
     }
 }

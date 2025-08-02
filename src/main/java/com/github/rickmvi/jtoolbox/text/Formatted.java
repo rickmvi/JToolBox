@@ -17,19 +17,21 @@
  */
 package com.github.rickmvi.jtoolbox.text;
 
+import com.github.rickmvi.jtoolbox.console.utils.convert.ToString;
+import com.github.rickmvi.jtoolbox.template.TemplateFormatter;
 import com.github.rickmvi.jtoolbox.collections.map.MapUtils;
 import com.github.rickmvi.jtoolbox.control.Conditionals;
-import com.github.rickmvi.jtoolbox.template.TemplateFormatter;
-import com.github.rickmvi.jtoolbox.text.internal.NumberFormatStyle;
+import com.github.rickmvi.jtoolbox.control.Match;
+import com.github.rickmvi.jtoolbox.control.While;
+
+import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
 
-import java.text.DecimalFormat;
 import java.util.regex.Pattern;
-
+import java.util.regex.Matcher;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.regex.Matcher;
 
 /**
  * Utility class for advanced string formatting and templating.
@@ -54,15 +56,10 @@ public final class Formatted {
     private final Pattern GENERIC_PATTERN = Pattern.compile("\\{\\}");
 
     private final Map<String, Object> TOKENS = Map.of(
-            "%n", System.lineSeparator(),                      // newline
-            "%t", "\t",                                        // tab
-            "%r", "\r",                                        // carriage return
-            "%sp", " ",                                        // space
-            "%dc", new DecimalFormat("#,##0.00"),           // decimal comma %dc{0}, %dc{1}
-            "%dp", new DecimalFormat("###0.00"),            // decimal point
-            "%in", new DecimalFormat("#,##0"),              // integer
-            "%p",  new DecimalFormat("0.00'%'"),            // percent
-            "%sc", new DecimalFormat("0.##E0")              // scientific
+            "%n", System.lineSeparator(),  // Nova linha
+            "%t", "\t",                    // Tabulação
+            "%r", "\r",                    // Carriage return
+            "%sp", " "                         // Espaço
     );
 
     /**
@@ -94,13 +91,18 @@ public final class Formatted {
      * @return the formatted string with placeholders replaced by argument values
      */
     public static @NotNull String format(@NotNull String template, Object @NotNull ... args) {
-        template = MapUtils.replace(template, TOKENS, args);
+        // Substitui tokens fixos como %n, %t, %sp, etc.
+        template = MapUtils.getReplacement(template, TOKENS);
+
+        // Substitui tokens com índice como %dc{0}, %S{1}, etc.
+        template = replaceIndexedFormatTokens(template, args);
 
         for (Object arg : args) {
             template = GENERIC_PATTERN
                     .matcher(template)
-                    .replaceFirst(Matcher.quoteReplacement(String.valueOf(arg)));
+                    .replaceFirst(Matcher.quoteReplacement(ToString.valueOf(arg)));
         }
+
         return template;
     }
 
@@ -233,5 +235,65 @@ public final class Formatted {
         public @NotNull String build() {
             return formatNamed(template, values, failIfMissing);
         }
+    }
+
+    /**
+     * Replaces tokens in the given template string with indexed values from the provided arguments.
+     * <p>
+     * This method identifies placeholders in the template with a specific format `%{type}{index}`
+     * and replaces them based on the type and index using the respective formatting logic.
+     * Supported types include:
+     * <ul>
+     * - dc: Decimal with comma separator
+     * - dp: Decimal with point separator
+     * - in: Integer
+     * - p: Percentage
+     * - sc: Scientific notation
+     * - S: String in uppercase
+     * </ul>
+     * If the index in the placeholder refers to an element that does not exist
+     * in the argument array, it uses {@code null}.
+     *
+     * @param template the string template containing indexed format tokens, not null
+     * @param args     the argument array used to replace the tokens, not null
+     * @return a new string with all indexed format tokens replaced by the formatted argument values
+     * @throws NullPointerException if the {@code template} or {@code args} parameter is null
+     * @throws NumberFormatException if an invalid index is provided in the token
+     */
+    @ApiStatus.Internal
+    private static @NotNull String replaceIndexedFormatTokens(
+            @NotNull String template,
+            Object @NotNull [] args) {
+        Pattern tokenWithIndex = Pattern.compile("%(dc|dp|in|p|sc|S)\\{(\\d+)}");
+        Matcher matcher = tokenWithIndex.matcher(template);
+        StringBuffer buffer = new StringBuffer();
+
+        While.whileTrue(matcher::find, () -> {
+            String token = matcher.group(1);
+            int index = Integer.parseInt(matcher.group(2));
+
+            Conditionals.ifTrueThrow(index >= args.length, () -> {
+                throw new IllegalArgumentException(
+                        "Invalid argument index {" + index + "} used in placeholder '%" + token + "{" + index + "}'. " +
+                        "Total arguments available: " + args.length
+                );
+            });
+
+            Object value = args[index];
+            String replacement = Match.returning(token,
+                    Map.of(
+                    "dc", () -> NumberFormat.DECIMAL_COMMA.format(value),
+                    "dp", () -> NumberFormat.DECIMAL_POINT.format(value),
+                    "in", () -> NumberFormat.INTEGER.format(value),
+                    "p",  () -> NumberFormat.PERCENT.format(value),
+                    "sc", () -> NumberFormat.SCIENTIFIC.format(value),
+                    "S",  () -> String.valueOf(value).toUpperCase()
+            ), () -> "");
+
+            matcher.appendReplacement(buffer, Matcher.quoteReplacement(replacement));
+        });
+
+        matcher.appendTail(buffer);
+        return buffer.toString();
     }
 }
