@@ -18,6 +18,7 @@
 package com.github.rickmvi.jtoolbox.collections.array.utils;
 
 import com.github.rickmvi.jtoolbox.control.Iteration;
+import com.github.rickmvi.jtoolbox.control.internal.MathUtils;
 import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
 
@@ -77,13 +78,13 @@ public class ArrayUtils {
     public static int @NotNull [] concat(int @NotNull [] first, int @NotNull []... rest) {
         int totalLength = first.length;
         for (int[] array : rest) {
-            totalLength = Iteration.sumInt(totalLength, array.length);
+            totalLength = MathUtils.sumInt(totalLength, array.length);
         }
         int[] result = Arrays.copyOf(first, totalLength);
         int offset = first.length;
         for (int[] array : rest) {
             System.arraycopy(array, 0, result, offset, array.length);
-            offset = Iteration.sumInt(offset, array.length);
+            offset = MathUtils.sumInt(offset, array.length);
         }
         return result;
     }

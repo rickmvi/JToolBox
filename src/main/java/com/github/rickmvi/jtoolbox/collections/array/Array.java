@@ -21,6 +21,7 @@ import com.github.rickmvi.jtoolbox.collections.array.utils.ArrayUtils;
 import com.github.rickmvi.jtoolbox.control.Conditionals;
 import com.github.rickmvi.jtoolbox.control.Iteration;
 
+import com.github.rickmvi.jtoolbox.control.internal.MathUtils;
 import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
 
@@ -421,7 +422,7 @@ public class Array extends ArrayUtils {
      */
     @Contract(pure = true)
     public static int sum(int @NotNull [] array) {
-        return Iteration.sumInt(array);
+        return MathUtils.sumInt(array);
     }
 
     /**
@@ -433,7 +434,7 @@ public class Array extends ArrayUtils {
      */
     @Contract(pure = true)
     public static long sum(long @NotNull [] array) {
-        return Iteration.sumLong(array);
+        return MathUtils.sumLong(array);
     }
 
     /**
@@ -445,7 +446,7 @@ public class Array extends ArrayUtils {
      */
     @Contract(pure = true)
     public static float sum(float @NotNull [] array) {
-        return Iteration.sumFloat(array);
+        return MathUtils.sumFloat(array);
     }
 
     /**
@@ -457,7 +458,7 @@ public class Array extends ArrayUtils {
      */
     @Contract(pure = true)
     public static double sum(double @NotNull [] array) {
-        return Iteration.sumDouble(array);
+        return MathUtils.sumDouble(array);
     }
 
     /* ==================================== REPEAT METHOD ========================================= */

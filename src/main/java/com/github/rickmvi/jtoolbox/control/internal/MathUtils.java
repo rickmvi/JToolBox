@@ -28,6 +28,7 @@ import org.jetbrains.annotations.NotNull;
  * Utility class providing arithmetic operations for integers, longs, floats, and doubles
  * including a sum, subtraction, multiplication, division, average, and modulo.
  */
+@lombok.experimental.UtilityClass
 public class MathUtils {
 
     /**
@@ -787,10 +788,5 @@ public class MathUtils {
     public static double sqrt(double value) {
         Conditionals.ifTrueThrow(value < 0, () -> new ArithmeticException("Negative value"));
         return Math.sqrt(value);
-    }
-
-    @Contract(value = " -> fail", pure = true)
-    private MathUtils() {
-        throw new IllegalStateException("Utility class");
     }
 }

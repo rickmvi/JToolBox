@@ -17,8 +17,6 @@
  */
 package com.github.rickmvi.jtoolbox.control;
 
-import com.github.rickmvi.jtoolbox.control.internal.MathUtils;
-
 import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.Nullable;
 import org.jetbrains.annotations.NotNull;
@@ -33,7 +31,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 @lombok.experimental.UtilityClass
-public final class Iteration extends MathUtils {
+public class Iteration {
 
     /**
      * Executes the specified action for every index from the start (inclusive) to the end (exclusive),
