@@ -17,11 +17,14 @@
  */
 package com.github.rickmvi.jtoolbox.text;
 
-import com.github.rickmvi.jtoolbox.collections.MapUtils;
+import com.github.rickmvi.jtoolbox.collections.map.MapUtils;
+import com.github.rickmvi.jtoolbox.control.Conditionals;
 import com.github.rickmvi.jtoolbox.template.TemplateFormatter;
+import com.github.rickmvi.jtoolbox.text.internal.NumberFormatStyle;
 import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
 
+import java.text.DecimalFormat;
 import java.util.regex.Pattern;
 
 import java.util.HashMap;
@@ -49,13 +52,17 @@ public final class Formatted {
 
     private final Pattern PLACEHOLDER_PATTERN = Pattern.compile("\\{(.*?)}");
     private final Pattern GENERIC_PATTERN = Pattern.compile("\\{\\}");
-    private final Pattern TOKEN_PATTERN = Pattern.compile("%(s|i|l|#d|ed|dn|nu|lc|c|b)");
 
-    private final Map<String, String> TOKENS = Map.of(
-            "%n", System.lineSeparator(), // Line break, jump line "\n"
-            "%t", "\t",                   // Horizontal tab "value:\t1" -> "value:  1"
-            "%r", "\r",                   // Car return (back cursor) "Halo \r, Ich bin der Rick" -> ", Ich bin..."
-            "b", " "                          // Blank "Ich%bkomma aus Braziliane" -> "Ich komma..."
+    private final Map<String, Object> TOKENS = Map.of(
+            "%n", System.lineSeparator(),                      // newline
+            "%t", "\t",                                        // tab
+            "%r", "\r",                                        // carriage return
+            "%sp", " ",                                        // space
+            "%dc", new DecimalFormat("#,##0.00"),           // decimal comma %dc{0}, %dc{1}
+            "%dp", new DecimalFormat("###0.00"),            // decimal point
+            "%in", new DecimalFormat("#,##0"),              // integer
+            "%p",  new DecimalFormat("0.00'%'"),            // percent
+            "%sc", new DecimalFormat("0.##E0")              // scientific
     );
 
     /**
@@ -87,12 +94,12 @@ public final class Formatted {
      * @return the formatted string with placeholders replaced by argument values
      */
     public static @NotNull String format(@NotNull String template, Object @NotNull ... args) {
-        template = MapUtils.replace(template, TOKENS);
+        template = MapUtils.replace(template, TOKENS, args);
+
         for (Object arg : args) {
             template = GENERIC_PATTERN
                     .matcher(template)
-                    .replaceFirst(Matcher.quoteReplacement(String.valueOf(arg))
-                    );
+                    .replaceFirst(Matcher.quoteReplacement(String.valueOf(arg)));
         }
         return template;
     }
@@ -110,7 +117,7 @@ public final class Formatted {
      */
     @Contract("_,_ -> new")
     public static @NotNull String formatTokens(@NotNull String template, Object... args) {
-        return TemplateFormatter.format(template, TOKEN_PATTERN, (matcher, index) -> {
+        return TemplateFormatter.format(template, FormatToken.FORMAT_TOKEN_PATTERN, (matcher, index) -> {
             if (index >= args.length) return "";
             String tokenCode = matcher.group(1);
             FormatToken token = FormatToken.fromCode(tokenCode);

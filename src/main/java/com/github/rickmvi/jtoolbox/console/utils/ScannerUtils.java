@@ -15,9 +15,9 @@
  * You should have received a copy of the GNU Lesser General Public License
  * along with this library. If not, see <https://www.gnu.org/licenses/>.
  */
-package com.github.rickmvi.jtoolbox.console;
+package com.github.rickmvi.jtoolbox.console.utils;
 
-import com.github.rickmvi.jtoolbox.console.internal.ScannerHandler;
+import com.github.rickmvi.jtoolbox.console.utils.internal.ScannerHandler;
 
 import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;

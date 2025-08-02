@@ -30,7 +30,7 @@ public class SLogger {
     /**
      * Gets whether ANSI color output is enabled for log messages.
      */
-    @lombok.Getter(value = lombok.AccessLevel.PUBLIC, onMethod_ = @Contract(pure = true))
+    @lombok.Getter(value = lombok.AccessLevel.PUBLIC)
     @lombok.Setter(value = lombok.AccessLevel.PUBLIC)
     private static boolean useAnsiColor = false;
 
@@ -58,8 +58,7 @@ public class SLogger {
         String time = FORMATTER.format(LocalDateTime.now());
         String coloredLevel = colorize(level.name(), AnsiColor.getColor(level));
 
-        String output = Formatted.format("[{}] [{}] {}", time, coloredLevel, message);
-        Out.printLine(output);
+        Out.printFormatted("[{}] [{}] {}%n", time, coloredLevel, message);
     }
 
     /**
@@ -76,8 +75,7 @@ public class SLogger {
         String coloredLevel = colorize(level.name(), AnsiColor.getColor(level));
         String message = Formatted.format(template, args);
 
-        String output = Formatted.format("[{}] [{}] {}", time, coloredLevel, message);
-        Out.printLine(output);
+        Out.printFormatted("[{}] [{}] {}%n", time, coloredLevel, message);
     }
 
     /**

@@ -15,7 +15,7 @@
  * You should have received a copy of the GNU Lesser General Public License
  * along with this library. If not, see <https://www.gnu.org/licenses/>.
  */
-package com.github.rickmvi.jtoolbox.console.convert;
+package com.github.rickmvi.jtoolbox.console.utils.convert;
 
 /**
  * Utility class for converting generic {@link Object} instances to primitive numeric types
@@ -51,7 +51,7 @@ public class ObjectToNumber {
     @SuppressWarnings("ConstantConditions")
     public static int toInt(Object o) {
         if (o instanceof Number) return ((Number) o).intValue();
-        return Integer.parseInt(String.valueOf(o));
+        return Integer.parseInt(ToString.valueOf(o));
     }
 
     /**
@@ -67,7 +67,7 @@ public class ObjectToNumber {
     @SuppressWarnings("ConstantConditions")
     public static long toLong(Object o) {
         if (o instanceof Number) return ((Number) o).longValue();
-        return Long.parseLong(String.valueOf(o));
+        return Long.parseLong(ToString.valueOf(o));
     }
 
     /**
@@ -83,7 +83,7 @@ public class ObjectToNumber {
     @SuppressWarnings("ConstantConditions")
     public static float toFloat(Object o) {
         if (o instanceof Number) return ((Number) o).floatValue();
-        return Float.parseFloat(String.valueOf(o));
+        return Float.parseFloat(ToString.valueOf(o));
     }
 
     /**
@@ -99,7 +99,7 @@ public class ObjectToNumber {
     @SuppressWarnings("ConstantConditions")
     public static double toDouble(Object o) {
         if (o instanceof Number) return ((Number) o).doubleValue();
-        return Double.parseDouble(String.valueOf(o));
+        return Double.parseDouble(ToString.valueOf(o));
     }
 
     /**
@@ -114,7 +114,7 @@ public class ObjectToNumber {
     @SuppressWarnings("ConstantConditions")
     public static boolean toBoolean(Object o) {
         if (o instanceof Boolean) return (Boolean) o;
-        return Boolean.parseBoolean(String.valueOf(o));
+        return Boolean.parseBoolean(ToString.valueOf(o));
     }
 }
 

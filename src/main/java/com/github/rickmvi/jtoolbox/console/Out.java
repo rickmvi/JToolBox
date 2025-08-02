@@ -1,5 +1,6 @@
 package com.github.rickmvi.jtoolbox.console;
 
+import com.github.rickmvi.jtoolbox.console.utils.convert.ToString;
 import com.github.rickmvi.jtoolbox.control.Conditionals;
 import com.github.rickmvi.jtoolbox.text.Formatted;
 import org.jetbrains.annotations.NotNull;
@@ -26,55 +27,15 @@ import java.util.function.Consumer;
 public class Out {
 
     /**
-     * Prints the given text to the console without a newline.
-     * <p>
-     * Does nothing if the text is {@code null} or empty.
-     *
-     * @param text the text to print, may be {@code null} or empty
-     */
-    public static void print(@Nullable String text) {
-        Conditionals.ifTrue(text != null && !text.isEmpty(), () -> System.out.print(text));
-    }
-
-    /**
-     * Prints the given text to the console followed by a newline.
-     * <p>
-     * Does nothing if the text is {@code null} or empty.
-     *
-     * @param text the text to print, may be {@code null} or empty
-     */
-    public static void printLine(@Nullable String text) {
-        Conditionals.ifTrue(text != null && !text.isEmpty(), () -> System.out.println(text));
-    }
-
-    /**
-     * Prints a formatted string to the console using the specified format string and arguments.
-     * <p>
-     * Does nothing if the format string is empty.
-     *
-     * @param format the format string (as in {@link String#format}), must not be empty
-     * @param args   the arguments referenced by the format specifiers in the format string
-     */
-    public static void printf(@NotNull String format, Object... args) {
-        Conditionals.ifTrue(!format.isEmpty(), () -> System.out.printf(format, args));
-    }
-
-    /**
-     * Prints an empty line to the console.
-     */
-    public static void emptyLine() {
-        System.out.println();
-    }
-
-    /**
      * Prints the string representation of the given object to the console without a newline.
      * <p>
      * Does nothing if the object is {@code null}.
      *
-     * @param obj the object to print, may be {@code null}
+     * @param o the object to print, may be {@code null}
      */
-    public static void printObject(@Nullable Object obj) {
-        Conditionals.ifTrue(obj != null, () -> System.out.print(obj));
+    public static void print(@Nullable Object o) {
+        Conditionals.ifTrue(o != null && !o.toString().isEmpty(),
+                () -> System.out.print(ToString.toString(o)));
     }
 
     /**
@@ -82,10 +43,11 @@ public class Out {
      * <p>
      * Does nothing if the object is {@code null}.
      *
-     * @param obj the object to print, may be {@code null}
+     * @param o the object to print, may be {@code null}
      */
-    public static void printLineObject(@Nullable Object obj) {
-        Conditionals.ifTrue(obj != null, () -> System.out.println(obj));
+    public static void printLine(@Nullable Object o) {
+        Conditionals.ifTrue(o != null && !o.toString().isEmpty(),
+                () -> System.out.println(ToString.toString(o)));
     }
 
     /**
@@ -97,8 +59,34 @@ public class Out {
      * @param format the format string or object, may be {@code null}
      * @param args   the arguments referenced by the format specifiers, may be {@code null}
      */
-    public static void printfObject(@Nullable Object format, @Nullable Object... args) {
-        Conditionals.ifTrue(format != null && args != null, () -> System.out.printf(format.toString(), args));
+    public static void printf(@Nullable Object format, @Nullable Object... args) {
+        Conditionals.ifTrue(
+                format != null
+                        && !format.toString().isEmpty()
+                        && args != null,
+                () -> System.out.printf(ToString.toString(format), args)
+        );
+    }
+
+    /**
+     * Prints an empty line to the console.
+     */
+    public static void newline() {
+        System.out.println();
+    }
+
+    /**
+     * Prints the string representation of the given object to the specified {@link PrintStream}.
+     * If the provided object is {@code null} or its string representation is empty,
+     * nothing will be printed.
+     *
+     * @param stream the output stream to which the object should be printed; must not be null
+     * @param text   the object to be printed; may be null
+     * @throws NullPointerException if the provided {@code stream} is null
+     */
+    public static void printTo(@NotNull PrintStream stream, @Nullable Object text) {
+        Conditionals.ifTrue(text != null && !text.toString().isEmpty(),
+                () -> stream.print(ToString.toString(text)));
     }
 
     /**
@@ -106,10 +94,10 @@ public class Out {
      * <p>
      * Does nothing if the object is {@code null}.
      *
-     * @param obj the debug message object, may be {@code null}
+     * @param o the debug message object, may be {@code null}
      */
-    public static void printDebug(@Nullable Object obj) {
-        Conditionals.ifTrue(obj != null, () -> System.out.println("[DEBUG] " + obj));
+    public static void printDebug(@Nullable Object o) {
+        Conditionals.ifTrue(o != null, () -> System.out.println("[DEBUG] " + ToString.toString(o)));
     }
 
     /**
@@ -120,7 +108,7 @@ public class Out {
      * @param t the throwable whose stack trace is to be printed, may be {@code null}
      */
     public static void printStackTrace(@Nullable Throwable t) {
-        Conditionals.ifTrue(t != null, () -> t.printStackTrace(System.out));
+        Conditionals.ifFalse(t == null, () -> t.printStackTrace(System.out));
     }
 
     /**
@@ -162,7 +150,7 @@ public class Out {
      * Prints a formatted string using named placeholders replaced by values in the given map.
      * Delegates to {@link Formatted#formatNamed(String, Map, boolean)}.
      * <p>
-     * Does nothing if the template is empty or the values map is empty.
+     * Does nothing if the template is empty or the value map is empty.
      *
      * @param template      the named placeholder template string, must not be empty
      * @param values        a map of placeholder names to replacement values, must not be empty

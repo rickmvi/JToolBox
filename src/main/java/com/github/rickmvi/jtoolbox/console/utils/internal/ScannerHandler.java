@@ -15,13 +15,15 @@
  * You should have received a copy of the GNU Lesser General Public License
  * along with this library. If not, see <https://www.gnu.org/licenses/>.
  */
-package com.github.rickmvi.jtoolbox.console.internal;
+package com.github.rickmvi.jtoolbox.console.utils.internal;
 
-import com.github.rickmvi.jtoolbox.console.convert.StringToBoolean;
-import com.github.rickmvi.jtoolbox.console.convert.StringToNumber;
-import com.github.rickmvi.jtoolbox.console.Location;
+import com.github.rickmvi.jtoolbox.console.utils.convert.StringToBoolean;
+import com.github.rickmvi.jtoolbox.console.utils.convert.StringToNumber;
+import com.github.rickmvi.jtoolbox.console.utils.Location;
 
 import static com.github.rickmvi.jtoolbox.debug.SLogger.warn;
+
+import com.github.rickmvi.jtoolbox.console.utils.ScannerUtils;
 import com.github.rickmvi.jtoolbox.control.Conditionals;
 import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
@@ -37,7 +39,7 @@ import java.util.Scanner;
  * It provides robust handling of user input, encapsulating common input
  * operations and converting raw strings into typed values.
  * <p>
- * This class is used internally by the public-facing {@link com.github.rickmvi.jtoolbox.console.ScannerUtils}.
+ * This class is used internally by the public-facing {@link ScannerUtils}.
  */
 public class ScannerHandler implements InputScanner {
 

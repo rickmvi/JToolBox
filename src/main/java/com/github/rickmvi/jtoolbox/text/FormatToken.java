@@ -17,13 +17,16 @@
  */
 package com.github.rickmvi.jtoolbox.text;
 
-import com.github.rickmvi.jtoolbox.console.convert.ObjectToNumber;
+import com.github.rickmvi.jtoolbox.console.utils.convert.ObjectToNumber;
 
+import com.github.rickmvi.jtoolbox.console.utils.convert.ToString;
+import com.github.rickmvi.jtoolbox.control.Conditionals;
 import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.Nullable;
 
 import java.text.DecimalFormat;
 import java.util.Locale;
+import java.util.regex.Pattern;
 
 /**
  * Enumeration representing various format tokens for string formatting.
@@ -53,37 +56,39 @@ public enum FormatToken {
     STRING("s") {
         @Override
         public String format(Object args1) {
-            return String.valueOf(args1);
+            return ToString.valueOf(args1);
         }
     },
     SPACE("n"){
       @Override
       public String format(Object value) {
-          return String.valueOf(value).replace("%n", System.lineSeparator());
+          return ToString.valueOf(value).replace("%n", System.lineSeparator());
       }
     },
     INT("i") {
         @Override
         public String format(Object value) {
-            return String.valueOf(ObjectToNumber.toInt(value));
+            return ToString.valueOf(ObjectToNumber.toInt(value));
         }
     },
     LONG("l") {
         @Override
         public String format(Object value) {
-            return String.valueOf(ObjectToNumber.toLong(value));
+            return ToString.valueOf(ObjectToNumber.toLong(value));
         }
     },
     DECIMAL("#d") {
+        private final DecimalFormat format = new DecimalFormat("###0.00");
         @Override
         public String format(Object value) {
-            return String.format(Locale.US, "%.2f", ObjectToNumber.toDouble(value));
+            return Formatted.format( "%dp{0}", ObjectToNumber.toDouble(value));
         }
     },
-    EXPONENTIAL("ed") {
+    EXPONENTIAL("de") {
+        private final DecimalFormat format = new DecimalFormat("0.##E0");
         @Override
         public String format(Object value) {
-            return String.format(Locale.US, "%.2e", ObjectToNumber.toDouble(value));
+            return format.format(ObjectToNumber.toDouble(value));
         }
     },
     NUMBER("dn") {
@@ -96,13 +101,13 @@ public enum FormatToken {
     UPPER("u") {
         @Override
         public String format(Object value) {
-            return String.valueOf(value).toUpperCase(Locale.ROOT);
+            return ToString.valueOf(value).toUpperCase(Locale.ROOT);
         }
     },
     LOWER("lc") {
         @Override
         public String format(Object value) {
-            return String.valueOf(value).toLowerCase(Locale.ROOT);
+            return ToString.valueOf(value).toLowerCase(Locale.ROOT);
         }
     },
     CHAR("c") {
@@ -118,8 +123,9 @@ public enum FormatToken {
         }
     };
 
-    @lombok.Getter(value = lombok.AccessLevel.PUBLIC, onMethod_ = @Contract(pure = true))
+    @lombok.Getter(value = lombok.AccessLevel.PUBLIC)
     private final String code;
+    public static final Pattern FORMAT_TOKEN_PATTERN = Pattern.compile("%(s|i|l|#d|de|dn|nu|n|lc|c|b)");
 
     /**
      * Constructs a format token with the associated string code.

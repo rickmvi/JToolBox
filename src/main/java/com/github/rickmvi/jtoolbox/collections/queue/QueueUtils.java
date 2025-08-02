@@ -15,7 +15,7 @@
  * You should have received a copy of the GNU Lesser General Public License
  * along with this library. If not, see <https://www.gnu.org/licenses/>.
  */
-package com.github.rickmvi.jtoolbox.collections;
+package com.github.rickmvi.jtoolbox.collections.queue;
 
 import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;

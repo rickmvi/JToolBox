@@ -17,6 +17,7 @@
  */
 package com.github.rickmvi.jtoolbox.debug;
 
+import com.github.rickmvi.jtoolbox.control.Conditionals;
 import com.github.rickmvi.jtoolbox.debug.log.LogLevel;
 
 import org.jetbrains.annotations.Contract;
@@ -44,7 +45,7 @@ public enum AnsiColor {
     WHITE   ("\u001B[37m"),
     YELLOW  ("\u001B[33m");
 
-    @lombok.Getter(value = lombok.AccessLevel.PUBLIC, onMethod_ = @NotNull)
+    @lombok.Getter(value = lombok.AccessLevel.PUBLIC)
     private final String ansiCode;
     private static final AnsiColor[] VALUES = values();
 
@@ -57,7 +58,10 @@ public enum AnsiColor {
      */
     @Contract(pure = true)
     public static @NotNull AnsiColor valueOf(int ordinal) {
-        if (ordinal < 0 || ordinal >= VALUES.length) throw new IndexOutOfBoundsException("Invalid ordinal: " + ordinal);
+        Conditionals.ifTrueThrow(
+                ordinal < 0 || ordinal >= VALUES.length,
+                () -> new IndexOutOfBoundsException("Invalid ordinal: " + ordinal)
+        );
         return VALUES[ordinal];
     }
 

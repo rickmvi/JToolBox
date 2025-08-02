@@ -15,9 +15,9 @@
  * You should have received a copy of the GNU Lesser General Public License
  * along with this library. If not, see <https://www.gnu.org/licenses/>.
  */
-package com.github.rickmvi.jtoolbox.collections;
+package com.github.rickmvi.jtoolbox.collections.array;
 
-import com.github.rickmvi.jtoolbox.collections.utils.ArrayUtils;
+import com.github.rickmvi.jtoolbox.collections.array.utils.ArrayUtils;
 import com.github.rickmvi.jtoolbox.control.Conditionals;
 import com.github.rickmvi.jtoolbox.control.Iteration;
 
@@ -69,7 +69,7 @@ public class Array extends ArrayUtils {
      * @throws NullPointerException If the provided array is null.
      */
     public static <T> int indexOf(T @NotNull [] array, T element) {
-        return Iteration.repeatFindIndex(array.length, i -> Objects.equals(array[i], element));
+        return Iteration.findFirstIndexMatching(array.length, i -> Objects.equals(array[i], element));
     }
 
     /**
@@ -84,7 +84,7 @@ public class Array extends ArrayUtils {
      * @throws NullPointerException if the array is null
      */
     public static <T> int lastIndexOf(T @NotNull [] array, T element) {
-        return Iteration.repeatFindLastIndex(array.length, i -> Objects.equals(array[i], element));
+        return Iteration.findLastIndexMatching(array.length, i -> Objects.equals(array[i], element));
     }
 
     /* ==================================== CONTAINS METHOD ========================================= */
@@ -184,10 +184,10 @@ public class Array extends ArrayUtils {
      * Removes all occurrences of the specified elements from the given array.
      *
      * @param <T> the type of elements in the array
-     * @param array the array from which elements will be removed, must not be null
-     * @param elements the array of elements to be removed from the input array, must not be null
+     * @param array the array from which elements will be removed must not be null
+     * @param elements the array of elements to be removed from the input array must not be null
      * @return a new array with the specified elements removed, never null
-     * @throws NullPointerException if either the input array or elements array is null
+     * @throws NullPointerException if either the input array or element array is null
      */
     public static <T> T @NotNull [] removeAll(T @NotNull [] array, T @NotNull [] elements) {
         T[] result = array;
@@ -201,8 +201,8 @@ public class Array extends ArrayUtils {
      * Removes all occurrences of the specified elements from the given array.
      *
      * @param <T> the type of elements in the array
-     * @param array the array from which elements will be removed, must not be null
-     * @param elements an iterable containing the elements to be removed, must not be null
+     * @param array the array from which elements will be removed must not be null
+     * @param elements an iterable containing the elements to be removed must not be null
      * @return a new array with all specified elements removed
      * @throws NullPointerException if either the array or elements parameter is null
      */
@@ -221,13 +221,13 @@ public class Array extends ArrayUtils {
      * The input array remains unchanged.
      *
      * @param <T>  the type of elements in the array
-     * @param array the input array to be reversed, must not be null
+     * @param array the input array to be reversed must not be null
      * @return a new array that contains the elements of the input array in reverse order, never null
      * @throws NullPointerException if the input array is null
      */
     public static <T> @NotNull T @NotNull [] reversed(T @NotNull [] array) {
         T[] result = java.util.Arrays.copyOf(array, array.length);
-        Iteration.half(array.length, i -> {
+        Iteration.forEachHalf(array.length, i -> {
             T t = result[i];
             result[i] = result[array.length - i - 1];
             result[array.length - i - 1] = t;
@@ -246,7 +246,7 @@ public class Array extends ArrayUtils {
      * @throws NullPointerException If the array is null.
      */
     public static <T> void reverseInPlace(T @NotNull [] array) {
-        Iteration.half(array.length, i -> {
+        Iteration.forEachHalf(array.length, i -> {
             T t = array[i];
             array[i] = array[array.length - i - 1];
             array[array.length - i - 1] = t;
@@ -290,7 +290,7 @@ public class Array extends ArrayUtils {
      */
     public static <T, R> R[] map(T @NotNull [] array, @NotNull Function<T, R> mapper, @NotNull IntFunction<R[]> generator) {
         R[] result = generator.apply(array.length);
-        Iteration.repeat(array.length, i -> result[i] = mapper.apply(array[i]));
+        Iteration.forEachIndex(array.length, i -> result[i] = mapper.apply(array[i]));
         return result;
     }
     /* ================================== DISTINCT METHOD ======================================= */
@@ -421,7 +421,7 @@ public class Array extends ArrayUtils {
      */
     @Contract(pure = true)
     public static int sum(int @NotNull [] array) {
-        return Iteration.sum(array);
+        return Iteration.sumInt(array);
     }
 
     /**
@@ -433,19 +433,7 @@ public class Array extends ArrayUtils {
      */
     @Contract(pure = true)
     public static long sum(long @NotNull [] array) {
-        return Iteration.sum(array);
-    }
-
-    /**
-     * Computes and returns the sum of all elements in the given array of doubles.
-     *
-     * @param array the array of doubles whose elements are to be summed; must not be {@code null}.
-     * @return the sum of all the double elements in the array.
-     * @throws NullPointerException if the provided {@code array} is {@code null}.
-     */
-    @Contract(pure = true)
-    public static double sum(double @NotNull [] array) {
-        return Iteration.sum(array);
+        return Iteration.sumLong(array);
     }
 
     /**
@@ -457,7 +445,19 @@ public class Array extends ArrayUtils {
      */
     @Contract(pure = true)
     public static float sum(float @NotNull [] array) {
-        return Iteration.sum(array);
+        return Iteration.sumFloat(array);
+    }
+
+    /**
+     * Computes and returns the sum of all elements in the given array of doubles.
+     *
+     * @param array the array of doubles whose elements are to be summed; must not be {@code null}.
+     * @return the sum of all the double elements in the array.
+     * @throws NullPointerException if the provided {@code array} is {@code null}.
+     */
+    @Contract(pure = true)
+    public static double sum(double @NotNull [] array) {
+        return Iteration.sumDouble(array);
     }
 
     /* ==================================== REPEAT METHOD ========================================= */

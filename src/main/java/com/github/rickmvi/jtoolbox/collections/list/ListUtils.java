@@ -15,7 +15,7 @@
  * You should have received a copy of the GNU Lesser General Public License
  * along with this library. If not, see <https://www.gnu.org/licenses/>.
  */
-package com.github.rickmvi.jtoolbox.collections;
+package com.github.rickmvi.jtoolbox.collections.list;
 
 import com.github.rickmvi.jtoolbox.control.Iteration;
 import org.jetbrains.annotations.NotNull;
@@ -68,7 +68,7 @@ public class ListUtils {
      */
     public static <T> @NotNull T @NotNull [] reverseArray(@NotNull T[] array) {
         T[] result = Arrays.copyOf(array, array.length);
-        Iteration.half(array, i -> {
+        Iteration.forEachHalf(array, i -> {
             T temp = result[i];
             result[i] = result[array.length - 1 - i];
             result[array.length - 1 - i] = temp;

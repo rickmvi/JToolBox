@@ -1,10 +1,10 @@
 plugins {
     id("java")
-    id("maven-publish")
+    id("com.vanniktech.maven.publish") version "0.34.0"
 }
 
-group = "com.github.rickmvi"
-version = "1.2.2"
+group = "io.github.rickmvi"
+version = "1.3.3"
 
 repositories {
     mavenCentral()
@@ -24,24 +24,35 @@ tasks.test {
     useJUnitPlatform()
 }
 
-publishing {
-    publications {
-        create<MavenPublication>("gpr") {
-            from(components["java"])
-            groupId = project.group.toString()
-            artifactId = "jtoolbox"
-            version = project.version.toString()
-        }
-    }
+mavenPublishing {
+    coordinates(group.toString(), "jtoolbox", version.toString())
 
-    repositories {
-        maven {
-            name = "GitHubPackages"
-            url = uri("https://maven.pkg.github.com/rickmvi/JToolBox")
-            credentials {
-                username = project.findProperty("gpr.user") as String? ?: System.getenv("USERNAME")
-                password = project.findProperty("gpr.key") as String? ?: System.getenv("TOKEN")
+    pom {
+        name.set("JToolBox")
+        description.set("Console and formatting utility library")
+        inceptionYear.set("2025")
+        url.set("https://github.com/rickmvi/JToolBox")
+
+        licenses {
+            license {
+                name.set("GNU Lesser General Public License v3.0")
+                url.set("https://www.gnu.org/licenses/lgpl-3.0.html")
+                distribution.set("repo")
             }
+        }
+
+        developers {
+            developer {
+                id.set("rickmvi")
+                name.set("Rick M. Viana")
+                url.set("https://github.com/rickmvi")
+            }
+        }
+
+        scm {
+            url.set("https://github.com/rickmvi/JToolBox")
+            connection.set("scm:git:git://github.com/rickmvi/JToolBox.git")
+            developerConnection.set("scm:git:ssh://git@github.com/rickmvi/JToolBox.git")
         }
     }
 }

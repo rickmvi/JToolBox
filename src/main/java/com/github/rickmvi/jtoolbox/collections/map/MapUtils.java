@@ -15,11 +15,20 @@
  * You should have received a copy of the GNU Lesser General Public License
  * along with this library. If not, see <https://www.gnu.org/licenses/>.
  */
-package com.github.rickmvi.jtoolbox.collections;
+package com.github.rickmvi.jtoolbox.collections.map;
 
+import com.github.rickmvi.jtoolbox.console.utils.convert.StringToNumber;
+import com.github.rickmvi.jtoolbox.console.utils.convert.ToString;
+import com.github.rickmvi.jtoolbox.control.Conditionals;
+import com.github.rickmvi.jtoolbox.control.While;
+import com.github.rickmvi.jtoolbox.text.Formatted;
+import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.NotNull;
 
+import java.text.DecimalFormat;
 import java.util.function.*;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 import java.util.LinkedHashMap;
 import java.util.Comparator;
@@ -38,6 +47,7 @@ import java.util.Map;
  */
 @lombok.experimental.UtilityClass
 public class MapUtils {
+
 
     /**
      * Iterates over each entry in the provided map and applies the specified action to it.
@@ -119,10 +129,18 @@ public class MapUtils {
      * @param replacements the map of keys and their replacement values
      * @return the resulting string after all replacements
      */
-    public static @NotNull String replace(@NotNull String target, @NotNull Map<String, String> replacements) {
-        for (Map.Entry<String, String> entry : replacements.entrySet()) {
-            target = target.replace(entry.getKey(), entry.getValue());
+    public static @NotNull String replace(
+            @NotNull String target,
+            @NotNull Map<String, Object> replacements,
+            Object... formatArgs) {
+
+        for (Map.Entry<String, Object> entry : replacements.entrySet()) {
+            String key = entry.getKey();
+            Object value = entry.getValue();
+
+            target = replaceIndexedOccurrences(target, key, value, formatArgs);
         }
+
         return target;
     }
 
@@ -209,5 +227,44 @@ public class MapUtils {
                         (e1, e2) -> e1,
                         LinkedHashMap::new
                 ));
+    }
+
+    @ApiStatus.Internal
+    private static @NotNull String replaceIndexedOccurrences(
+            @NotNull String target,
+            @NotNull String key,
+            @NotNull Object value,
+            Object... formatArgs) {
+
+        Pattern indexedPattern = Pattern.compile(Pattern.quote(key) + "\\{(\\d+)}");
+        Matcher matcher = indexedPattern.matcher(target);
+
+        StringBuffer buffer = new StringBuffer();
+
+        While.whileTrue(matcher::find, () -> {
+            int index = StringToNumber.toInt(matcher.group(1));
+            String replacement = getReplacement(value, formatArgs, index);
+            matcher.appendReplacement(buffer, Matcher.quoteReplacement(replacement));
+        });
+
+        matcher.appendTail(buffer);
+        return buffer.toString();
+    }
+
+    @ApiStatus.Internal
+    private static @NotNull String getReplacement(
+            @NotNull Object value,
+            Object[] formatArgs,
+            int index) {
+
+        return Conditionals.supplyIfTrueElse(
+                value instanceof DecimalFormat && index < formatArgs.length,
+                () -> {
+                    assert value instanceof DecimalFormat;
+                    DecimalFormat format = (DecimalFormat) value;
+                    return format.format(formatArgs[index]);
+                },
+                () -> ToString.toString(value)
+        );
     }
 }

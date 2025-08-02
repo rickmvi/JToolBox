@@ -42,7 +42,7 @@ public class DoWhile {
      * <p>Typical usage: read input until it becomes valid and get the final value.</p>
      *
      * <pre>{@code
-     * int option = Flow.doWhile(
+     * int option = DoWhile.doWhile(
      *     () -> {
      *         Out.printFormatted("Enter 0 for {} or 1 for {}: ", "exit", "continue");
      *         return ScannerUtils.nextInt();
