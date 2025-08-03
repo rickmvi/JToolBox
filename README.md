@@ -50,7 +50,7 @@ Adicione ao seu `pom.xml`:
 <dependency>
   <groupId>io.github.rickmvi</groupId>
   <artifactId>jtoolbox</artifactId>
-  <version>1.3.3</version>
+  <version>1.4.4</version>
 </dependency> 
 ```
 
@@ -60,7 +60,7 @@ Adicione no seu `build.gradle`:
 
 ```gradle
 dependencies {
-    implementation("io.github.rickmvi:jtoolbox:1.3.3")
+    implementation("io.github.rickmvi:jtoolbox:1.4.4")
 }
 ```
 ___
@@ -82,13 +82,12 @@ String result = Formatted.replace("Hello {name}, you are {age} years old", value
 // Placeholders genéricos
 String formatted = Formatted.format("Hello {}, you are {} years old", "John", 30);
 
-// Placeholders & Tokens(%n, %t, %r, %d)
-Out.printFormatted("Test %rHello%d{}, you're {} years old%n", "John", 30)
-// Console -> "Hello John, you're 30 years old"
-// 
+// Placeholders e tokens especiais (%n, %t, %r, %d)
+Out.printFormatted("Test %rHello%d{}, you're {} years old%n", "John", 30);
+// Console output: Hello John, you're 30 years old
 
-// Tokens de formatação
-String tokenFormatted = Formatted.formatTokens("Name: %s, Age: %i", "John", "30");
+// Tokens de formatação com índice
+String tokenFormatted = Formatted.format("Name: %S{0}, Age: %in{1}", "john", 30);
 ```
 
 ### Leitura de Entrada
@@ -118,8 +117,8 @@ ScannerUtils.close();
 import com.github.rickmvi.console.Out;
 
 Out.println("Hello World!");
-Out.printfSafe("Formatted: %s %d%n", "text", 123);
-Out.space();
+Out.printf("Formatted: %s %d%n", "text", 123);
+Out.newline();
 Out.printDebug("Mensagem de debug");
 ```
 
@@ -158,6 +157,8 @@ public class Example {
         // Formata a saída
         String message = Formatted.format("Hello {}, you are {} years old", name, age);
         Out.println(message);
+
+        Out.printFormatted("Hello {}, you are {} years old", name, age) // mesma saida da de cima
 
         // Fecha o scanner
         ScannerUtils.close();
