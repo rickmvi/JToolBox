@@ -19,6 +19,7 @@ package com.github.rickmvi.jtoolbox.control.internal;
 
 import com.github.rickmvi.jtoolbox.collections.array.Array;
 import com.github.rickmvi.jtoolbox.control.Conditionals;
+import com.github.rickmvi.jtoolbox.control.Iteration;
 import com.github.rickmvi.jtoolbox.control.While;
 
 import org.jetbrains.annotations.Contract;
@@ -489,6 +490,15 @@ public class MathUtils {
         return Math.divideExact(dividend, divisor);
     }
 
+    public static float divideFloat(float dividend, float divisor) {
+        return (float) divideDouble(dividend, divisor);
+    }
+
+    public static double divideDouble(double dividend, double divisor) {
+        Conditionals.ifTrueThrow(divisor == 0, () -> new ArithmeticException("Division by zero"));
+        return dividend / divisor;
+    }
+
     /**
      * Divides the given dividend by the divisor after adjusting the dividend to the nearest smaller number
      * that is evenly divisible by the divisor.
@@ -524,7 +534,6 @@ public class MathUtils {
      * @return the average of the provided numbers as a double value
      * @throws ArithmeticException if the input array is empty
      */
-    @Contract(pure = true)
     public static double averageDouble(long @NotNull ... numbers) {
         Conditionals.ifTrueThrow(
                 Array.isEmpty(numbers),
@@ -540,7 +549,6 @@ public class MathUtils {
      * @return The average value of the provided numbers.
      * @throws ArithmeticException If the provided array is empty.
      */
-    @Contract(pure = true)
     public static float averageFloat(float @NotNull ... numbers) {
         Conditionals.ifTrueThrow(
                 Array.isEmpty(numbers),
@@ -556,7 +564,6 @@ public class MathUtils {
      * @return the average value of the provided integers as a double.
      * @throws ArithmeticException if the input array is empty.
      */
-    @Contract(pure = true)
     public static double averageInt(int @NotNull ... numbers) {
         Conditionals.ifTrueThrow(
                 Array.isEmpty(numbers),
@@ -573,13 +580,236 @@ public class MathUtils {
      * @throws ArithmeticException if the array is empty.
      * @throws NullPointerException if the array is null.
      */
-    @Contract(pure = true)
     public static double averageDouble(double @NotNull ... numbers) {
         Conditionals.ifTrueThrow(
                 Array.isEmpty(numbers),
                 () -> new ArithmeticException("Cannot average an empty array")
         );
         return sumDouble(numbers) / numbers.length;
+    }
+
+    /**
+     * Calculates the sum of all even numbers from 0 to the given byte value inclusively.
+     *
+     * @param number the upper limit up to which even numbers are summed; must be within the valid byte range.
+     * @return the sum of all even numbers from 0 to the provided limit as a byte.
+     * @throws ArithmeticException if the sum exceeds the range of the byte type.
+     */
+    @Contract(pure = true)
+    public static byte evenByte(byte number) {
+        byte result = 0;
+        for (int i = 0; i <= number; i++) {
+            if (i % 2 == 0) result = (byte) Math.addExact(result, i);
+        }
+        return result;
+    }
+
+    /**
+     * Calculates the sum of all odd integers from 1 up to the given number.
+     *
+     * @param number the inclusive upper bound up to which odd numbers are summed.
+     *               Must be a non-negative byte value.
+     * @return the sum of all odd integers from 1 to the specified number.
+     * @throws ArithmeticException if an integer overflow occurs during the summation process.
+     */
+    @Contract(pure = true)
+    public static byte oddByte(byte number) {
+        byte result = 0;
+        for (int i = 0; i <= number; i++) {
+            if (i % 2 != 0) result = (byte) Math.addExact(result, i);
+        }
+        return result;
+    }
+
+    /**
+     * Computes the sum of all even short integers from 0 up to and including
+     * the specified number.
+     *
+     * @param number the upper bound short value up to which even numbers
+     *               will be summed
+     * @return the sum of all even short integers from 0 to the specified number
+     * @throws ArithmeticException if an arithmetic overflow occurs during the summation
+     */
+    @Contract(pure = true)
+    public static short evenShort(short number) {
+        short result = 0;
+        for (int i = 0; i <= number; i++) {
+            if (i % 2 == 0) result = (short) Math.addExact(result, i);
+        }
+        return result;
+    }
+
+    /**
+     * Calculates the sum of all odd numbers from 0 to the given number (inclusive).
+     *
+     * @param number the upper bound to calculate the sum of odd numbers; must be a non-negative short value.
+     * @return the sum of all odd numbers from 0 to the specified number (inclusive).
+     * @throws ArithmeticException if the sum exceeds the range of the {@code short} type.
+     */
+    @Contract(pure = true)
+    public static short oddShort(short number) {
+        short result = 0;
+        for (int i = 0; i <= number; i++) {
+            if (i % 2 != 0) result = (short) Math.addExact(result, i);
+        }
+        return result;
+    }
+
+    /**
+     * Computes the sum of all even integers from 0 up to and including the given number.
+     *
+     * @param number the upper limit (inclusive) up to which the sum of even integers is calculated
+     * @return the sum of all even integers from 0 to the specified number
+     * @throws ArithmeticException if an integer overflow occurs during the computation
+     */
+    @Contract(pure = true)
+    public static int evenInt(int number) {
+        int result = 0;
+        for (int i = 0; i <= number; i += 2) {
+            result = Math.addExact(result, i);
+        }
+        return result;
+    }
+
+    /**
+     * Calculates the sum of all odd integers from 1 up to and including the specified number.
+     * If the number is lower than 1, the return value will be 0.
+     *
+     * @param number the upper bound up to which odd integers will be summed, inclusive
+     * @return the sum of all odd integers from 1 to the given number, inclusive
+     * @throws ArithmeticException if an integer overflow occurs during the calculation
+     */
+    @Contract(pure = true)
+    public static int oddInt(int number) {
+        int result = 0;
+        for (int i = 1; i <= number; i += 2) {
+            result = Math.addExact(result, i);
+        }
+        return result;
+    }
+
+    /**
+     * Calculates the sum of all even numbers from 0 up to and including the specified number.
+     *
+     * @param number The upper limit up to which even numbers are summed. Must be a non-negative value.
+     * @return The sum of all even numbers from 0 to the specified number.
+     * @throws ArithmeticException If the result overflows a {@code long}.
+     */
+    @Contract(pure = true)
+    public static long evenLong(long number) {
+        long result = 0L;
+        for (long i = 0; i <= number; i += 2) {
+            result = Math.addExact(result, i);
+        }
+        return result;
+    }
+
+    /**
+     * Calculates the sum of all odd numbers from 1 up to and including the specified number.
+     *
+     * @param number the upper limit up to which odd numbers are summed, inclusive
+     * @return the sum of all odd numbers between 1 and the specified number, inclusive
+     * @throws ArithmeticException if the sum overflows a {@code long}
+     */
+    @Contract(pure = true)
+    public static long oddLong(long number) {
+        long result = 0L;
+        for (long i = 1; i <= number; i += 2) {
+            result = Math.addExact(result, i);
+        }
+        return result;
+    }
+
+    /**
+     * Computes the sum of all even integers from 0 up to and including the given number
+     * (if the number itself is even) and returns the result as a floating-point value.
+     *
+     * @param number the upper bound up to which even numbers are summed (inclusive if even)
+     * @return the sum of all even integers from 0 to the specified number as a float
+     * @throws ArithmeticException if the computed sum overflows to infinity or results in NaN
+     */
+    @Contract(pure = true)
+    public static float evenFloat(int number) {
+        float result = 0f;
+        for (int i = 0; i <= number; i += 2) {
+            result += i;
+            Conditionals.ifTrueThrow(Float.isInfinite(result), () ->
+                    new ArithmeticException("Sum overflow")
+            );
+            Conditionals.ifTrueThrow(Float.isNaN(result), () ->
+                    new ArithmeticException("Invalid float operation (NaN encountered)")
+            );
+        }
+        return result;
+    }
+
+    /**
+     * Calculates the sum of all odd integers from 1 up to the given number, returning the result as a float.
+     * Ensures the computed sum does not result in overflow or NaN conditions.
+     *
+     * @param number the upper limit for summing odd integers; must be a non-negative integer.
+     * @return the sum of all odd integers from 1 up to the given number as a float.
+     * @throws ArithmeticException if the resulting sum overflows the float range or if a NaN value is encountered.
+     */
+    @Contract(pure = true)
+    public static float oddFloat(int number) {
+        float result = 0f;
+        for (int i = 1; i <= number; i += 2) {
+            result += i;
+            Conditionals.ifTrueThrow(Float.isInfinite(result), () ->
+                    new ArithmeticException("Sum overflow")
+            );
+            Conditionals.ifTrueThrow(Float.isNaN(result), () ->
+                    new ArithmeticException("Invalid float operation (NaN encountered)")
+            );
+        }
+        return result;
+    }
+
+    /**
+     * Computes the sum of all even numbers from 0 to the specified number (inclusive) and returns the result as a double.
+     *
+     * @param number the maximum number up to which even numbers will be summed, inclusive
+     * @return the sum of all even numbers from 0 to {@code number} as a double
+     * @throws ArithmeticException if the resulting sum overflows or produces an invalid double value (e.g., NaN)
+     */
+    @Contract(pure = true)
+    public static double evenDouble(long number) {
+        double result = 0;
+        for (long i = 0; i <= number; i += 2) {
+            result += i;
+            Conditionals.ifTrueThrow(Double.isInfinite(result), () ->
+                    new ArithmeticException("Sum overflow")
+            );
+            Conditionals.ifTrueThrow(Double.isNaN(result), () ->
+                    new ArithmeticException("Invalid double operation (NaN encountered)")
+            );
+        }
+        return result;
+    }
+
+    /**
+     * Calculates the sum of all odd numbers from 1 up to the specified number
+     * and returns the result as a double.
+     * Throws an exception if overflow or invalid operations occur during the sum.
+     *
+     * @param number the upper bound (inclusive) up to which odd numbers are summed
+     * @return the sum of all odd numbers from 1 up to the specified number
+     * @throws ArithmeticException if the summation results in a value that is infinite or NaN
+     */
+    @Contract(pure = true)
+    public static double oddDouble(long number) {
+        double result = 0;
+        for (long i = 1; i <= number; i += 2) {
+            result += i;
+            Conditionals.ifTrueThrow(Double.isInfinite(result), () ->
+                    new ArithmeticException("Sum overflow")
+            );
+            Conditionals.ifTrueThrow(Double.isNaN(result), () ->
+                    new ArithmeticException("Invalid double operation (NaN encountered)")
+            );
+        }
+        return result;
     }
 
     /**
