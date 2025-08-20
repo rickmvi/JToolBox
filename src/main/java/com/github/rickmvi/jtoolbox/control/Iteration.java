@@ -17,6 +17,9 @@
  */
 package com.github.rickmvi.jtoolbox.control;
 
+import com.github.rickmvi.jtoolbox.lang.InvalidEndIndexException;
+import com.github.rickmvi.jtoolbox.lang.InvalidStartIndexException;
+import com.github.rickmvi.jtoolbox.utils.function.IntBiConsumer;
 import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.Nullable;
 import org.jetbrains.annotations.NotNull;
@@ -226,7 +229,8 @@ public class Iteration {
      * @throws NullPointerException if the action is null
      */
     public static void forEachInRange(int start, int end, @NotNull IntConsumer action) {
-        Conditionals.ifTrueThrow(start > end, IllegalArgumentException::new);
+        Conditionals.ifTrueThrow(start > end, () -> new InvalidEndIndexException(start, end));
+        Conditionals.ifTrueThrow(start < 0, InvalidStartIndexException::new);
         for (int i = start; i < end; i++) action.accept(i);
     }
 
@@ -256,6 +260,16 @@ public class Iteration {
     public static void forEachIndex(int repetitions, @NotNull IntConsumer action) {
         Conditionals.ifTrueThrow(repetitions < 0, IllegalArgumentException::new);
         for (int i = 0; i < repetitions; i++) action.accept(i);
+    }
+
+    public static void bubble(int start, int end, IntBiConsumer action) {
+        Conditionals.ifTrueThrow(action == null, NullPointerException::new);
+        Conditionals.ifTrueThrow(start < 0 || end < 0 || start > end, () -> new InvalidEndIndexException(start, end));
+        for (int i = start; i < end; i++) {
+            for (int j = i + 1; j < end; j++) {
+                action.accept(i, j);
+            }
+        }
     }
 
     /**
@@ -434,7 +448,6 @@ public class Iteration {
     public static void forEachReversedWithIndex(int times, BiConsumer<Integer, Integer> action) {
         int index = 0;
         for (int i = times - 1; i >= 0; i--) {
-
             action.accept(index++, i);
         }
     }

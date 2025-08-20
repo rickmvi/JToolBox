@@ -117,6 +117,18 @@ public class ToString {
         }
     }
 
+    @Contract("null, _ -> param2")
+    public static Object valueOf(Object o, Object defaultValue) {
+        if (o == null) return defaultValue;
+        try {
+            if (o instanceof String) return o;
+            if (o instanceof Number || o instanceof Boolean || o instanceof Character) return o.toString();
+        } catch (Exception e) {
+            return "Error@toString(" + e.getClass().getSimpleName() + ")";
+        }
+        return o;
+    }
+
     @ApiStatus.Internal
     private static @NotNull String toArrayString(Object array) {
         if (array instanceof Object[])  return Arrays.toString((Object[])   array);

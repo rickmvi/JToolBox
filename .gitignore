@@ -15,6 +15,7 @@ gradle.properties
 *.iws
 *.iml
 *.ipr
+.idea
 out/
 src/main/java/com/github/rickmvi/package-info.java
 !**/src/main/**/out/

@@ -15,14 +15,19 @@
  * You should have received a copy of the GNU Lesser General Public License
  * along with this library. If not, see <https://www.gnu.org/licenses/>.
  */
-package com.github.rickmvi.jtoolbox.collections.array.utils;
+package com.github.rickmvi.jtoolbox.utils;
 
+import com.github.rickmvi.jtoolbox.collections.array.Array;
+import com.github.rickmvi.jtoolbox.control.Conditionals;
 import com.github.rickmvi.jtoolbox.control.Iteration;
-import com.github.rickmvi.jtoolbox.control.internal.MathUtils;
+import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
 
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.List;
+import java.util.regex.Pattern;
 
 public class ArrayUtils {
 
@@ -1196,6 +1201,9 @@ public class ArrayUtils {
     public static double @NotNull [] filter(double @NotNull [] array, double @NotNull [] filter) {
         double[] result = new double[array.length];
         Iteration.forEachIndex(array.length, i -> {
+
+            Conditionals.ifTrue(contains(filter, array[i]), () -> result[i] = array[i]);
+
             if (contains(filter, array[i])) {
                 result[i] = array[i];
             }
@@ -1238,11 +1246,36 @@ public class ArrayUtils {
      */
     public static boolean @NotNull [] filter(boolean @NotNull [] array, boolean @NotNull [] filter) {
         boolean[] result = new boolean[array.length];
-        Iteration.forEachIndex(array.length, i -> {
-            if (contains(filter, array[i])) {
-                result[i] = array[i];
-            }
-        });
+        Iteration.forEachIndex(array.length, i -> Conditionals
+                .ifTrue(contains(filter, array[i]), () -> result[i] = array[i]));
         return result;
+    }
+
+    /**
+     * Converts a given string into an array of integer digits.
+     * Non-digit characters are ignored safely.
+     *
+     * @param number the input string; must not be null.
+     * @return an array of integers containing only the digits found in the string.
+     *         Returns an empty array if the string is empty, contains only whitespace,
+     *         or no digits are found.
+     * @throws NullPointerException if the input number is null.
+     */
+    public static int @NotNull [] convert(@NotNull String number) {
+        if (number.trim().isEmpty()) return new int[0];
+
+        List<Integer> result = new ArrayList<>();
+
+        for (char c : number.toCharArray()) {
+            int digit = Character.getNumericValue(c);
+            Conditionals.ifTrue(digit >= 0 && digit <= 9, () -> result.add(digit));
+        }
+
+        if (result.isEmpty()) return new int[0];
+
+        int[] arr = new int[result.size()];
+        Iteration.forEachIndex(result.size(), i -> arr[i] = result.get(i));
+
+        return arr;
     }
 }

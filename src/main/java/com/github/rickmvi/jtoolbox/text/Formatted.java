@@ -53,7 +53,7 @@ import java.util.Map;
 public final class Formatted {
 
     private final Pattern PLACEHOLDER_PATTERN = Pattern.compile("\\{(.*?)}");
-    private final Pattern GENERIC_PATTERN = Pattern.compile("\\{\\}");
+    private final Pattern GENERIC_PATTERN = Pattern.compile("\\{}");
 
     private final Map<String, Object> TOKENS = Map.of(
             "%n", System.lineSeparator(),  // Nova linha
@@ -287,7 +287,8 @@ public final class Formatted {
                     "in", () -> NumberFormat.INTEGER.format(value),
                     "p",  () -> NumberFormat.PERCENT.format(value),
                     "sc", () -> NumberFormat.SCIENTIFIC.format(value),
-                    "S",  () -> String.valueOf(value).toUpperCase()
+                    "S",  () -> String.valueOf(value).toUpperCase(),
+                    "lc", () -> String.valueOf(value).toLowerCase()
             ), () -> "");
 
             matcher.appendReplacement(buffer, Matcher.quoteReplacement(replacement));

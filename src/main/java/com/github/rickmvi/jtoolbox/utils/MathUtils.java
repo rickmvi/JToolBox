@@ -15,11 +15,10 @@
  * You should have received a copy of the GNU Lesser General Public License
  * along with this library. If not, see <https://www.gnu.org/licenses/>.
  */
-package com.github.rickmvi.jtoolbox.control.internal;
+package com.github.rickmvi.jtoolbox.utils;
 
 import com.github.rickmvi.jtoolbox.collections.array.Array;
 import com.github.rickmvi.jtoolbox.control.Conditionals;
-import com.github.rickmvi.jtoolbox.control.Iteration;
 import com.github.rickmvi.jtoolbox.control.While;
 
 import org.jetbrains.annotations.Contract;

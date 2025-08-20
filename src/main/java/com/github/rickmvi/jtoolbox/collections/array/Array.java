@@ -17,11 +17,12 @@
  */
 package com.github.rickmvi.jtoolbox.collections.array;
 
-import com.github.rickmvi.jtoolbox.collections.array.utils.ArrayUtils;
+import com.github.rickmvi.jtoolbox.lang.InvalidStartIndexException;
+import com.github.rickmvi.jtoolbox.utils.ArrayUtils;
 import com.github.rickmvi.jtoolbox.control.Conditionals;
 import com.github.rickmvi.jtoolbox.control.Iteration;
 
-import com.github.rickmvi.jtoolbox.control.internal.MathUtils;
+import com.github.rickmvi.jtoolbox.utils.MathUtils;
 import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
 
@@ -38,6 +39,23 @@ import java.util.Set;
 
 @lombok.experimental.UtilityClass
 public class Array extends ArrayUtils {
+
+    /* ==================================== ADD METHOD ========================================= */
+
+    public static <T> T @NotNull [] add(T @NotNull [] array, T element) {
+        T[] result = java.util.Arrays.copyOf(array, array.length + 1);
+        result[array.length] = element;
+        return result;
+    }
+
+    public static <T> T @NotNull [] add(T @NotNull [] array, int index, T element) {
+        Conditionals.ifTrueThrow(index < 0 || index > array.length, () ->
+                new InvalidStartIndexException("Index: " + index + ", Length: " + array.length));
+        T[] result = java.util.Arrays.copyOf(array, array.length + 1);
+        System.arraycopy(array, index, result, index + 1, array.length - index);
+        result[index] = element;
+        return result;
+    }
 
     /* ==================================== CONCAT METHOD ========================================= */
 
@@ -160,7 +178,7 @@ public class Array extends ArrayUtils {
      */
     public static <T> T @NotNull [] remove(T @NotNull [] array, int index) {
         Conditionals.ifTrueThrow(index < 0 || index >= array.length, () ->
-                new IndexOutOfBoundsException("Index: " + index + ", Length: " + array.length));
+                new InvalidStartIndexException("Index: " + index + ", Length: " + array.length));
         T[] result = java.util.Arrays.copyOf(array, array.length - 1);
         System.arraycopy(array, index + 1, result, index, array.length - index - 1);
         return result;

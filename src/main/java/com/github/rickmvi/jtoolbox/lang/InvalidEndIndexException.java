@@ -1,0 +1,30 @@
+package com.github.rickmvi.jtoolbox.lang;
+
+import com.github.rickmvi.jtoolbox.lang.message.ErrorMessage;
+
+public class InvalidEndIndexException extends RuntimeException {
+
+    public InvalidEndIndexException() {
+        super(ErrorMessage.INVALID_END_INDEX.getMessage());
+    }
+
+    public InvalidEndIndexException(int startIndex, int endIndex) {
+        super(ErrorMessage.END_MENOR_THAN_START.format(endIndex, startIndex));
+    }
+
+    public InvalidEndIndexException(String message) {
+        super(message);
+    }
+
+    public InvalidEndIndexException(String message, Throwable cause) {
+        super(message, cause);
+    }
+
+    public InvalidEndIndexException(Throwable cause) {
+        super(cause);
+    }
+
+    public InvalidEndIndexException(int index) {
+        super(ErrorMessage.INVALID_END_INDEX.format(index));
+    }
+}
