@@ -25,7 +25,7 @@ import java.util.concurrent.CompletableFuture;
 import java.util.function.Supplier;
 
 @lombok.experimental.UtilityClass
-public class Match {
+public class ActionMapper {
     /**
      * Performs a switch-like operation using a map of cases. Executes the matching case or the default if not found.
      *

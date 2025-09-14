@@ -18,6 +18,7 @@
 package com.github.rickmvi.jtoolbox.console.utils.convert;
 
 import com.github.rickmvi.jtoolbox.template.TryConvert;
+import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -91,6 +92,7 @@ public class StringToBoolean {
      * @param value the string value to convert, may be {@code null}
      * @return an {@code Optional} containing the boolean value if conversion succeeds; otherwise, an empty {@code Optional}
      */
+    @Contract("null -> !null")
     public static Optional<Boolean> toBooleanOptional(@Nullable String value) {
         return TryConvert.convert(value, Boolean::parseBoolean);
     }

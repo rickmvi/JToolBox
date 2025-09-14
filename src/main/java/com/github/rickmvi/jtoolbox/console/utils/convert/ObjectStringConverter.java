@@ -25,6 +25,7 @@ import org.jetbrains.annotations.Nullable;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Map;
+import java.util.Objects;
 
 /**
  * A utility class providing methods for generating a string representation of various objects.
@@ -46,7 +47,7 @@ public class ToString {
      */
     @Contract(value = "null -> !null", pure = true)
     public static String valueOf(@Nullable Object o) {
-        return o == null ? "null" : String.valueOf(o);
+        return Objects.isNull(o) ? "null" : String.valueOf(o);
     }
 
     /**
@@ -83,7 +84,7 @@ public class ToString {
      */
     @Contract("null,_-> param2")
     public static @NotNull String toString(@Nullable Object o, @NotNull String defaultValue) {
-        if (o == null) return defaultValue;
+        if (Objects.isNull(o)) return defaultValue;
 
         try {
             if (o instanceof String) return (String) o;
@@ -108,7 +109,7 @@ public class ToString {
             if (o.getClass().isArray()) return toArrayString(o);
 
             String result = o.toString();
-            if (result == null || result.trim().isEmpty()) {
+            if (Objects.isNull(result) || result.trim().isEmpty()) {
                 return o.getClass().getSimpleName() + "@" + Integer.toHexString(o.hashCode());
             }
             return result;
@@ -119,7 +120,7 @@ public class ToString {
 
     @Contract("null, _ -> param2")
     public static Object valueOf(Object o, Object defaultValue) {
-        if (o == null) return defaultValue;
+        if (Objects.isNull(o)) return defaultValue;
         try {
             if (o instanceof String) return o;
             if (o instanceof Number || o instanceof Boolean || o instanceof Character) return o.toString();

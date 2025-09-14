@@ -24,7 +24,7 @@ import com.github.rickmvi.jtoolbox.console.utils.Location;
 import static com.github.rickmvi.jtoolbox.debug.SLogger.warn;
 
 import com.github.rickmvi.jtoolbox.console.utils.ScannerUtils;
-import com.github.rickmvi.jtoolbox.control.Conditionals;
+import com.github.rickmvi.jtoolbox.control.ConditionalHelper;
 import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
 
@@ -236,7 +236,7 @@ public class ScannerHandler implements InputScanner {
      * @throws IllegalStateException if the scanner is not present
      */
     private void validate() {
-        Conditionals.ifTrueThrow(scanner.isEmpty(), () ->
+        ConditionalHelper.ifTrueThrow(scanner.isEmpty(), () ->
                 new IllegalStateException("Mistake: Scanner not initialized. Call ScannerUtils.init() first."));
     }
 }

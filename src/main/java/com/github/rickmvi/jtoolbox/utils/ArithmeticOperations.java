@@ -18,11 +18,16 @@
 package com.github.rickmvi.jtoolbox.utils;
 
 import com.github.rickmvi.jtoolbox.collections.array.Array;
-import com.github.rickmvi.jtoolbox.control.Conditionals;
-import com.github.rickmvi.jtoolbox.control.While;
 
+import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
+
+import java.util.stream.IntStream;
+
+import static com.github.rickmvi.jtoolbox.control.ConditionalHelper.ifTrueThrow;
+import static com.github.rickmvi.jtoolbox.control.ActionRepeater.whileTrue;
+import static com.github.rickmvi.jtoolbox.utils.Primitives.*;
 
 /**
  * Utility class providing arithmetic operations for integers, longs, floats, and doubles
@@ -122,10 +127,10 @@ public class MathUtils {
         for (float number : numbers) {
             result += number;
 
-            Conditionals.ifTrueThrow(Float.isInfinite(result), () ->
+            ifTrueThrow(Float.isInfinite(result), () ->
                     new ArithmeticException("Sum overflow")
             );
-            Conditionals.ifTrueThrow(Float.isNaN(result), () ->
+            ifTrueThrow(Float.isNaN(result), () ->
                     new ArithmeticException("Invalid float operation (NaN encountered)")
             );
         }
@@ -149,10 +154,10 @@ public class MathUtils {
         for (double number : numbers) {
             result += number;
 
-            Conditionals.ifTrueThrow(Double.isInfinite(result), () ->
+            ifTrueThrow(Double.isInfinite(result), () ->
                     new ArithmeticException("Sum overflow")
             );
-            Conditionals.ifTrueThrow(Double.isNaN(result), () ->
+            ifTrueThrow(Double.isNaN(result), () ->
                     new ArithmeticException("Invalid double operation (NaN encountered)")
             );
         }
@@ -260,9 +265,9 @@ public class MathUtils {
         for (int i = 1; i < numbers.length; i++) {
             result -= numbers[i];
 
-            Conditionals.ifTrueThrow(Float.isInfinite(result), () ->
+            ifTrueThrow(Float.isInfinite(result), () ->
                     new ArithmeticException("Subtraction overflow"));
-            Conditionals.ifTrueThrow(Float.isNaN(result), () ->
+            ifTrueThrow(Float.isNaN(result), () ->
                     new ArithmeticException("Invalid float operation (NaN encountered)"));
         }
         return result;
@@ -286,9 +291,9 @@ public class MathUtils {
         for (int i = 1; i < numbers.length; i++) {
             result -= numbers[i];
 
-            Conditionals.ifTrueThrow(Double.isInfinite(result), () ->
+            ifTrueThrow(Double.isInfinite(result), () ->
                     new ArithmeticException("Subtraction overflow"));
-            Conditionals.ifTrueThrow(Double.isNaN(result), () ->
+            ifTrueThrow(Double.isNaN(result), () ->
                     new ArithmeticException("Invalid double operation (NaN encountered)"));
         }
         return result;
@@ -388,11 +393,11 @@ public class MathUtils {
         for (float number : numbers) {
             result *= number;
 
-            Conditionals.ifTrueThrow(
+            ifTrueThrow(
                     Float.isInfinite(result),
                     () -> new ArithmeticException("Product overflow")
             );
-            Conditionals.ifTrueThrow(
+            ifTrueThrow(
                     Float.isNaN(result),
                     () -> new ArithmeticException("Invalid float operation (NaN encountered)")
             );
@@ -420,11 +425,11 @@ public class MathUtils {
         for (double number : numbers) {
             result *= number;
 
-            Conditionals.ifTrueThrow(
+            ifTrueThrow(
                     Double.isInfinite(result),
                     () -> new ArithmeticException("Product overflow")
             );
-            Conditionals.ifTrueThrow(
+            ifTrueThrow(
                     Double.isNaN(result),
                     () -> new ArithmeticException("Invalid double operation (NaN encountered)")
             );
@@ -445,7 +450,7 @@ public class MathUtils {
      * @throws ArithmeticException if the divisor is zero
      */
     public static byte divideByte(byte dividend, byte divisor) {
-        Conditionals.ifTrueThrow(divisor == 0, () -> new ArithmeticException("Division by zero"));
+        ifTrueThrow(divisor == 0, () -> new ArithmeticException("Division by zero"));
         return (byte) Math.divideExact(dividend, divisor);
     }
 
@@ -458,7 +463,7 @@ public class MathUtils {
      * @throws ArithmeticException if the divisor is zero
      */
     public static short divideShort(short dividend, short divisor) {
-        Conditionals.ifTrueThrow(divisor == 0, () -> new ArithmeticException("Division by zero"));
+        ifTrueThrow(divisor == 0, () -> new ArithmeticException("Division by zero"));
         return (short) Math.divideExact(dividend, divisor);
     }
 
@@ -472,7 +477,7 @@ public class MathUtils {
      * @throws ArithmeticException If the divisor is zero.
      */
     public static int divideInt(int dividend, int divisor) {
-        Conditionals.ifTrueThrow(divisor == 0, () -> new ArithmeticException("Division by zero"));
+        ifTrueThrow(divisor == 0, () -> new ArithmeticException("Division by zero"));
         return Math.divideExact(dividend, divisor);
     }
 
@@ -485,7 +490,7 @@ public class MathUtils {
      * @throws ArithmeticException if the divisor is zero
      */
     public static long divideLong(long dividend, long divisor) {
-        Conditionals.ifTrueThrow(divisor == 0L, () -> new ArithmeticException("Division by zero"));
+        ifTrueThrow(divisor == 0L, () -> new ArithmeticException("Division by zero"));
         return Math.divideExact(dividend, divisor);
     }
 
@@ -494,7 +499,7 @@ public class MathUtils {
     }
 
     public static double divideDouble(double dividend, double divisor) {
-        Conditionals.ifTrueThrow(divisor == 0, () -> new ArithmeticException("Division by zero"));
+        ifTrueThrow(divisor == 0, () -> new ArithmeticException("Division by zero"));
         return dividend / divisor;
     }
 
@@ -510,13 +515,13 @@ public class MathUtils {
      *                             nearest divisible number.
      */
     public static int divideNearestMultipleInt(int dividend, int divisor) {
-        Conditionals.ifTrueThrow(divisor == 0, () -> new ArithmeticException("Division by zero"));
+        ifTrueThrow(divisor == 0, () -> new ArithmeticException("Division by zero"));
 
         final int[] result = { dividend };
-        While.whileTrue(
+        whileTrue(
                 () -> result[0] % divisor != 0,
                 () -> {
-                    Conditionals.ifTrueThrow(
+                    ifTrueThrow(
                             result[0] == Integer.MIN_VALUE,
                             () -> new ArithmeticException("Overflow while searching nearest divisible number")
                     );
@@ -534,7 +539,7 @@ public class MathUtils {
      * @throws ArithmeticException if the input array is empty
      */
     public static double averageDouble(long @NotNull ... numbers) {
-        Conditionals.ifTrueThrow(
+        ifTrueThrow(
                 Array.isEmpty(numbers),
                 () -> new ArithmeticException("Cannot average an empty array")
         );
@@ -549,7 +554,7 @@ public class MathUtils {
      * @throws ArithmeticException If the provided array is empty.
      */
     public static float averageFloat(float @NotNull ... numbers) {
-        Conditionals.ifTrueThrow(
+        ifTrueThrow(
                 Array.isEmpty(numbers),
                 () -> new ArithmeticException("Cannot average an empty array")
         );
@@ -564,7 +569,7 @@ public class MathUtils {
      * @throws ArithmeticException if the input array is empty.
      */
     public static double averageInt(int @NotNull ... numbers) {
-        Conditionals.ifTrueThrow(
+        ifTrueThrow(
                 Array.isEmpty(numbers),
                 () -> new ArithmeticException("Cannot average an empty array")
         );
@@ -580,7 +585,7 @@ public class MathUtils {
      * @throws NullPointerException if the array is null.
      */
     public static double averageDouble(double @NotNull ... numbers) {
-        Conditionals.ifTrueThrow(
+        ifTrueThrow(
                 Array.isEmpty(numbers),
                 () -> new ArithmeticException("Cannot average an empty array")
         );
@@ -596,9 +601,10 @@ public class MathUtils {
      */
     @Contract(pure = true)
     public static byte evenByte(byte number) {
+        byte valid = Primitives.requiredNonNegative(number);
         byte result = 0;
-        for (int i = 0; i <= number; i++) {
-            if (i % 2 == 0) result = (byte) Math.addExact(result, i);
+        for (int i = 0; i <= valid; i += 2) {
+            result = (byte) Math.addExact(result, i);
         }
         return result;
     }
@@ -613,9 +619,10 @@ public class MathUtils {
      */
     @Contract(pure = true)
     public static byte oddByte(byte number) {
+        byte valid = Primitives.requiredNonNegative(number);
         byte result = 0;
-        for (int i = 0; i <= number; i++) {
-            if (i % 2 != 0) result = (byte) Math.addExact(result, i);
+        for (int i = 1; i <= valid; i += 2) {
+            result = (byte) Math.addExact(result, i);
         }
         return result;
     }
@@ -631,9 +638,10 @@ public class MathUtils {
      */
     @Contract(pure = true)
     public static short evenShort(short number) {
+        short valid = Primitives.requiredNonNegative(number);
         short result = 0;
-        for (int i = 0; i <= number; i++) {
-            if (i % 2 == 0) result = (short) Math.addExact(result, i);
+        for (int i = 0; i <= valid; i += 2) {
+            result = (short) Math.addExact(result, i);
         }
         return result;
     }
@@ -647,9 +655,10 @@ public class MathUtils {
      */
     @Contract(pure = true)
     public static short oddShort(short number) {
+        short valid = Primitives.requiredNonNegative(number);
         short result = 0;
-        for (int i = 0; i <= number; i++) {
-            if (i % 2 != 0) result = (short) Math.addExact(result, i);
+        for (int i = 1; i <= valid; i += 2) {
+            result = (short) Math.addExact(result, i);
         }
         return result;
     }
@@ -663,11 +672,8 @@ public class MathUtils {
      */
     @Contract(pure = true)
     public static int evenInt(int number) {
-        int result = 0;
-        for (int i = 0; i <= number; i += 2) {
-            result = Math.addExact(result, i);
-        }
-        return result;
+        int valid = Primitives.requiredNonNegative(number);
+        return IntStream.rangeClosed(0, valid).filter(Primitives::even).sum();
     }
 
     /**
@@ -680,11 +686,8 @@ public class MathUtils {
      */
     @Contract(pure = true)
     public static int oddInt(int number) {
-        int result = 0;
-        for (int i = 1; i <= number; i += 2) {
-            result = Math.addExact(result, i);
-        }
-        return result;
+        int valid = Primitives.requiredNonNegative(number);
+        return IntStream.rangeClosed(1, valid).filter(Primitives::odd).sum();
     }
 
     /**
@@ -696,8 +699,9 @@ public class MathUtils {
      */
     @Contract(pure = true)
     public static long evenLong(long number) {
+        long valid = Primitives.requiredNonNegative(number);
         long result = 0L;
-        for (long i = 0; i <= number; i += 2) {
+        for (long i = 0; i <= valid; i += 2) {
             result = Math.addExact(result, i);
         }
         return result;
@@ -712,8 +716,9 @@ public class MathUtils {
      */
     @Contract(pure = true)
     public static long oddLong(long number) {
+        long valid = Primitives.requiredNonNegative(number);
         long result = 0L;
-        for (long i = 1; i <= number; i += 2) {
+        for (long i = 1; i <= valid; i += 2) {
             result = Math.addExact(result, i);
         }
         return result;
@@ -729,13 +734,14 @@ public class MathUtils {
      */
     @Contract(pure = true)
     public static float evenFloat(int number) {
+        int valid = Primitives.requiredNonNegative(number);
         float result = 0f;
-        for (int i = 0; i <= number; i += 2) {
+        for (int i = 0; i <= valid; i += 2) {
             result += i;
-            Conditionals.ifTrueThrow(Float.isInfinite(result), () ->
+            ifTrueThrow(Float.isInfinite(result), () ->
                     new ArithmeticException("Sum overflow")
             );
-            Conditionals.ifTrueThrow(Float.isNaN(result), () ->
+            ifTrueThrow(Float.isNaN(result), () ->
                     new ArithmeticException("Invalid float operation (NaN encountered)")
             );
         }
@@ -752,13 +758,14 @@ public class MathUtils {
      */
     @Contract(pure = true)
     public static float oddFloat(int number) {
+        int valid = Primitives.requiredNonNegative(number);
         float result = 0f;
-        for (int i = 1; i <= number; i += 2) {
+        for (int i = 1; i <= valid; i += 2) {
             result += i;
-            Conditionals.ifTrueThrow(Float.isInfinite(result), () ->
+            ifTrueThrow(Float.isInfinite(result), () ->
                     new ArithmeticException("Sum overflow")
             );
-            Conditionals.ifTrueThrow(Float.isNaN(result), () ->
+            ifTrueThrow(Float.isNaN(result), () ->
                     new ArithmeticException("Invalid float operation (NaN encountered)")
             );
         }
@@ -774,13 +781,14 @@ public class MathUtils {
      */
     @Contract(pure = true)
     public static double evenDouble(long number) {
+        long valid = Primitives.requiredNonNegative(number);
         double result = 0;
-        for (long i = 0; i <= number; i += 2) {
+        for (long i = 0; i <= valid; i += 2) {
             result += i;
-            Conditionals.ifTrueThrow(Double.isInfinite(result), () ->
+            ifTrueThrow(Double.isInfinite(result), () ->
                     new ArithmeticException("Sum overflow")
             );
-            Conditionals.ifTrueThrow(Double.isNaN(result), () ->
+            ifTrueThrow(Double.isNaN(result), () ->
                     new ArithmeticException("Invalid double operation (NaN encountered)")
             );
         }
@@ -798,13 +806,14 @@ public class MathUtils {
      */
     @Contract(pure = true)
     public static double oddDouble(long number) {
+        long valid = Primitives.requiredNonNegative(number);
         double result = 0;
-        for (long i = 1; i <= number; i += 2) {
+        for (long i = 1; i <= valid; i += 2) {
             result += i;
-            Conditionals.ifTrueThrow(Double.isInfinite(result), () ->
+            ifTrueThrow(Double.isInfinite(result), () ->
                     new ArithmeticException("Sum overflow")
             );
-            Conditionals.ifTrueThrow(Double.isNaN(result), () ->
+            ifTrueThrow(Double.isNaN(result), () ->
                     new ArithmeticException("Invalid double operation (NaN encountered)")
             );
         }
@@ -837,7 +846,7 @@ public class MathUtils {
      */
     @Contract(pure = true)
     public static long moduloLong(long dividend, long divisor) {
-        Conditionals.ifTrueThrow(divisor == 0, () -> new ArithmeticException("Division by zero"));
+        ifTrueThrow(isZero(divisor), () -> new ArithmeticException("Division by zero"));
         return dividend % divisor;
     }
 
@@ -854,13 +863,14 @@ public class MathUtils {
      *                             while searching for the nearest divisible number
      */
     public static int moduloNearestMultiple(int dividend, int divisor) {
-        Conditionals.ifTrueThrow(dividend < 0, () -> new ArithmeticException("Negative dividend"));
+        ifTrueThrow(isNegative(dividend), () -> new ArithmeticException("Negative dividend"));
+        ifTrueThrow(isNonPositive(divisor), () -> new ArithmeticException("Divisor must be positive"));
 
         final int[] result = { dividend };
-        While.whileTrue(
+        whileTrue(
                 () -> result[0] % divisor != 0,
                 () -> {
-                    Conditionals.ifTrueThrow(
+                    ifTrueThrow(
                             result[0] == Integer.MAX_VALUE,
                             () -> new ArithmeticException("Underflow while searching nearest divisible number")
                     );
@@ -884,13 +894,13 @@ public class MathUtils {
      *         search results in underflow.
      */
     public static long moduloNearestMultiple(long dividend, long divisor) {
-        Conditionals.ifTrueThrow(dividend < 0L, () -> new ArithmeticException("Negative dividend"));
+        ifTrueThrow(dividend < 0L, () -> new ArithmeticException("Negative dividend"));
 
         final long[] result = { dividend };
-        While.whileTrue(
+        whileTrue(
                 () -> result[0] % divisor != 0L,
                 () -> {
-                    Conditionals.ifTrueThrow(
+                    ifTrueThrow(
                             result[0] == Long.MAX_VALUE,
                             () -> new ArithmeticException("Underflow while searching nearest divisible number")
                     );
@@ -909,11 +919,11 @@ public class MathUtils {
      */
     @Contract(pure = true)
     public static int gcd(int a, int b) {
-        if (a == 0) return b;
-        if (b == 0) return a;
+        if (isZero(a)) return b;
+        if (isZero(b)) return a;
 
         int r = a % b;
-        if (r == 0) return b;
+        if (isZero(r)) return b;
 
         return gcd(b, r);
     }
@@ -928,45 +938,58 @@ public class MathUtils {
      */
     @Contract(pure = true)
     public static int lcm(int a, int b) {
-        if (a == 0 || b == 0) return 0;
-        return Math.abs(Math.multiplyExact(a, b)) / gcd(a, b);
+        if (isZero(a) || isZero(b)) return 0;
+        return Math.abs(a / gcd(a, b) * b);
     }
 
     /**
-     * Calculates the power of a given base raised to a non-negative exponent.
-     * The method uses iterative multiplication to compute the result.
+     * Calculates base^exponent using exponentiation by squaring (O(log n)).
      *
-     * @param base the base value to be raised to the power of the exponent
-     * @param exponent the non-negative exponent value
-     * @return the result of raising the base to the power of the exponent
-     * @throws ArithmeticException if the exponent is negative or if an overflow occurs during the computation
+     * @param base     the base value
+     * @param exponent the non-negative exponent
+     * @return the result of base raised to exponent
+     * @throws ArithmeticException if the exponent is negative or if an overflow occurs
      */
     @Contract(pure = true)
     public static int pow(int base, int exponent) {
-        Conditionals.ifTrueThrow(exponent < 0, () -> new ArithmeticException("Negative exponent"));
-
-        int result = 1;
-        for (int i = 0; i < exponent; i++) {
-            result = Math.multiplyExact(result, base);
-        }
-        return result;
+        ifTrueThrow(isNegative(exponent), () -> new ArithmeticException("Negative exponent"));
+        return powerBySquaring(base, exponent);
     }
 
     /**
-     * Computes the result of raising the specified base to the power of the specified exponent.
+     * Calculates base^exponent using exponentiation by squaring (O(log n)).
      *
-     * @param base the base number to be raised to a power.
-     * @param exponent the non-negative integer exponent to which the base is to be raised.
-     * @return the result of base raised to the power of the exponent.
-     * @throws ArithmeticException if the exponent is negative or the result overflows.
+     * @param base     the base value
+     * @param exponent the non-negative exponent (long)
+     * @return the result of base raised to exponent
+     * @throws ArithmeticException if the exponent is negative or if an overflow occurs
      */
+    @Contract(pure = true)
     public static int pow(int base, long exponent) {
-        Conditionals.ifTrueThrow(exponent < 0L, () -> new ArithmeticException("Negative exponent"));
+        ifTrueThrow(isNegative(exponent), () -> new ArithmeticException("Negative exponent"));
+        return powerBySquaring(base, exponent);
+    }
 
+    @ApiStatus.Internal
+    private static int powerBySquaring(int base, long exponent) {
         int result = 1;
-        for (long i = 0L; i < exponent; i++) {
-            result = Math.multiplyExact(result, base);
+        result = computePower(exponent, result, base);
+
+        return result;
+    }
+
+    @ApiStatus.Internal
+    private static int computePower(long exponent, int result, int b) {
+        while (isPositive(exponent)) {
+            if (odd(exponent)) {
+                result = Math.multiplyExact(result, b);
+            }
+            exponent >>= 1;
+            if (isPositive(exponent)) {
+                b = Math.multiplyExact(b, b);
+            }
         }
+
         return result;
     }
 
@@ -982,12 +1005,12 @@ public class MathUtils {
      * @throws ArithmeticException if the result of the exponentiation is infinite or invalid
      */
     public static double pow(double base, double exponent) {
-        Conditionals.ifTrueThrow(exponent < 0, () -> new ArithmeticException("Negative exponent"));
+        ifTrueThrow(isNegative(exponent), () -> new ArithmeticException("Negative exponent"));
 
         double result = Math.pow(base, exponent);
 
-        Conditionals.ifTrueThrow(Double.isInfinite(result), () -> new ArithmeticException("Exponentiation overflow"));
-        Conditionals.ifTrueThrow(Double.isNaN(result), () -> new ArithmeticException("Invalid exponentiation result"));
+        ifTrueThrow(Double.isInfinite(result), () -> new ArithmeticException("Exponentiation overflow"));
+        ifTrueThrow(Double.isNaN(result), () -> new ArithmeticException("Invalid exponentiation result"));
         return result;
     }
 
@@ -1001,8 +1024,8 @@ public class MathUtils {
      */
     @Contract(pure = true)
     public static int sqrtInt(int value) {
-        Conditionals.ifTrueThrow(value < 0, () -> new ArithmeticException("Negative value"));
-        return (int) Math.floor(Math.sqrt(value));
+        ifTrueThrow(isNegative(value), () -> new ArithmeticException("Negative value"));
+        return (int) Math.round(Math.sqrt(value));
     }
 
     /**
@@ -1015,7 +1038,7 @@ public class MathUtils {
      */
     @Contract(pure = true)
     public static double sqrt(double value) {
-        Conditionals.ifTrueThrow(value < 0, () -> new ArithmeticException("Negative value"));
+        ifTrueThrow(isNegative(value), () -> new ArithmeticException("Negative value"));
         return Math.sqrt(value);
     }
 }

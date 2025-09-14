@@ -1,6 +1,7 @@
 package com.github.rickmvi.jtoolbox.lang;
 
 import com.github.rickmvi.jtoolbox.lang.message.ErrorMessage;
+import org.jetbrains.annotations.NotNull;
 
 public class InvalidEndIndexException extends RuntimeException {
 
@@ -10,6 +11,10 @@ public class InvalidEndIndexException extends RuntimeException {
 
     public InvalidEndIndexException(int startIndex, int endIndex) {
         super(ErrorMessage.END_MENOR_THAN_START.format(endIndex, startIndex));
+    }
+
+    public InvalidEndIndexException(int startIndex, int endIndex, @NotNull ErrorMessage errorMessage) {
+        super(errorMessage.format(endIndex, startIndex));
     }
 
     public InvalidEndIndexException(String message) {

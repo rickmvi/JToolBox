@@ -17,12 +17,12 @@
  */
 package com.github.rickmvi.jtoolbox.collections.array;
 
-import com.github.rickmvi.jtoolbox.lang.InvalidStartIndexException;
+import com.github.rickmvi.jtoolbox.lang.exceptions.InvalidStartIndexException;
 import com.github.rickmvi.jtoolbox.utils.ArrayUtils;
-import com.github.rickmvi.jtoolbox.control.Conditionals;
+import com.github.rickmvi.jtoolbox.control.ConditionalHelper;
 import com.github.rickmvi.jtoolbox.control.Iteration;
 
-import com.github.rickmvi.jtoolbox.utils.MathUtils;
+import com.github.rickmvi.jtoolbox.utils.ArithmeticOperations;
 import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
 
@@ -49,7 +49,7 @@ public class Array extends ArrayUtils {
     }
 
     public static <T> T @NotNull [] add(T @NotNull [] array, int index, T element) {
-        Conditionals.ifTrueThrow(index < 0 || index > array.length, () ->
+        ConditionalHelper.ifTrueThrow(index < 0 || index > array.length, () ->
                 new InvalidStartIndexException("Index: " + index + ", Length: " + array.length));
         T[] result = java.util.Arrays.copyOf(array, array.length + 1);
         System.arraycopy(array, index, result, index + 1, array.length - index);
@@ -140,6 +140,13 @@ public class Array extends ArrayUtils {
         return array == null || array.length == 0;
     }
 
+    /* ==================================== LENGTH METHOD ========================================= */
+
+    @Contract(pure = true)
+    public static int length(Object[] array) {
+        return isEmpty(array) ? 0 : array.length;
+    }
+
     /* =================================== COPY RANGE METHOD ======================================== */
 
     /**
@@ -158,7 +165,7 @@ public class Array extends ArrayUtils {
      *         when {@code from < 0}, {@code to > array.length}, or {@code from > to}
      */
     public static <T> T @NotNull [] copyRange(T @NotNull [] array, int from, int to) {
-        Conditionals.ifTrueThrow(from < 0 || to > array.length || from > to,
+        ConditionalHelper.ifTrueThrow(from < 0 || to > array.length || from > to,
                 () -> new IndexOutOfBoundsException("Invalid range: " + from + " to " + to));
         return java.util.Arrays.copyOfRange(array, from, to);
     }
@@ -177,7 +184,7 @@ public class Array extends ArrayUtils {
      * @throws IndexOutOfBoundsException if the index is negative or greater than or equal to the array's length
      */
     public static <T> T @NotNull [] remove(T @NotNull [] array, int index) {
-        Conditionals.ifTrueThrow(index < 0 || index >= array.length, () ->
+        ConditionalHelper.ifTrueThrow(index < 0 || index >= array.length, () ->
                 new InvalidStartIndexException("Index: " + index + ", Length: " + array.length));
         T[] result = java.util.Arrays.copyOf(array, array.length - 1);
         System.arraycopy(array, index + 1, result, index, array.length - index - 1);
@@ -440,7 +447,7 @@ public class Array extends ArrayUtils {
      */
     @Contract(pure = true)
     public static int sum(int @NotNull [] array) {
-        return MathUtils.sumInt(array);
+        return ArithmeticOperations.sumInt(array);
     }
 
     /**
@@ -452,7 +459,7 @@ public class Array extends ArrayUtils {
      */
     @Contract(pure = true)
     public static long sum(long @NotNull [] array) {
-        return MathUtils.sumLong(array);
+        return ArithmeticOperations.sumLong(array);
     }
 
     /**
@@ -464,7 +471,7 @@ public class Array extends ArrayUtils {
      */
     @Contract(pure = true)
     public static float sum(float @NotNull [] array) {
-        return MathUtils.sumFloat(array);
+        return ArithmeticOperations.sumFloat(array);
     }
 
     /**
@@ -476,7 +483,7 @@ public class Array extends ArrayUtils {
      */
     @Contract(pure = true)
     public static double sum(double @NotNull [] array) {
-        return MathUtils.sumDouble(array);
+        return ArithmeticOperations.sumDouble(array);
     }
 
     /* ==================================== REPEAT METHOD ========================================= */
@@ -494,7 +501,7 @@ public class Array extends ArrayUtils {
      */
     @Contract("_, _, _ -> new")
     public static <T> T[] repeat(T value, int times, @NotNull IntFunction<T[]> generator) {
-        Conditionals.ifTrueThrow(times < 0, () -> new IllegalArgumentException("times: " + times));
+        ConditionalHelper.ifTrueThrow(times < 0, () -> new IllegalArgumentException("times: " + times));
         T[] array = generator.apply(times);
         Arrays.fill(array, value);
         return array;
