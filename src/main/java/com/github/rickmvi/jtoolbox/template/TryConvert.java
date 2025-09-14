@@ -20,6 +20,7 @@ package com.github.rickmvi.jtoolbox.template;
 import com.github.rickmvi.jtoolbox.debug.SLogger;
 import org.jetbrains.annotations.Contract;
 
+import java.util.Objects;
 import java.util.Optional;
 import java.util.function.Function;
 
@@ -65,13 +66,13 @@ public class TryConvert {
      */
     @Contract("null, _ -> !null")
     public static <T, R> Optional<R> convert(T value, Function<T, R> converter) {
-        if (value == null) return Optional.empty();
+        if (Objects.isNull(value)) return Optional.empty();
         try {
             return Optional.ofNullable(converter.apply(value));
         } catch (Exception e) {
             SLogger.warn(
                     "Failed to convert value: {} to type: {} ",
-                    e,
+                    e.getMessage() != null ? e.getMessage() : e.getClass().getSimpleName(),
                     value,
                     converter.getClass().getSimpleName()
             );

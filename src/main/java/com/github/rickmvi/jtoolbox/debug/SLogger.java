@@ -58,7 +58,7 @@ public class SLogger {
         String time = FORMATTER.format(LocalDateTime.now());
         String coloredLevel = colorize(level.name(), AnsiColor.getColor(level));
 
-        Out.printFormatted("[{}] [{}] {}%n", time, coloredLevel, message);
+        Out.displayFormatted("[{}] [{}] {}%n", time, coloredLevel, message);
     }
 
     /**
@@ -75,7 +75,7 @@ public class SLogger {
         String coloredLevel = colorize(level.name(), AnsiColor.getColor(level));
         String message = Formatted.format(template, args);
 
-        Out.printFormatted("[{}] [{}] {}%n", time, coloredLevel, message);
+        Out.displayFormatted("[{}] [{}] {}%n", time, coloredLevel, message);
     }
 
     /**

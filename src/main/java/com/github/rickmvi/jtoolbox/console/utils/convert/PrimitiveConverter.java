@@ -17,6 +17,8 @@
  */
 package com.github.rickmvi.jtoolbox.console.utils.convert;
 
+import java.util.Objects;
+
 /**
  * Utility class for converting generic {@link Object} instances to primitive numeric types
  * ({@code int}, {@code long}, {@code float}, {@code double}) and {@code boolean}.
@@ -36,7 +38,7 @@ package com.github.rickmvi.jtoolbox.console.utils.convert;
  * these methods will throw runtime exceptions like {@link NumberFormatException}.
  */
 @lombok.experimental.UtilityClass
-public class ObjectToNumber {
+public class PrimitiveConverter {
 
     /**
      * Converts the given object to an {@code int} value.
@@ -50,8 +52,9 @@ public class ObjectToNumber {
      */
     @SuppressWarnings("ConstantConditions")
     public static int toInt(Object o) {
+        if (Objects.isNull(o)) return 0;
         if (o instanceof Number) return ((Number) o).intValue();
-        return Integer.parseInt(ToString.valueOf(o));
+        return Integer.parseInt(ObjectStringConverter.valueOf(o));
     }
 
     /**
@@ -66,8 +69,9 @@ public class ObjectToNumber {
      */
     @SuppressWarnings("ConstantConditions")
     public static long toLong(Object o) {
+        if (Objects.isNull(o)) return 0L;
         if (o instanceof Number) return ((Number) o).longValue();
-        return Long.parseLong(ToString.valueOf(o));
+        return Long.parseLong(ObjectStringConverter.valueOf(o));
     }
 
     /**
@@ -82,8 +86,9 @@ public class ObjectToNumber {
      */
     @SuppressWarnings("ConstantConditions")
     public static float toFloat(Object o) {
+        if (Objects.isNull(o)) return 0.0f;
         if (o instanceof Number) return ((Number) o).floatValue();
-        return Float.parseFloat(ToString.valueOf(o));
+        return Float.parseFloat(ObjectStringConverter.valueOf(o));
     }
 
     /**
@@ -98,8 +103,9 @@ public class ObjectToNumber {
      */
     @SuppressWarnings("ConstantConditions")
     public static double toDouble(Object o) {
+        if (Objects.isNull(o)) return 0.0d;
         if (o instanceof Number) return ((Number) o).doubleValue();
-        return Double.parseDouble(ToString.valueOf(o));
+        return Double.parseDouble(ObjectStringConverter.valueOf(o));
     }
 
     /**
@@ -113,8 +119,9 @@ public class ObjectToNumber {
      */
     @SuppressWarnings("ConstantConditions")
     public static boolean toBoolean(Object o) {
+        if (Objects.isNull(o)) return false;
         if (o instanceof Boolean) return (Boolean) o;
-        return Boolean.parseBoolean(ToString.valueOf(o));
+        return Boolean.parseBoolean(ObjectStringConverter.valueOf(o));
     }
 }
 

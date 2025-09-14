@@ -33,7 +33,7 @@ import java.util.Objects;
  * maps, and other object types. Default values are provided to replace {@code null} when needed.
  */
 @lombok.experimental.UtilityClass
-public class ToString {
+public class ObjectStringConverter {
 
     /**
      * Converts the given object to its string representation.
@@ -98,10 +98,10 @@ public class ToString {
                     return throwable.toString();
                 }
                 case Collection<?> objects -> {
-                    return toCollectionString(objects);
+                    return joinCollection(objects);
                 }
                 case Map<?, ?> map -> {
-                    return toMapString(map);
+                    return serializeMap(map);
                 }
                 default -> {
                 }
@@ -145,14 +145,14 @@ public class ToString {
     }
 
     @ApiStatus.Internal
-    private static @NotNull String toCollectionString(@NotNull Collection<?> col) {
+    private static @NotNull String joinCollection(@NotNull Collection<?> col) {
         return "[" + col.stream()
-                .map(ToString::toString)
+                .map(ObjectStringConverter::toString)
                 .reduce((a, b) -> a + ", " + b).orElse("") + "]";
     }
 
     @ApiStatus.Internal
-    private static @NotNull String toMapString(@NotNull Map<?, ?> map) {
+    private static @NotNull String serializeMap(@NotNull Map<?, ?> map) {
         return "{" + map.entrySet().stream()
                 .map(e -> toString(e.getKey()) + "=" + toString(e.getValue()))
                 .reduce((a, b) -> a + ", " + b).orElse("") + "}";

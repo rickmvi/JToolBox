@@ -17,10 +17,9 @@
  */
 package com.github.rickmvi.jtoolbox.text;
 
-import com.github.rickmvi.jtoolbox.console.utils.convert.ObjectToNumber;
+import com.github.rickmvi.jtoolbox.console.utils.convert.PrimitiveConverter;
 
-import com.github.rickmvi.jtoolbox.console.utils.convert.ToString;
-import com.github.rickmvi.jtoolbox.control.Conditionals;
+import com.github.rickmvi.jtoolbox.console.utils.convert.ObjectStringConverter;
 import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.Nullable;
 
@@ -56,66 +55,76 @@ public enum FormatToken {
     STRING("s") {
         @Override
         public String format(Object args1) {
-            return ToString.valueOf(args1);
+            return ObjectStringConverter.valueOf(args1);
         }
     },
+
     SPACE("n"){
       @Override
       public String format(Object value) {
-          return ToString.valueOf(value).replace("%n", System.lineSeparator());
+          return ObjectStringConverter.valueOf(value).replace("%n", System.lineSeparator());
       }
     },
+
     INT("i") {
         @Override
         public String format(Object value) {
-            return ToString.valueOf(ObjectToNumber.toInt(value));
+            return ObjectStringConverter.valueOf(PrimitiveConverter.toInt(value));
         }
     },
+
     LONG("l") {
         @Override
         public String format(Object value) {
-            return ToString.valueOf(ObjectToNumber.toLong(value));
+            return ObjectStringConverter.valueOf(PrimitiveConverter.toLong(value));
         }
     },
+
     DECIMAL("#d") {
         private final DecimalFormat format = new DecimalFormat("###0.00");
         @Override
         public String format(Object value) {
-            return Formatted.format( "%dp{0}", ObjectToNumber.toDouble(value));
+            return Formatted.format( "%dp{0}", PrimitiveConverter.toDouble(value));
         }
     },
+
     EXPONENTIAL("de") {
         private final DecimalFormat format = new DecimalFormat("0.##E0");
         @Override
         public String format(Object value) {
-            return format.format(ObjectToNumber.toDouble(value));
+            return format.format(PrimitiveConverter.toDouble(value));
         }
     },
+
     NUMBER("dn") {
         private final DecimalFormat format = new DecimalFormat("#,##0.00");
         @Override
         public String format(Object value) {
-            return format.format(ObjectToNumber.toDouble(value));
+            return format.format(PrimitiveConverter.toDouble(value));
         }
     },
+
     UPPER("u") {
         @Override
         public String format(Object value) {
-            return ToString.valueOf(value).toUpperCase(Locale.ROOT);
+            return ObjectStringConverter.valueOf(value).toUpperCase(Locale.ROOT);
         }
     },
+
     LOWER("lc") {
         @Override
         public String format(Object value) {
-            return ToString.valueOf(value).toLowerCase(Locale.ROOT);
+            return ObjectStringConverter.valueOf(value).toLowerCase(Locale.ROOT);
         }
     },
+
     CHAR("c") {
         @Override
         public String format(Object value) {
             return String.valueOf(value).charAt(0) + "";
         }
     },
+
     BOOLEAN("b") {
         @Override
         public String format(Object value) {

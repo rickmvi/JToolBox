@@ -17,21 +17,23 @@
  */
 package com.github.rickmvi.jtoolbox.text;
 
-import com.github.rickmvi.jtoolbox.console.utils.convert.ToString;
+import com.github.rickmvi.jtoolbox.console.utils.convert.ObjectStringConverter;
 import com.github.rickmvi.jtoolbox.template.TemplateFormatter;
 import com.github.rickmvi.jtoolbox.collections.map.MapUtils;
-import com.github.rickmvi.jtoolbox.control.Conditionals;
-import com.github.rickmvi.jtoolbox.control.Match;
-import com.github.rickmvi.jtoolbox.control.While;
+import com.github.rickmvi.jtoolbox.control.ActionMapper;
 
 import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
 
+import java.util.function.Function;
 import java.util.regex.Pattern;
 import java.util.regex.Matcher;
 import java.util.HashMap;
 import java.util.Map;
+
+import static com.github.rickmvi.jtoolbox.control.ConditionalHelper.ifTrueThrow;
+import static com.github.rickmvi.jtoolbox.control.ActionRepeater.whileTrue;
 
 /**
  * Utility class for advanced string formatting and templating.
@@ -55,11 +57,13 @@ public final class Formatted {
     private final Pattern PLACEHOLDER_PATTERN = Pattern.compile("\\{(.*?)}");
     private final Pattern GENERIC_PATTERN = Pattern.compile("\\{}");
 
-    private final Map<String, Object> TOKENS = Map.of(
-            "%n", System.lineSeparator(),  // Nova linha
-            "%t", "\t",                    // Tabulação
-            "%r", "\r",                    // Carriage return
-            "%sp", " "                         // Espaço
+    private static final Pattern PRINTF_PATTERN =
+            Pattern.compile("%([-#+ 0,(<]*)?(\\d*)?(\\.\\d+)?([a-zA-Z])");
+
+    private static final Map<String, Function<Object, String>> PRINTF_TOKENS = Map.of(
+            "%n", obj  -> System.lineSeparator(),
+            "%t", obj  -> "\t",
+            "%sp", obj -> " "
     );
 
     /**
@@ -91,19 +95,21 @@ public final class Formatted {
      * @return the formatted string with placeholders replaced by argument values
      */
     public static @NotNull String format(@NotNull String template, Object @NotNull ... args) {
-        // Substitui tokens fixos como %n, %t, %sp, etc.
-        template = MapUtils.getReplacement(template, TOKENS);
+        return replaceAllTokens(template, args);
+    }
 
-        // Substitui tokens com índice como %dc{0}, %S{1}, etc.
+    @Deprecated
+    public static @NotNull String replaceAllTokens(@NotNull String template, Object @NotNull ... args) {
+        template = MapUtils.getReplacement(template, PRINTF_TOKENS);
         template = replaceIndexedFormatTokens(template, args);
 
         for (Object arg : args) {
             template = GENERIC_PATTERN
                     .matcher(template)
-                    .replaceFirst(Matcher.quoteReplacement(ToString.valueOf(arg)));
+                    .replaceFirst(Matcher.quoteReplacement(ObjectStringConverter.valueOf(arg)));
         }
 
-        return template;
+        return printfTokens(template, args);
     }
 
     /**
@@ -268,11 +274,11 @@ public final class Formatted {
         Matcher matcher = tokenWithIndex.matcher(template);
         StringBuffer buffer = new StringBuffer();
 
-        While.whileTrue(matcher::find, () -> {
+        whileTrue(matcher::find, () -> {
             String token = matcher.group(1);
             int index = Integer.parseInt(matcher.group(2));
 
-            Conditionals.ifTrueThrow(index >= args.length, () -> {
+            ifTrueThrow(index >= args.length, () -> {
                 throw new IllegalArgumentException(
                         "Invalid argument index {" + index + "} used in placeholder '%" + token + "{" + index + "}'. " +
                         "Total arguments available: " + args.length
@@ -280,7 +286,7 @@ public final class Formatted {
             });
 
             Object value = args[index];
-            String replacement = Match.returning(token,
+            String replacement = ActionMapper.returning(token,
                     Map.of(
                     "dc", () -> NumberFormat.DECIMAL_COMMA.format(value),
                     "dp", () -> NumberFormat.DECIMAL_POINT.format(value),
@@ -290,6 +296,34 @@ public final class Formatted {
                     "S",  () -> String.valueOf(value).toUpperCase(),
                     "lc", () -> String.valueOf(value).toLowerCase()
             ), () -> "");
+
+            matcher.appendReplacement(buffer, Matcher.quoteReplacement(replacement));
+        });
+
+        matcher.appendTail(buffer);
+        return buffer.toString();
+    }
+
+    @ApiStatus.Internal
+    @Contract(pure = true)
+    private static @NotNull String printfTokens(@NotNull String template, Object @NotNull ... args) {
+        Matcher matcher =     PRINTF_PATTERN.matcher(template);
+        StringBuffer buffer = new StringBuffer();
+        int[] argIndex = {0};
+
+        whileTrue(() -> matcher.find() && argIndex[0] < args.length, () -> {
+            String flags =      matcher.group(1) != null ? matcher.group(1) : "";
+            String width =      matcher.group(2) != null ? matcher.group(2) : "";
+            String precision =  matcher.group(3) != null ? matcher.group(3) : "";
+            String conversion = matcher.group(4);
+
+            String formatSpecifier = "%" + flags + width + precision + conversion;
+            String replacement;
+            try {
+                replacement = String.format(formatSpecifier, args[argIndex[0]++]);
+            } catch (Exception e) {
+                replacement = ObjectStringConverter.valueOf(args[argIndex[0] - 1]);
+            }
 
             matcher.appendReplacement(buffer, Matcher.quoteReplacement(replacement));
         });

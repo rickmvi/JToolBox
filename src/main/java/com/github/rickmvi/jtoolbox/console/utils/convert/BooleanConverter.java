@@ -41,7 +41,7 @@ import java.util.function.Supplier;
  * Typical use cases include parsing user input, configuration values, or environment variables where boolean semantics are needed.
  */
 @lombok.experimental.UtilityClass
-public class StringToBoolean {
+public class BooleanConverter {
 
     /**
      * Converts the given {@link String} to a primitive {@code boolean}.

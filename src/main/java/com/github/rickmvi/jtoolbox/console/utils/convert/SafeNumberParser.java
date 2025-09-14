@@ -47,7 +47,7 @@ import java.util.Optional;
  * robust and null-safe numeric parsing in console applications or general utilities.
  */
 @lombok.experimental.UtilityClass
-public class StringToNumber {
+public class SafeNumberParser {
 
     /**
      * Converts a string to an {@code int}, returning 0 if the string is null or invalid.

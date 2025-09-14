@@ -17,13 +17,13 @@
  */
 package com.github.rickmvi.jtoolbox.console.utils.internal;
 
-import com.github.rickmvi.jtoolbox.console.utils.convert.StringToBoolean;
-import com.github.rickmvi.jtoolbox.console.utils.convert.StringToNumber;
+import com.github.rickmvi.jtoolbox.console.utils.convert.BooleanConverter;
+import com.github.rickmvi.jtoolbox.console.utils.convert.SafeNumberParser;
 import com.github.rickmvi.jtoolbox.console.utils.Location;
 
 import static com.github.rickmvi.jtoolbox.debug.SLogger.warn;
 
-import com.github.rickmvi.jtoolbox.console.utils.ScannerUtils;
+import com.github.rickmvi.jtoolbox.console.utils.InputHandler;
 import com.github.rickmvi.jtoolbox.control.ConditionalHelper;
 import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
@@ -32,16 +32,16 @@ import java.util.Optional;
 import java.util.Scanner;
 
 /**
- * Internal implementation of the {@link InputScanner} interface.
+ * Internal implementation of the {@link InputReader} interface.
  * <p>
  * This class handles low-level operations for console input using {@link Scanner},
  * including validation, localization, safe reading, and type conversion.
  * It provides robust handling of user input, encapsulating common input
  * operations and converting raw strings into typed values.
  * <p>
- * This class is used internally by the public-facing {@link ScannerUtils}.
+ * This class is used internally by the public-facing {@link InputHandler}.
  */
-public class ScannerHandler implements InputScanner {
+public class ReaderUtility implements InputReader, AutoCloseable {
 
     /**
      * Internal {@link Scanner} instance wrapped in an {@link Optional}.
@@ -149,14 +149,14 @@ public class ScannerHandler implements InputScanner {
 
     /**
      * Reads the next token and parses it into an {@code int}.
-     * Falls back to safe parsing via {@link StringToNumber#toInt(String)}.
+     * Falls back to safe parsing via {@link SafeNumberParser#toInt(String)}.
      *
      * @return the parsed integer value, or {@code 0} if invalid
      */
     @Override
     @Contract(pure = true)
     public int nextInt() {
-        return StringToNumber.toInt(nextSafe());
+        return SafeNumberParser.toInt(nextSafe());
     }
 
     /**
@@ -167,7 +167,7 @@ public class ScannerHandler implements InputScanner {
     @Override
     @Contract(pure = true)
     public long nextLong() {
-        return StringToNumber.toLong(nextSafe());
+        return SafeNumberParser.toLong(nextSafe());
     }
 
     /**
@@ -178,7 +178,7 @@ public class ScannerHandler implements InputScanner {
     @Override
     @Contract(pure = true)
     public float nextFloat() {
-        return StringToNumber.toFloat(nextSafe());
+        return SafeNumberParser.toFloat(nextSafe());
     }
 
     /**
@@ -189,7 +189,7 @@ public class ScannerHandler implements InputScanner {
     @Override
     @Contract(pure = true)
     public double nextDouble() {
-        return StringToNumber.toDouble(nextSafe());
+        return SafeNumberParser.toDouble(nextSafe());
     }
 
     /**
@@ -201,7 +201,7 @@ public class ScannerHandler implements InputScanner {
     @Override
     @Contract(pure = true)
     public boolean nextBoolean() {
-        return StringToBoolean.toBoolean(nextSafe());
+        return BooleanConverter.toBoolean(nextSafe());
     }
 
     /**
@@ -237,6 +237,6 @@ public class ScannerHandler implements InputScanner {
      */
     private void validate() {
         ConditionalHelper.ifTrueThrow(scanner.isEmpty(), () ->
-                new IllegalStateException("Mistake: Scanner not initialized. Call ScannerUtils.init() first."));
+                new IllegalStateException("Mistake: Scanner not initialized. Call InputHandler.init() first."));
     }
 }

@@ -17,9 +17,14 @@
  */
 package com.github.rickmvi.jtoolbox.control;
 
-import com.github.rickmvi.jtoolbox.lang.InvalidEndIndexException;
-import com.github.rickmvi.jtoolbox.lang.InvalidStartIndexException;
+import com.github.rickmvi.jtoolbox.collections.array.Collection;
+import com.github.rickmvi.jtoolbox.lang.exceptions.InvalidStartIndexException;
+import com.github.rickmvi.jtoolbox.lang.exceptions.InvalidEndIndexException;
+import com.github.rickmvi.jtoolbox.utils.Primitives;
 import com.github.rickmvi.jtoolbox.utils.function.IntBiConsumer;
+import com.github.rickmvi.jtoolbox.lang.exceptions.InvalidStepOutOfBounds;
+import com.github.rickmvi.jtoolbox.lang.message.ErrorMessage;
+
 import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.Nullable;
 import org.jetbrains.annotations.NotNull;
@@ -31,6 +36,7 @@ import java.util.function.IntConsumer;
 import java.util.function.BiConsumer;
 import java.util.function.Supplier;
 import java.util.ArrayList;
+import java.util.Objects;
 import java.util.List;
 
 @lombok.experimental.UtilityClass
@@ -60,9 +66,12 @@ public class Iteration {
      * @throws IllegalArgumentException if a step is less than or equal to 0
      */
     public static void forEachRange(int start, int end, int step, IntConsumer action) {
-        Conditionals.ifTrueThrow(action == null, NullPointerException::new);
-        Conditionals.ifTrueThrow(step <= 0 || start > end, IllegalArgumentException::new);
-        for (int i = start; i < end; i += step) action.accept(i);
+        int init = Primitives.nonNegativeNonZero(start);
+        int finish = Primitives.requiredPositive(end);
+        int stepVal = Primitives.requiredPositive(step);
+        ConditionalHelper.ifTrueThrow(start > end, () -> new InvalidEndIndexException(start, end));
+        IntConsumer act = Objects.requireNonNull(action);
+        for (int i = init; i < finish; i += stepVal) act.accept(i);
     }
 
     /**
@@ -90,9 +99,11 @@ public class Iteration {
      * @throws IllegalArgumentException if a step is less than or equal to 0
      */
     public static void forEachRangeDescending(int start, int end, int step, IntConsumer action) {
-        Conditionals.ifTrueThrow(action == null, NullPointerException::new);
-        Conditionals.ifTrueThrow(step <= 0 || start < end, IllegalArgumentException::new);
-        for (int i = start; i >= end; i -= step) action.accept(i);
+        IntConsumer act = Objects.requireNonNull(action);
+        ConditionalHelper.ifTrueThrow(Primitives.isNonPositive(step), InvalidStepOutOfBounds::new);
+        ConditionalHelper.ifTrueThrow(start > end, () -> new InvalidEndIndexException(start, end));
+        ConditionalHelper.ifTrueThrow(Primitives.isNegative(start), InvalidStartIndexException::new);
+        for (int i = start; i >= end; i -= step) act.accept(i);
     }
 
     /**
@@ -117,10 +128,14 @@ public class Iteration {
      * @param action the action to perform on each index, accepting the current index as input
      */
     public static void forEachHalf(int end, IntConsumer action) {
-        Conditionals.ifTrueThrow(action == null, NullPointerException::new);
-        Conditionals.ifTrueThrow(end < 0, IllegalArgumentException::new);
+        IntConsumer act = Objects.requireNonNull(action);
+        ConditionalHelper.ifTrueThrow(Primitives.isZero(end), () -> new InvalidEndIndexException(0, end));
+        ConditionalHelper.ifTrueThrow(Primitives.isNegative(end), () -> new InvalidEndIndexException(
+                end,
+                0,
+                ErrorMessage.END_MENOR_THAN_ZERO));
         for (int i = 0; i < end / 2; i++) {
-            action.accept(i);
+            act.accept(i);
         }
     }
 
@@ -145,9 +160,10 @@ public class Iteration {
      * @throws NullPointerException if {@code array} or {@code action} is null
      */
     public static <T> void forEachHalf(T @NotNull [] array, IntConsumer action) {
-        Conditionals.ifTrueThrow(action == null, NullPointerException::new);
-        for (int i = 0; i < array.length / 2; i++) {
-            action.accept(i);
+        if (Collection.isEmpty(array)) return;
+        IntConsumer act = Objects.requireNonNull(action);
+        for (int i = 0; i < Collection.length(array) / 2; i++) {
+            act.accept(i);
         }
     }
 
@@ -174,10 +190,11 @@ public class Iteration {
      * @throws IllegalArgumentException if the step is less than or equal to 0
      */
     public static void forEachHalf(int end, int step, IntConsumer action) {
-        Conditionals.ifTrueThrow(action == null, NullPointerException::new);
-        Conditionals.ifTrueThrow(end < 0 || step <= 0, IllegalArgumentException::new);
-        for (int i = 0; i < end / 2; i += step) {
-            action.accept(i);
+        int finish = Primitives.requiredPositive(end);
+        int stepVal = Primitives.requiredPositive(step);
+        IntConsumer act = Objects.requireNonNull(action);
+        for (int i = 0; i < finish / 2; i += stepVal) {
+            act.accept(i);
         }
     }
 
@@ -201,8 +218,10 @@ public class Iteration {
      * @throws NullPointerException if {@code predicate} is null.
      */
     public static boolean anyMatch(int length, @NotNull IntPredicate predicate) {
-        for (int i = 0; i < length; i++) {
-            if (predicate.test(i)) return true;
+        int size = Primitives.nonNegative(length);
+        IntPredicate pred = Objects.requireNonNull(predicate);
+        for (int i = 0; i < size; i++) {
+            if (pred.test(i)) return true;
         }
         return false;
     }
@@ -229,9 +248,10 @@ public class Iteration {
      * @throws NullPointerException if the action is null
      */
     public static void forEachInRange(int start, int end, @NotNull IntConsumer action) {
-        Conditionals.ifTrueThrow(start > end, () -> new InvalidEndIndexException(start, end));
-        Conditionals.ifTrueThrow(start < 0, InvalidStartIndexException::new);
-        for (int i = start; i < end; i++) action.accept(i);
+        IntConsumer act = Objects.requireNonNull(action);
+        ConditionalHelper.ifTrueThrow(start > end, () -> new InvalidEndIndexException(start, end));
+        ConditionalHelper.ifTrueThrow(Primitives.isNegative(start), InvalidStartIndexException::new);
+        for (int i = start; i < end; i++) act.accept(i);
     }
 
     /**
@@ -255,19 +275,33 @@ public class Iteration {
      * @param repetitions the number of times to repeat the action; must be non-negative
      * @param action      the action to perform, receiving the current index (from 0 to repetitions - 1)
      * @throws NullPointerException     if {@code action} is null
-     * @throws IllegalArgumentException if {@code repetitions} is negative
+     * @throws InvalidStepOutOfBounds   if {@code repetitions} is negative
      */
     public static void forEachIndex(int repetitions, @NotNull IntConsumer action) {
-        Conditionals.ifTrueThrow(repetitions < 0, IllegalArgumentException::new);
+        ConditionalHelper.ifTrueThrow(Primitives.isNegative(repetitions), InvalidStepOutOfBounds::new);
         for (int i = 0; i < repetitions; i++) action.accept(i);
     }
 
+    /**
+     * Performs a nested iteration over a range of integers and applies the specified action
+     * to each pair of indices in the range [start, end).
+     *
+     * @param start  the starting index (inclusive) of the range.
+     * @param end    the ending index (exclusive) of the range.
+     * @param action the action to be performed on each pair of indices, represented as
+     *               an {@code IntBiConsumer}.
+     *
+     * @throws NullPointerException        if the specified {@code action} is {@code null}.
+     * @throws InvalidEndIndexException    if {@code start} or {@code end} is negative, or
+     *                                     if {@code start} is greater than {@code end}.
+     */
     public static void bubble(int start, int end, IntBiConsumer action) {
-        Conditionals.ifTrueThrow(action == null, NullPointerException::new);
-        Conditionals.ifTrueThrow(start < 0 || end < 0 || start > end, () -> new InvalidEndIndexException(start, end));
+        IntBiConsumer act = Objects.requireNonNull(action);
+        ConditionalHelper.ifTrueThrow(start < 0 || end < 0 || start > end,
+                () -> new InvalidEndIndexException(start, end));
         for (int i = start; i < end; i++) {
             for (int j = i + 1; j < end; j++) {
-                action.accept(i, j);
+                act.accept(i, j);
             }
         }
     }
@@ -294,9 +328,10 @@ public class Iteration {
      * @throws NullPointerException if {@code function} is null
      */
     public static <T> @Nullable T findFirstByFunction(int length, @NotNull IntFunction<T> function) {
-        for (int i = 0; i < length; i++) {
+        int lengthy = Primitives.requiredPositive(length);
+        for (int i = 0; i < lengthy; i++) {
             T result = function.apply(i);
-            if (result != null) return result;
+            if (Objects.nonNull(result)) return result;
         }
         return null;
     }
@@ -322,7 +357,8 @@ public class Iteration {
      * @throws NullPointerException if {@code predicate} is null
      */
     public static int findFirstIndexMatching(int length, @NotNull IntPredicate predicate) {
-        for (int i = 0; i < length; i++) {
+        int lengthy = Primitives.requiredPositive(length);
+        for (int i = 0; i < lengthy; i++) {
             if (predicate.test(i)) return i;
         }
         return -1;
@@ -343,12 +379,11 @@ public class Iteration {
      * @return the last index for which the predicate returns true, or -1 if none match
      */
     public static int findLastIndexMatching(int repetitions, @NotNull IntPredicate predicate) {
-        Conditionals.ifTrueThrow(repetitions < 0, IllegalArgumentException::new);
-        int last = -1;
-        for (int i = 0; i < repetitions; i++) {
-            if (predicate.test(i)) last = i;
+        int repetition = Primitives.requiredPositive(repetitions);
+        for (int i = repetition - 1; i >= 0; i--) {
+            if (predicate.test(i)) return i;
         }
-        return last;
+        return -1;
     }
 
     /**
@@ -367,11 +402,11 @@ public class Iteration {
      * @return a list of non-null results collected from the mapper function
      */
     public static <T> @NotNull List<T> collectAllMatching(int repetitions, @NotNull IntFunction<@Nullable T> mapper) {
-        Conditionals.ifTrueThrow(repetitions < 0, IllegalArgumentException::new);
+        int repetition = Primitives.requiredPositive(repetitions);
         List<T> results = new ArrayList<>();
-        for (int i = 0; i < repetitions; i++) {
+        for (int i = 0; i < repetition; i++) {
             T value = mapper.apply(i);
-            if (value != null) results.add(value);
+            if (Objects.nonNull(value)) results.add(value);
         }
         return results;
     }
@@ -392,8 +427,8 @@ public class Iteration {
      * @return the first non-null value found, or null if none match
      */
     public static <T> @Nullable T findFirstMatchingValue(int repetitions, @NotNull IntFunction<@Nullable T> mapper) {
-        Conditionals.ifTrueThrow(repetitions < 0, IllegalArgumentException::new);
-        for (int i = 0; i < repetitions; i++) {
+        int repetition = Primitives.requiredPositive(repetitions);
+        for (int i = 0; i < repetition; i++) {
             T result = mapper.apply(i);
             if (result != null) return result;
         }
@@ -420,9 +455,9 @@ public class Iteration {
      * @param action the action to perform, receiving the current index
      */
     public static void forEachDescending(int times, IntConsumer action) {
-        Conditionals.ifTrueThrow(action == null, NullPointerException::new);
-        Conditionals.ifTrueThrow(times < 0, IllegalArgumentException::new);
-        for (int i = times - 1; i >= 0; i--) action.accept(i);
+        IntConsumer act = Objects.requireNonNull(action);
+        ConditionalHelper.ifTrueThrow(times < 0, IllegalArgumentException::new);
+        for (int i = times - 1; i >= 0; i--) act.accept(i);
     }
 
     /**
@@ -446,8 +481,9 @@ public class Iteration {
      */
     @Contract(pure = true)
     public static void forEachReversedWithIndex(int times, BiConsumer<Integer, Integer> action) {
+        int repetition = Primitives.requiredPositive(times);
         int index = 0;
-        for (int i = times - 1; i >= 0; i--) {
+        for (int i = repetition - 1; Primitives.isGreaterOrEqual(i , 0); i--) {
             action.accept(index++, i);
         }
     }
@@ -476,9 +512,9 @@ public class Iteration {
      * @throws NullPointerException if {@code action} is null
      */
     public static void forEachDescending(int start, int end, IntConsumer action) {
-        Conditionals.ifTrueThrow(action == null, NullPointerException::new);
-        Conditionals.ifTrueThrow(start < end, IllegalArgumentException::new);
-        for (int i = start; i >= end; i--) action.accept(i);
+        IntConsumer act = Objects.requireNonNull(action);
+        ConditionalHelper.ifTrueThrow(start < end, IllegalArgumentException::new);
+        for (int i = start; i >= end; i--) act.accept(i);
     }
 
     /**
@@ -505,9 +541,10 @@ public class Iteration {
      * @param cancel  the supplier that determines if repetition should stop
      */
     public static void forEachWhile(int times, IntConsumer action, Supplier<Boolean> cancel) {
-        Conditionals.ifTrueThrow(action == null || cancel == null, NullPointerException::new);
-        Conditionals.ifTrueThrow(times < 0, IllegalArgumentException::new);
-        for (int i = 0; i < times && !cancel.get(); i++) action.accept(i);
+        IntConsumer act = Objects.requireNonNull(action);
+        Supplier<Boolean> can = Objects.requireNonNull(cancel);
+        ConditionalHelper.ifTrueThrow(times < 0, IllegalArgumentException::new);
+        for (int i = 0; i < times && !can.get(); i++) act.accept(i);
     }
 
     /**
@@ -526,7 +563,8 @@ public class Iteration {
      */
     @Contract("_, _ -> new")
     public static @NotNull CompletableFuture<Void> forEachAsync(int times, IntConsumer action) {
-        return CompletableFuture.runAsync(() -> forEachIndex(times, action));
+        IntConsumer act = Objects.requireNonNull(action);
+        return CompletableFuture.runAsync(() -> forEachIndex(times, act));
     }
 
     /**

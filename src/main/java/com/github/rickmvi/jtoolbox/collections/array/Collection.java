@@ -18,7 +18,7 @@
 package com.github.rickmvi.jtoolbox.collections.array;
 
 import com.github.rickmvi.jtoolbox.lang.exceptions.InvalidStartIndexException;
-import com.github.rickmvi.jtoolbox.utils.ArrayUtils;
+import com.github.rickmvi.jtoolbox.utils.CollectionUtils;
 import com.github.rickmvi.jtoolbox.control.ConditionalHelper;
 import com.github.rickmvi.jtoolbox.control.Iteration;
 
@@ -38,7 +38,7 @@ import java.util.List;
 import java.util.Set;
 
 @lombok.experimental.UtilityClass
-public class Array extends ArrayUtils {
+public class Collection extends CollectionUtils {
 
     /* ==================================== ADD METHOD ========================================= */
 

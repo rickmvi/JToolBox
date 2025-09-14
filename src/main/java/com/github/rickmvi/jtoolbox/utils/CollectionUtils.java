@@ -29,7 +29,37 @@ import java.util.List;
 
 import static com.github.rickmvi.jtoolbox.control.ConditionalHelper.ifTrue;
 
-public class ArrayUtils {
+public class CollectionUtils {
+
+    @Contract(pure = true)
+    public static int length(byte @NotNull [] array) {
+        return isEmpty(array) ? 0 : array.length;
+    }
+
+    @Contract(pure = true)
+    public static int length(short @NotNull [] array) {
+        return isEmpty(array) ? 0 : array.length;
+    }
+
+    @Contract(pure = true)
+    public static int length(int @NotNull [] array) {
+        return isEmpty(array) ? 0 : array.length;
+    }
+
+    @Contract(pure = true)
+    public static int length(long @NotNull [] array) {
+        return isEmpty(array) ? 0 : array.length;
+    }
+
+    @Contract(pure = true)
+    public static int length(float @NotNull [] array) {
+        return isEmpty(array) ? 0 : array.length;
+    }
+
+    @Contract(pure = true)
+    public static int length(double @NotNull [] array) {
+        return isEmpty(array) ? 0 : array.length;
+    }
 
     /**
      * Combines two byte arrays into a single array, preserving the order of elements

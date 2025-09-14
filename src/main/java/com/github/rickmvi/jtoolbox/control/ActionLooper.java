@@ -24,7 +24,7 @@ import java.util.function.Predicate;
 import java.util.function.Supplier;
 
 @lombok.experimental.UtilityClass
-public class DoWhile {
+public class ActionLooper {
     /**
      * Executes the action once and continues as long as the condition returns true (do-while loop).
      *

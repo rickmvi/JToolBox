@@ -118,11 +118,11 @@ public final class TypeConverter {
     @Contract("null, _, _ -> !null")
     public static Object convert(@Nullable String value, @NotNull PrimitiveType type, @Nullable Object fallback) {
         return TryConvert.convert(value, s -> switch (type) {
-            case INT ->     StringToNumber.toInt      (s, (Integer) fallback);
-            case LONG ->    StringToNumber.toLong     (s, (Long)    fallback);
-            case DOUBLE ->  StringToNumber.toDouble   (s, (Double)  fallback);
-            case FLOAT ->   StringToNumber.toFloat    (s, (Float)   fallback);
-            case BOOLEAN -> StringToBoolean.toBoolean (s, (Boolean) fallback);
+            case INT ->     SafeNumberParser.toInt      (s, (Integer) fallback);
+            case LONG ->    SafeNumberParser.toLong     (s, (Long)    fallback);
+            case DOUBLE ->  SafeNumberParser.toDouble   (s, (Double)  fallback);
+            case FLOAT ->   SafeNumberParser.toFloat    (s, (Float)   fallback);
+            case BOOLEAN -> BooleanConverter.toBoolean (s, (Boolean) fallback);
             case STRING ->  s != null ? s : fallback;
         });
     }

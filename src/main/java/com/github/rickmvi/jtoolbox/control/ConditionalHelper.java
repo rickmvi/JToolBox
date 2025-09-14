@@ -24,7 +24,7 @@ import java.util.function.Supplier;
 import java.util.Optional;
 
 @lombok.experimental.UtilityClass
-public class Conditionals {
+public class ConditionalHelper {
     /**
      * Executes the given action if the condition is true.
      *

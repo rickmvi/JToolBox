@@ -17,7 +17,7 @@
  */
 package com.github.rickmvi.jtoolbox.utils;
 
-import com.github.rickmvi.jtoolbox.collections.array.Array;
+import com.github.rickmvi.jtoolbox.collections.array.Collection;
 
 import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.Contract;
@@ -34,7 +34,7 @@ import static com.github.rickmvi.jtoolbox.utils.Primitives.*;
  * including a sum, subtraction, multiplication, division, average, and modulo.
  */
 @lombok.experimental.UtilityClass
-public class MathUtils {
+public class ArithmeticOperations {
 
     /**
      * Computes the sum of an array of byte values.
@@ -45,7 +45,7 @@ public class MathUtils {
      * @throws ArithmeticException if the sum overflows the range of a byte.
      */
     public static byte sumByte(byte @NotNull ... numbers) {
-        if (Array.isEmpty(numbers)) return 0;
+        if (Collection.isEmpty(numbers)) return 0;
 
         byte result = 0;
         for (byte number : numbers) {
@@ -64,7 +64,7 @@ public class MathUtils {
      * @throws ArithmeticException if the sum overflows the range of the {@code short} type.
      */
     public static short sumShort(short @NotNull ... numbers) {
-        if (Array.isEmpty(numbers)) return 0;
+        if (Collection.isEmpty(numbers)) return 0;
 
         short result = 0;
         for (short number : numbers) {
@@ -82,7 +82,7 @@ public class MathUtils {
      * @throws ArithmeticException if an integer overflow occurs while computing the sum
      */
     public static int sumInt(int @NotNull ... numbers) {
-        if (Array.isEmpty(numbers)) return 0;
+        if (Collection.isEmpty(numbers)) return 0;
 
         int result = 0;
         for (int number : numbers) {
@@ -101,7 +101,7 @@ public class MathUtils {
      * @throws ArithmeticException if a numeric overflow occurs while computing the sum.
      */
     public static long sumLong(long @NotNull ... numbers) {
-        if (Array.isEmpty(numbers)) return 0L;
+        if (Collection.isEmpty(numbers)) return 0L;
 
         long result = 0L;
         for (long number : numbers) {
@@ -121,7 +121,7 @@ public class MathUtils {
      *         a non-numeric (NaN) value is encountered during the computation.
      */
     public static float sumFloat(float @NotNull ... numbers) {
-        if (Array.isEmpty(numbers)) return 0.0f;
+        if (Collection.isEmpty(numbers)) return 0.0f;
 
         float result = 0.0f;
         for (float number : numbers) {
@@ -148,7 +148,7 @@ public class MathUtils {
      *                             a non-numeric (NaN) value is encountered during the computation.
      */
     public static double sumDouble(double @NotNull ... numbers) {
-        if (Array.isEmpty(numbers)) return 0.0;
+        if (Collection.isEmpty(numbers)) return 0.0;
 
         double result = 0.0;
         for (double number : numbers) {
@@ -176,10 +176,10 @@ public class MathUtils {
      * @throws ArithmeticException If an arithmetic overflow occurs during subtraction.
      */
     public static byte subtractByte(byte @NotNull ... numbers) {
-        if (Array.isEmpty(numbers)) return 0;
-
+        if (Collection.isEmpty(numbers)) return 0;
+        int length = Collection.length(numbers);
         byte result = numbers[0];
-        for (int i = 1; i < numbers.length; i++) {
+        for (int i = 1; i < length; i++) {
             result = (byte) Math.subtractExact(result, numbers[i]);
         }
         return result;
@@ -198,10 +198,10 @@ public class MathUtils {
      * @throws ArithmeticException If the subtraction results in underflow or overflow for the short type.
      */
     public static short subtractShort(short @NotNull ... numbers) {
-        if (Array.isEmpty(numbers)) return 0;
-
+        if (Collection.isEmpty(numbers)) return 0;
+        int length = Collection.length(numbers);
         short result = numbers[0];
-        for (int i = 1; i < numbers.length; i++) {
+        for (int i = 1; i < length; i++) {
             result = (short) Math.subtractExact(result, numbers[i]);
         }
         return result;
@@ -218,10 +218,10 @@ public class MathUtils {
      * @throws ArithmeticException if an integer overflow occurs during subtraction.
      */
     public static int subtractInt(int @NotNull ... numbers) {
-        if (Array.isEmpty(numbers)) return 0;
-
+        if (Collection.isEmpty(numbers)) return 0;
+        int length = Collection.length(numbers);
         int result = numbers[0];
-        for (int i = 1; i < numbers.length; i++) {
+        for (int i = 1; i < length; i++) {
             result = Math.subtractExact(result, numbers[i]);
         }
         return result;
@@ -238,10 +238,10 @@ public class MathUtils {
      * @throws ArithmeticException if a numeric overflow occurs during subtraction.
      */
     public static long subtractLong(long @NotNull ... numbers) {
-        if (Array.isEmpty(numbers)) return 0L;
-
+        if (Collection.isEmpty(numbers)) return 0L;
+        int length = Collection.length(numbers);
         long result = numbers[0];
-        for (int i = 1; i < numbers.length; i++) {
+        for (int i = 1; i < length; i++) {
             result = Math.subtractExact(result, numbers[i]);
         }
         return result;
@@ -259,10 +259,10 @@ public class MathUtils {
      *                             a non-numeric (NaN) value is encountered during the computation.
      */
     public static float subtractFloat(float @NotNull ... numbers) {
-        if (Array.isEmpty(numbers)) return 0.0f;
-
+        if (Collection.isEmpty(numbers)) return 0.0f;
+        int length = Collection.length(numbers);
         float result = numbers[0];
-        for (int i = 1; i < numbers.length; i++) {
+        for (int i = 1; i < length; i++) {
             result -= numbers[i];
 
             ifTrueThrow(Float.isInfinite(result), () ->
@@ -285,10 +285,10 @@ public class MathUtils {
      *                             a non-numeric (NaN) value is encountered during the computation.
      */
     public static double subtractDouble(double @NotNull ... numbers) {
-        if (Array.isEmpty(numbers)) return 0.0;
-
+        if (Collection.isEmpty(numbers)) return 0.0;
+        int length = Collection.length(numbers);
         double result = numbers[0];
-        for (int i = 1; i < numbers.length; i++) {
+        for (int i = 1; i < length; i++) {
             result -= numbers[i];
 
             ifTrueThrow(Double.isInfinite(result), () ->
@@ -308,7 +308,7 @@ public class MathUtils {
      * @throws ArithmeticException if an overflow occurs during multiplication
      */
     public static byte mutiplyByte(byte @NotNull ... numbers) {
-        if (Array.isEmpty(numbers)) return 1;
+        if (Collection.isEmpty(numbers)) return 1;
 
         byte result = 1;
         for (byte number : numbers) {
@@ -326,7 +326,7 @@ public class MathUtils {
      * @throws ArithmeticException if an overflow occurs during multiplication.
      */
     public static short mutiplyShort(short @NotNull ... numbers) {
-        if (Array.isEmpty(numbers)) return 1;
+        if (Collection.isEmpty(numbers)) return 1;
 
         short result = 1;
         for (short number : numbers) {
@@ -346,7 +346,7 @@ public class MathUtils {
      * @throws ArithmeticException if an integer overflow occurs during multiplication.
      */
     public static int multiplyInt(int @NotNull ... numbers) {
-        if (Array.isEmpty(numbers)) return 1;
+        if (Collection.isEmpty(numbers)) return 1;
 
         int result = 1;
         for (int number : numbers) {
@@ -366,7 +366,7 @@ public class MathUtils {
      * @throws ArithmeticException if a numeric overflow occurs during multiplication.
      */
     public static long multiplyLong(long @NotNull ... numbers) {
-        if (Array.isEmpty(numbers)) return 1L;
+        if (Collection.isEmpty(numbers)) return 1L;
 
         long result = 1L;
         for (long number : numbers) {
@@ -387,7 +387,7 @@ public class MathUtils {
      *                             if a non-numeric (NaN) value is encountered during the computation.
      */
     public static float multiplyFloat(float @NotNull ... numbers) {
-        if (Array.isEmpty(numbers)) return 1.0f;
+        if (Collection.isEmpty(numbers)) return 1.0f;
 
         float result = 1.0f;
         for (float number : numbers) {
@@ -419,7 +419,7 @@ public class MathUtils {
      *                              or NaN due to overflow or invalid operations.
      */
     public static double multiplyDouble(double @NotNull ... numbers) {
-        if (Array.isEmpty(numbers)) return 1.0;
+        if (Collection.isEmpty(numbers)) return 1.0;
 
         double result = 1.0;
         for (double number : numbers) {
@@ -450,7 +450,7 @@ public class MathUtils {
      * @throws ArithmeticException if the divisor is zero
      */
     public static byte divideByte(byte dividend, byte divisor) {
-        ifTrueThrow(divisor == 0, () -> new ArithmeticException("Division by zero"));
+        ifTrueThrow(Primitives.isZero(divisor), () -> new ArithmeticException("Division by zero"));
         return (byte) Math.divideExact(dividend, divisor);
     }
 
@@ -463,7 +463,7 @@ public class MathUtils {
      * @throws ArithmeticException if the divisor is zero
      */
     public static short divideShort(short dividend, short divisor) {
-        ifTrueThrow(divisor == 0, () -> new ArithmeticException("Division by zero"));
+        ifTrueThrow(Primitives.isZero(divisor), () -> new ArithmeticException("Division by zero"));
         return (short) Math.divideExact(dividend, divisor);
     }
 
@@ -477,7 +477,7 @@ public class MathUtils {
      * @throws ArithmeticException If the divisor is zero.
      */
     public static int divideInt(int dividend, int divisor) {
-        ifTrueThrow(divisor == 0, () -> new ArithmeticException("Division by zero"));
+        ifTrueThrow(Primitives.isZero(divisor), () -> new ArithmeticException("Division by zero"));
         return Math.divideExact(dividend, divisor);
     }
 
@@ -490,7 +490,7 @@ public class MathUtils {
      * @throws ArithmeticException if the divisor is zero
      */
     public static long divideLong(long dividend, long divisor) {
-        ifTrueThrow(divisor == 0L, () -> new ArithmeticException("Division by zero"));
+        ifTrueThrow(Primitives.isZero(divisor), () -> new ArithmeticException("Division by zero"));
         return Math.divideExact(dividend, divisor);
     }
 
@@ -499,7 +499,7 @@ public class MathUtils {
     }
 
     public static double divideDouble(double dividend, double divisor) {
-        ifTrueThrow(divisor == 0, () -> new ArithmeticException("Division by zero"));
+        ifTrueThrow(Primitives.isZero(divisor), () -> new ArithmeticException("Division by zero"));
         return dividend / divisor;
     }
 
@@ -515,7 +515,7 @@ public class MathUtils {
      *                             nearest divisible number.
      */
     public static int divideNearestMultipleInt(int dividend, int divisor) {
-        ifTrueThrow(divisor == 0, () -> new ArithmeticException("Division by zero"));
+        ifTrueThrow(Primitives.isZero(divisor), () -> new ArithmeticException("Division by zero"));
 
         final int[] result = { dividend };
         whileTrue(
@@ -540,7 +540,7 @@ public class MathUtils {
      */
     public static double averageDouble(long @NotNull ... numbers) {
         ifTrueThrow(
-                Array.isEmpty(numbers),
+                Collection.isEmpty(numbers),
                 () -> new ArithmeticException("Cannot average an empty array")
         );
         return (double) sumLong(numbers) / numbers.length;
@@ -555,7 +555,7 @@ public class MathUtils {
      */
     public static float averageFloat(float @NotNull ... numbers) {
         ifTrueThrow(
-                Array.isEmpty(numbers),
+                Collection.isEmpty(numbers),
                 () -> new ArithmeticException("Cannot average an empty array")
         );
         return sumFloat(numbers) / numbers.length;
@@ -570,7 +570,7 @@ public class MathUtils {
      */
     public static double averageInt(int @NotNull ... numbers) {
         ifTrueThrow(
-                Array.isEmpty(numbers),
+                Collection.isEmpty(numbers),
                 () -> new ArithmeticException("Cannot average an empty array")
         );
         return (double) sumInt(numbers) / numbers.length;
@@ -586,7 +586,7 @@ public class MathUtils {
      */
     public static double averageDouble(double @NotNull ... numbers) {
         ifTrueThrow(
-                Array.isEmpty(numbers),
+                Collection.isEmpty(numbers),
                 () -> new ArithmeticException("Cannot average an empty array")
         );
         return sumDouble(numbers) / numbers.length;
@@ -595,7 +595,7 @@ public class MathUtils {
     /**
      * Calculates the sum of all even numbers from 0 to the given byte value inclusively.
      *
-     * @param number the upper limit up to which even numbers are summed; must be within the valid byte range.
+     * @param number the upper limit up to which even numbers are summed must be within the valid byte range.
      * @return the sum of all even numbers from 0 to the provided limit as a byte.
      * @throws ArithmeticException if the sum exceeds the range of the byte type.
      */

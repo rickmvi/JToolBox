@@ -17,7 +17,7 @@
  */
 package com.github.rickmvi.jtoolbox.debug;
 
-import com.github.rickmvi.jtoolbox.control.Conditionals;
+import com.github.rickmvi.jtoolbox.control.ConditionalHelper;
 import com.github.rickmvi.jtoolbox.debug.log.LogLevel;
 
 import org.jetbrains.annotations.Contract;
@@ -58,7 +58,7 @@ public enum AnsiColor {
      */
     @Contract(pure = true)
     public static @NotNull AnsiColor valueOf(int ordinal) {
-        Conditionals.ifTrueThrow(
+        ConditionalHelper.ifTrueThrow(
                 ordinal < 0 || ordinal >= VALUES.length,
                 () -> new IndexOutOfBoundsException("Invalid ordinal: " + ordinal)
         );

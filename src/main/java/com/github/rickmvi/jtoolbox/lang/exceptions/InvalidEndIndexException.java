@@ -1,4 +1,4 @@
-package com.github.rickmvi.jtoolbox.lang;
+package com.github.rickmvi.jtoolbox.lang.exceptions;
 
 import com.github.rickmvi.jtoolbox.lang.message.ErrorMessage;
 import org.jetbrains.annotations.NotNull;

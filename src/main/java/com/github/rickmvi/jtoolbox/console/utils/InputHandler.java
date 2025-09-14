@@ -17,7 +17,7 @@
  */
 package com.github.rickmvi.jtoolbox.console.utils;
 
-import com.github.rickmvi.jtoolbox.console.utils.internal.ScannerHandler;
+import com.github.rickmvi.jtoolbox.console.utils.internal.ReaderUtility;
 
 import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
@@ -29,7 +29,7 @@ import java.util.Scanner;
  * <p>
  * This class provides static methods for initializing, reading, validating, and closing
  * input streams.
- * It wraps a core {@link ScannerHandler} instance to centralize
+ * It wraps a core {@link ReaderUtility} instance to centralize
  * input logic, enabling features like locale management, pattern matching, and safe reads.
  * <p>
  * The methods are null-safe, optionally locale-aware, and ready for user input in
@@ -39,20 +39,20 @@ import java.util.Scanner;
  * @since 1.0
  */
 @lombok.experimental.UtilityClass
-public class ScannerUtils {
+public class InputHandler {
 
     /**
-     * A private, final, and static instance of {@link ScannerHandler} designed
+     * A private, final, and static instance of {@link ReaderUtility} designed
      * to manage the internal handling of {@link Scanner} operations.
      * This singleton ensures streamlined input management with options like custom initialization,
      * locale settings, and various token or line reading methods.
      * <p>
      * This instance cannot be accessed directly due to its private access level
-     * but is used internally by the {@link ScannerUtils} class to provide
+     * but is used internally by the {@link InputHandler} class to provide
      * input scanning functionalities.
      */
     @lombok.Getter(value = lombok.AccessLevel.PRIVATE)
-    private final static ScannerHandler core = new ScannerHandler();
+    private final static ReaderUtility core = new ReaderUtility();
 
     /**
      * Initializes the internal {@link Scanner} using {@code System.in}.
@@ -198,13 +198,5 @@ public class ScannerUtils {
     @Contract(pure = true)
     public static String nextSafe() {
         return core.nextSafe();
-    }
-
-    /**
-     * Closes the underlying {@link Scanner} and releases any associated resources.
-     * Once closed, the scanner cannot be reused unless re-initialized.
-     */
-    public static void close() {
-        core.close();
     }
 }

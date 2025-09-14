@@ -17,7 +17,7 @@
  */
 package com.github.rickmvi.jtoolbox.collections.map;
 
-import com.github.rickmvi.jtoolbox.console.utils.convert.ToString;
+import com.github.rickmvi.jtoolbox.console.utils.convert.ObjectStringConverter;
 import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
 
@@ -129,7 +129,7 @@ public class MapUtils {
         for (Map.Entry<String, Object> entry : replacements.entrySet()) {
             String key = entry.getKey();
             Object value = entry.getValue();
-            target = target.replace(key, ToString.valueOf(value));
+            target = target.replace(key, ObjectStringConverter.valueOf(value));
         }
 
         return target;
@@ -149,9 +149,9 @@ public class MapUtils {
      * @throws NullPointerException if the target string or the replacements map is null
      */
     @Contract("_, null -> fail")
-    public static @NotNull String getReplacement(@NotNull String target, @NotNull Map<String, Object> replacements) {
-        for (Map.Entry<String, Object> entry : replacements.entrySet()) {
-            target = target.replace(entry.getKey(), String.valueOf(entry.getValue()));
+    public static @NotNull String getReplacement(@NotNull String target, @NotNull Map<String, Function<Object, String>> replacements) {
+        for (Map.Entry<String, Function<Object, String>> entry : replacements.entrySet()) {
+            target = target.replace(entry.getKey(), ObjectStringConverter.valueOf(entry.getValue()));
         }
         return target;
     }
