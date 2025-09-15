@@ -2,6 +2,7 @@ package com.github.rickmvi.jtoolbox.console;
 
 import com.github.rickmvi.jtoolbox.console.utils.convert.ObjectStringConverter;
 import com.github.rickmvi.jtoolbox.control.ConditionalHelper;
+import com.github.rickmvi.jtoolbox.debug.SLogger;
 import com.github.rickmvi.jtoolbox.text.Formatted;
 import com.github.rickmvi.jtoolbox.utils.NullSafety;
 import org.jetbrains.annotations.NotNull;
@@ -88,11 +89,9 @@ public class Out {
      */
     @Deprecated
     public static void printf(@Nullable Object format, @Nullable Object... args) {
-        ifTrue(
-                NullSafety.nonNull(format)
+        ifTrue(NullSafety.nonNull(format)
                         && Objects.nonNull(args),
-                () -> System.out.printf(format.toString(), args)
-        );
+                () -> System.out.printf(format.toString(), args));
     }
 
     /**
@@ -103,12 +102,10 @@ public class Out {
      * @param format the format object whose string representation is used as the format; may be {@code null}
      * @param args   the arguments referenced by the format specifiers; may be {@code null}
      */
-    public static void writeFormatted(@Nullable Object format, @Nullable Object... args) {
-        ifTrue(
-                NullSafety.nonNull(format)
+    public static void formatted(@Nullable Object format, @Nullable Object... args) {
+        ifTrue(NullSafety.nonNull(format)
                         && Objects.nonNull(args),
-                () -> System.out.printf(ObjectStringConverter.toString(format), args)
-        );
+                () -> display(Formatted.format(ObjectStringConverter.toString(format), args)));
     }
 
     /**
@@ -133,14 +130,14 @@ public class Out {
     }
 
     /**
-     * Prints a debug message prefixed with "[DEBUG]" followed by the string representation of the given object.
-     * <p>
-     * Does nothing if the object is {@code null}.
+     * Logs the debug information of the given object if it is not {@code null}.
+     * Converts the object to its string representation using {@link ObjectStringConverter#toString(Object)}
+     * and logs it using {@link SLogger#debug(String)}.
      *
-     * @param o the debug message object, may be {@code null}
+     * @param o the object to be debugged; may be {@code null}
      */
     public static void debug(@Nullable Object o) {
-        ifTrue(Objects.nonNull(o), () -> System.out.println("[DEBUG] " + ObjectStringConverter.toString(o)));
+        ifTrue(Objects.nonNull(o), () -> SLogger.debug(ObjectStringConverter.toString(o)));
     }
 
     /**
@@ -161,19 +158,6 @@ public class Out {
      */
     public static void withOut(@NotNull Consumer<PrintStream> action) {
         action.accept(System.out);
-    }
-
-    /**
-     * Prints a formatted string by applying a custom formatting template with placeholders,
-     * delegating formatting to {@link Formatted#format(String, Object...)}.
-     * <p>
-     * Does nothing if the template is empty.
-     *
-     * @param template the formatting template string must not be empty
-     * @param args     the arguments to replace placeholders in the template
-     */
-    public static void displayFormatted(@NotNull String template, Object... args) {
-        ifTrue(!template.isEmpty(), () -> display(Formatted.format(template, args)));
     }
 
     /**

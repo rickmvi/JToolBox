@@ -18,18 +18,12 @@
 package com.github.rickmvi.jtoolbox.collections.list;
 
 import com.github.rickmvi.jtoolbox.control.Iteration;
+import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
 
+import java.util.*;
 import java.util.function.Predicate;
 import java.util.function.Function;
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.ArrayList;
-import java.util.Optional;
-import java.util.HashMap;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Map;
 
 /**
  * Utility class that provides a collection of helper methods for working with {@link List}s and arrays.
@@ -45,6 +39,19 @@ import java.util.Map;
  */
 @lombok.experimental.UtilityClass
 public class ListUtils {
+
+    /**
+     * Checks if the given list is empty or null.
+     * A list is considered empty if it is null or contains no elements.
+     *
+     * @param list the list to check for emptiness; may be null
+     * @return {@code true} if the list is null or empty, {@code false} otherwise
+     * @throws NullPointerException if any unexpected null behavior occurs in processing
+     */
+    @Contract("null -> true")
+    public static boolean isEmpty(List<?> list) {
+        return Objects.isNull(list) || list.isEmpty() && list.equals(Collections.emptyList());
+    }
 
     /**
      * Returns a new list with the elements in reverse order.

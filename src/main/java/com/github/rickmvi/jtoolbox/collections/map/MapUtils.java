@@ -149,8 +149,8 @@ public class MapUtils {
      * @throws NullPointerException if the target string or the replacements map is null
      */
     @Contract("_, null -> fail")
-    public static @NotNull String getReplacement(@NotNull String target, @NotNull Map<String, Function<Object, String>> replacements) {
-        for (Map.Entry<String, Function<Object, String>> entry : replacements.entrySet()) {
+    public static @NotNull String getReplacement(@NotNull String target, @NotNull Map<String, Object> replacements) {
+        for (Map.Entry<String, Object> entry : replacements.entrySet()) {
             target = target.replace(entry.getKey(), ObjectStringConverter.valueOf(entry.getValue()));
         }
         return target;

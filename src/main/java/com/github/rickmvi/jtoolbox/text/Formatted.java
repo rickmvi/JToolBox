@@ -60,10 +60,10 @@ public final class Formatted {
     private static final Pattern PRINTF_PATTERN =
             Pattern.compile("%([-#+ 0,(<]*)?(\\d*)?(\\.\\d+)?([a-zA-Z])");
 
-    private static final Map<String, Function<Object, String>> PRINTF_TOKENS = Map.of(
-            "%n", obj  -> System.lineSeparator(),
-            "%t", obj  -> "\t",
-            "%sp", obj -> " "
+    private static final Map<String, Object> PRINTF_TOKENS = Map.of(
+            "%n", System.lineSeparator(),
+            "%t", "\t",
+            "%sp", " "
     );
 
     /**
