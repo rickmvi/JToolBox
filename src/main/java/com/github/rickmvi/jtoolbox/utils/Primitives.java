@@ -537,65 +537,65 @@ public final class Primitives {
         return nonNegativeNonZero(value);
     }
 
-    /* =================================== EVEN AND ODD METHOD'S ======================================== */
+    /* =================================== isEven AND isOdd METHOD'S ======================================== */
 
     @Contract(pure = true)
-    public static boolean even(byte value) {
+    public static boolean isEven(byte value) {
         return (value & 1) == 0;
     }
 
     @Contract(pure = true)
-    public static boolean odd(byte value) {
+    public static boolean isOdd(byte value) {
         return (value & 1) != 0;
     }
 
     @Contract(pure = true)
-    public static boolean even(short value) {
+    public static boolean isEven(short value) {
         return (value & 1) == 0;
     }
 
     @Contract(pure = true)
-    public static boolean odd(short value) {
+    public static boolean isOdd(short value) {
         return (value & 1) != 0;
     }
 
     @Contract(pure = true)
-    public static boolean even(int value) {
+    public static boolean isEven(int value) {
         return (value & 1) == 0;
     }
 
     @Contract(pure = true)
-    public static boolean odd(int value) {
+    public static boolean isOdd(int value) {
         return (value & 1) != 0;
     }
 
     @Contract(pure = true)
-    public static boolean even(long value) {
+    public static boolean isEven(long value) {
         return (value & 1L) == 0;
     }
 
     @Contract(pure = true)
-    public static boolean odd(long value) {
+    public static boolean isOdd(long value) {
         return (value & 1L) != 0;
     }
 
     @Contract(pure = true)
-    public static boolean even(float value) {
+    public static boolean isEven(float value) {
         return isIntegral(value) && (((long) value) & 1L) == 0;
     }
 
     @Contract(pure = true)
-    public static boolean odd(float value) {
+    public static boolean isOdd(float value) {
         return isIntegral(value) && (((long) value) & 1L) != 0;
     }
 
     @Contract(pure = true)
-    public static boolean even(double value) {
+    public static boolean isEven(double value) {
         return isIntegral(value) && (((long) value) & 1L) == 0;
     }
 
     @Contract(pure = true)
-    public static boolean odd(double value) {
+    public static boolean isOdd(double value) {
         return isIntegral(value) && (((long) value) & 1L) != 0;
     }
 

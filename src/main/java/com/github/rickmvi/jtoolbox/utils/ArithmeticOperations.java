@@ -673,7 +673,7 @@ public class ArithmeticOperations {
     @Contract(pure = true)
     public static int evenInt(int number) {
         int valid = Primitives.requiredNonNegative(number);
-        return IntStream.rangeClosed(0, valid).filter(Primitives::even).sum();
+        return IntStream.rangeClosed(0, valid).filter(Primitives::isEven).sum();
     }
 
     /**
@@ -687,7 +687,7 @@ public class ArithmeticOperations {
     @Contract(pure = true)
     public static int oddInt(int number) {
         int valid = Primitives.requiredNonNegative(number);
-        return IntStream.rangeClosed(1, valid).filter(Primitives::odd).sum();
+        return IntStream.rangeClosed(1, valid).filter(Primitives::isOdd).sum();
     }
 
     /**
@@ -981,7 +981,7 @@ public class ArithmeticOperations {
     @ApiStatus.Internal
     private static int computePower(long exponent, int result, int b) {
         while (isPositive(exponent)) {
-            if (odd(exponent)) {
+            if (isOdd(exponent)) {
                 result = Math.multiplyExact(result, b);
             }
             exponent >>= 1;
