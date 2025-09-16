@@ -25,7 +25,7 @@ import java.util.function.BooleanSupplier;
 import java.util.function.Supplier;
 
 @lombok.experimental.UtilityClass
-public class ActionRepeater {
+public class Repeater {
     /**
      * Repeatedly executes the action while the condition returns true.
      *

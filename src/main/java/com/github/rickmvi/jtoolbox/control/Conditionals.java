@@ -24,7 +24,7 @@ import java.util.function.Supplier;
 import java.util.Optional;
 
 @lombok.experimental.UtilityClass
-public class ConditionalHelper {
+public class Conditionals {
     /**
      * Executes the given action if the condition is true.
      *
@@ -140,6 +140,10 @@ public class ConditionalHelper {
      */
     public static <T> T supplyByCondition(boolean condition, Supplier<T> trueSupplier, Supplier<T> falseSupplier) {
         return condition ? trueSupplier.get() : falseSupplier.get();
+    }
+
+    public static String messageOrDefault(Supplier<String> messageSupplier, String defaultMessage) {
+        return supplyByCondition(messageSupplier == null, () -> defaultMessage, messageSupplier::get);
     }
 
     /**

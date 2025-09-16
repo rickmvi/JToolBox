@@ -38,7 +38,7 @@ import java.util.Objects;
  * these methods will throw runtime exceptions like {@link NumberFormatException}.
  */
 @lombok.experimental.UtilityClass
-public class PrimitiveConverter {
+public class TypeCaster {
 
     /**
      * Converts the given object to an {@code int} value.
@@ -54,7 +54,7 @@ public class PrimitiveConverter {
     public static int toInt(Object o) {
         if (Objects.isNull(o)) return 0;
         if (o instanceof Number) return ((Number) o).intValue();
-        return Integer.parseInt(ObjectStringConverter.valueOf(o));
+        return Integer.parseInt(Stringifier.valueOf(o));
     }
 
     /**
@@ -71,7 +71,7 @@ public class PrimitiveConverter {
     public static long toLong(Object o) {
         if (Objects.isNull(o)) return 0L;
         if (o instanceof Number) return ((Number) o).longValue();
-        return Long.parseLong(ObjectStringConverter.valueOf(o));
+        return Long.parseLong(Stringifier.valueOf(o));
     }
 
     /**
@@ -88,7 +88,7 @@ public class PrimitiveConverter {
     public static float toFloat(Object o) {
         if (Objects.isNull(o)) return 0.0f;
         if (o instanceof Number) return ((Number) o).floatValue();
-        return Float.parseFloat(ObjectStringConverter.valueOf(o));
+        return Float.parseFloat(Stringifier.valueOf(o));
     }
 
     /**
@@ -105,7 +105,7 @@ public class PrimitiveConverter {
     public static double toDouble(Object o) {
         if (Objects.isNull(o)) return 0.0d;
         if (o instanceof Number) return ((Number) o).doubleValue();
-        return Double.parseDouble(ObjectStringConverter.valueOf(o));
+        return Double.parseDouble(Stringifier.valueOf(o));
     }
 
     /**
@@ -121,7 +121,7 @@ public class PrimitiveConverter {
     public static boolean toBoolean(Object o) {
         if (Objects.isNull(o)) return false;
         if (o instanceof Boolean) return (Boolean) o;
-        return Boolean.parseBoolean(ObjectStringConverter.valueOf(o));
+        return Boolean.parseBoolean(Stringifier.valueOf(o));
     }
 }
 

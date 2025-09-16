@@ -1,7 +1,7 @@
 package com.github.rickmvi.jtoolbox.collections.algorithms.sorting;
 
 import com.github.rickmvi.jtoolbox.control.Iteration;
-import com.github.rickmvi.jtoolbox.utils.CollectionUtils;
+import com.github.rickmvi.jtoolbox.utils.ArrayUtils;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
@@ -25,7 +25,7 @@ public class BubbleSort {
         if (input == null || input.isEmpty()) return new ArrayList<>();
         List<Integer> result = new ArrayList<>();
 
-        int[] arrInt = CollectionUtils.convert(input);
+        int[] arrInt = ArrayUtils.convert(input);
 
         Iteration.bubble(0, arrInt.length, (i, j) -> {
             if (arrInt[i] > arrInt[j]) {

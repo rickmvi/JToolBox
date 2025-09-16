@@ -122,7 +122,7 @@ public final class TypeConverter {
             case LONG ->    SafeNumberParser.toLong     (s, (Long)    fallback);
             case DOUBLE ->  SafeNumberParser.toDouble   (s, (Double)  fallback);
             case FLOAT ->   SafeNumberParser.toFloat    (s, (Float)   fallback);
-            case BOOLEAN -> BooleanConverter.toBoolean (s, (Boolean) fallback);
+            case BOOLEAN -> BooleanParser.toBoolean (s, (Boolean) fallback);
             case STRING ->  s != null ? s : fallback;
         });
     }

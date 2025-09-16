@@ -18,11 +18,11 @@
 package com.github.rickmvi.jtoolbox.collections.array;
 
 import com.github.rickmvi.jtoolbox.lang.exceptions.InvalidStartIndexException;
-import com.github.rickmvi.jtoolbox.utils.CollectionUtils;
-import com.github.rickmvi.jtoolbox.control.ConditionalHelper;
+import com.github.rickmvi.jtoolbox.utils.ArrayUtils;
+import com.github.rickmvi.jtoolbox.control.Conditionals;
 import com.github.rickmvi.jtoolbox.control.Iteration;
 
-import com.github.rickmvi.jtoolbox.utils.ArithmeticOperations;
+import com.github.rickmvi.jtoolbox.utils.MathOperations;
 import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
 
@@ -37,23 +37,32 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Set;
 
+import static com.github.rickmvi.jtoolbox.text.Formatted.format;
+
 @lombok.experimental.UtilityClass
-public class Collection extends CollectionUtils {
+public class Array extends ArrayUtils {
 
     /* ==================================== ADD METHOD ========================================= */
 
     public static <T> T @NotNull [] add(T @NotNull [] array, T element) {
-        T[] result = java.util.Arrays.copyOf(array, array.length + 1);
-        result[array.length] = element;
+        T[] result = java.util.Arrays.copyOf(array, length(array) + 1);
+        result[length(array)] = element;
         return result;
     }
 
     public static <T> T @NotNull [] add(T @NotNull [] array, int index, T element) {
-        ConditionalHelper.ifTrueThrow(index < 0 || index > array.length, () ->
-                new InvalidStartIndexException("Index: " + index + ", Length: " + array.length));
+        Conditionals.ifTrueThrow(index < 0 || index > array.length, () ->
+                new InvalidStartIndexException(format("Index: {}, Length: {}", index, length(array))));
         T[] result = java.util.Arrays.copyOf(array, array.length + 1);
-        System.arraycopy(array, index, result, index + 1, array.length - index);
+
+        System.arraycopy(
+                array,
+                index,
+                result,
+                index + 1,
+                length(array) - index);
         result[index] = element;
+
         return result;
     }
 
@@ -88,7 +97,7 @@ public class Collection extends CollectionUtils {
      * @throws NullPointerException If the provided array is null.
      */
     public static <T> int indexOf(T @NotNull [] array, T element) {
-        return Iteration.findFirstIndexMatching(array.length, i -> Objects.equals(array[i], element));
+        return Iteration.findFirstIndexMatching(length(array), i -> Objects.equals(array[i], element));
     }
 
     /**
@@ -103,7 +112,7 @@ public class Collection extends CollectionUtils {
      * @throws NullPointerException if the array is null
      */
     public static <T> int lastIndexOf(T @NotNull [] array, T element) {
-        return Iteration.findLastIndexMatching(array.length, i -> Objects.equals(array[i], element));
+        return Iteration.findLastIndexMatching(length(array), i -> Objects.equals(array[i], element));
     }
 
     /* ==================================== CONTAINS METHOD ========================================= */
@@ -165,8 +174,8 @@ public class Collection extends CollectionUtils {
      *         when {@code from < 0}, {@code to > array.length}, or {@code from > to}
      */
     public static <T> T @NotNull [] copyRange(T @NotNull [] array, int from, int to) {
-        ConditionalHelper.ifTrueThrow(from < 0 || to > array.length || from > to,
-                () -> new IndexOutOfBoundsException("Invalid range: " + from + " to " + to));
+        Conditionals.ifTrueThrow(from < 0 || to > array.length || from > to,
+                () -> new IndexOutOfBoundsException(format("Invalid range: {} to {}",from, to)));
         return java.util.Arrays.copyOfRange(array, from, to);
     }
 
@@ -184,8 +193,8 @@ public class Collection extends CollectionUtils {
      * @throws IndexOutOfBoundsException if the index is negative or greater than or equal to the array's length
      */
     public static <T> T @NotNull [] remove(T @NotNull [] array, int index) {
-        ConditionalHelper.ifTrueThrow(index < 0 || index >= array.length, () ->
-                new InvalidStartIndexException("Index: " + index + ", Length: " + array.length));
+        Conditionals.ifTrueThrow(index < 0 || index >= array.length, () ->
+                new InvalidStartIndexException(format("Index: {}, Length: {}", index, length(array))));
         T[] result = java.util.Arrays.copyOf(array, array.length - 1);
         System.arraycopy(array, index + 1, result, index, array.length - index - 1);
         return result;
@@ -447,7 +456,7 @@ public class Collection extends CollectionUtils {
      */
     @Contract(pure = true)
     public static int sum(int @NotNull [] array) {
-        return ArithmeticOperations.sumInt(array);
+        return MathOperations.sumInt(array);
     }
 
     /**
@@ -459,7 +468,7 @@ public class Collection extends CollectionUtils {
      */
     @Contract(pure = true)
     public static long sum(long @NotNull [] array) {
-        return ArithmeticOperations.sumLong(array);
+        return MathOperations.sumLong(array);
     }
 
     /**
@@ -471,7 +480,7 @@ public class Collection extends CollectionUtils {
      */
     @Contract(pure = true)
     public static float sum(float @NotNull [] array) {
-        return ArithmeticOperations.sumFloat(array);
+        return MathOperations.sumFloat(array);
     }
 
     /**
@@ -483,7 +492,7 @@ public class Collection extends CollectionUtils {
      */
     @Contract(pure = true)
     public static double sum(double @NotNull [] array) {
-        return ArithmeticOperations.sumDouble(array);
+        return MathOperations.sumDouble(array);
     }
 
     /* ==================================== REPEAT METHOD ========================================= */
@@ -501,7 +510,7 @@ public class Collection extends CollectionUtils {
      */
     @Contract("_, _, _ -> new")
     public static <T> T[] repeat(T value, int times, @NotNull IntFunction<T[]> generator) {
-        ConditionalHelper.ifTrueThrow(times < 0, () -> new IllegalArgumentException("times: " + times));
+        Conditionals.ifTrueThrow(times < 0, () -> new IllegalArgumentException("times: " + times));
         T[] array = generator.apply(times);
         Arrays.fill(array, value);
         return array;

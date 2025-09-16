@@ -17,7 +17,7 @@
  */
 package com.github.rickmvi.jtoolbox.collections.map;
 
-import com.github.rickmvi.jtoolbox.console.utils.convert.ObjectStringConverter;
+import com.github.rickmvi.jtoolbox.console.utils.convert.Stringifier;
 import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
 
@@ -129,7 +129,7 @@ public class MapUtils {
         for (Map.Entry<String, Object> entry : replacements.entrySet()) {
             String key = entry.getKey();
             Object value = entry.getValue();
-            target = target.replace(key, ObjectStringConverter.valueOf(value));
+            target = target.replace(key, Stringifier.valueOf(value));
         }
 
         return target;
@@ -151,7 +151,7 @@ public class MapUtils {
     @Contract("_, null -> fail")
     public static @NotNull String getReplacement(@NotNull String target, @NotNull Map<String, Object> replacements) {
         for (Map.Entry<String, Object> entry : replacements.entrySet()) {
-            target = target.replace(entry.getKey(), ObjectStringConverter.valueOf(entry.getValue()));
+            target = target.replace(entry.getKey(), Stringifier.valueOf(entry.getValue()));
         }
         return target;
     }

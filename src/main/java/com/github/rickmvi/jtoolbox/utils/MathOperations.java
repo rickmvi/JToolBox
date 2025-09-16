@@ -17,7 +17,7 @@
  */
 package com.github.rickmvi.jtoolbox.utils;
 
-import com.github.rickmvi.jtoolbox.collections.array.Collection;
+import com.github.rickmvi.jtoolbox.collections.array.Array;
 
 import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.Contract;
@@ -25,16 +25,16 @@ import org.jetbrains.annotations.NotNull;
 
 import java.util.stream.IntStream;
 
-import static com.github.rickmvi.jtoolbox.control.ConditionalHelper.ifTrueThrow;
-import static com.github.rickmvi.jtoolbox.control.ActionRepeater.whileTrue;
-import static com.github.rickmvi.jtoolbox.utils.Primitives.*;
+import static com.github.rickmvi.jtoolbox.control.Conditionals.ifTrueThrow;
+import static com.github.rickmvi.jtoolbox.control.Repeater.whileTrue;
+import static com.github.rickmvi.jtoolbox.utils.primitives.Primitives.*;
 
 /**
  * Utility class providing arithmetic operations for integers, longs, floats, and doubles
  * including a sum, subtraction, multiplication, division, average, and modulo.
  */
 @lombok.experimental.UtilityClass
-public class ArithmeticOperations {
+public class MathOperations {
 
     /**
      * Computes the sum of an array of byte values.
@@ -45,7 +45,7 @@ public class ArithmeticOperations {
      * @throws ArithmeticException if the sum overflows the range of a byte.
      */
     public static byte sumByte(byte @NotNull ... numbers) {
-        if (Collection.isEmpty(numbers)) return 0;
+        if (Array.isEmpty(numbers)) return 0;
 
         byte result = 0;
         for (byte number : numbers) {
@@ -64,7 +64,7 @@ public class ArithmeticOperations {
      * @throws ArithmeticException if the sum overflows the range of the {@code short} type.
      */
     public static short sumShort(short @NotNull ... numbers) {
-        if (Collection.isEmpty(numbers)) return 0;
+        if (Array.isEmpty(numbers)) return 0;
 
         short result = 0;
         for (short number : numbers) {
@@ -82,7 +82,7 @@ public class ArithmeticOperations {
      * @throws ArithmeticException if an integer overflow occurs while computing the sum
      */
     public static int sumInt(int @NotNull ... numbers) {
-        if (Collection.isEmpty(numbers)) return 0;
+        if (Array.isEmpty(numbers)) return 0;
 
         int result = 0;
         for (int number : numbers) {
@@ -101,7 +101,7 @@ public class ArithmeticOperations {
      * @throws ArithmeticException if a numeric overflow occurs while computing the sum.
      */
     public static long sumLong(long @NotNull ... numbers) {
-        if (Collection.isEmpty(numbers)) return 0L;
+        if (Array.isEmpty(numbers)) return 0L;
 
         long result = 0L;
         for (long number : numbers) {
@@ -121,7 +121,7 @@ public class ArithmeticOperations {
      *         a non-numeric (NaN) value is encountered during the computation.
      */
     public static float sumFloat(float @NotNull ... numbers) {
-        if (Collection.isEmpty(numbers)) return 0.0f;
+        if (Array.isEmpty(numbers)) return 0.0f;
 
         float result = 0.0f;
         for (float number : numbers) {
@@ -148,7 +148,7 @@ public class ArithmeticOperations {
      *                             a non-numeric (NaN) value is encountered during the computation.
      */
     public static double sumDouble(double @NotNull ... numbers) {
-        if (Collection.isEmpty(numbers)) return 0.0;
+        if (Array.isEmpty(numbers)) return 0.0;
 
         double result = 0.0;
         for (double number : numbers) {
@@ -176,8 +176,8 @@ public class ArithmeticOperations {
      * @throws ArithmeticException If an arithmetic overflow occurs during subtraction.
      */
     public static byte subtractByte(byte @NotNull ... numbers) {
-        if (Collection.isEmpty(numbers)) return 0;
-        int length = Collection.length(numbers);
+        if (Array.isEmpty(numbers)) return 0;
+        int length = Array.length(numbers);
         byte result = numbers[0];
         for (int i = 1; i < length; i++) {
             result = (byte) Math.subtractExact(result, numbers[i]);
@@ -198,8 +198,8 @@ public class ArithmeticOperations {
      * @throws ArithmeticException If the subtraction results in underflow or overflow for the short type.
      */
     public static short subtractShort(short @NotNull ... numbers) {
-        if (Collection.isEmpty(numbers)) return 0;
-        int length = Collection.length(numbers);
+        if (Array.isEmpty(numbers)) return 0;
+        int length = Array.length(numbers);
         short result = numbers[0];
         for (int i = 1; i < length; i++) {
             result = (short) Math.subtractExact(result, numbers[i]);
@@ -218,8 +218,8 @@ public class ArithmeticOperations {
      * @throws ArithmeticException if an integer overflow occurs during subtraction.
      */
     public static int subtractInt(int @NotNull ... numbers) {
-        if (Collection.isEmpty(numbers)) return 0;
-        int length = Collection.length(numbers);
+        if (Array.isEmpty(numbers)) return 0;
+        int length = Array.length(numbers);
         int result = numbers[0];
         for (int i = 1; i < length; i++) {
             result = Math.subtractExact(result, numbers[i]);
@@ -238,8 +238,8 @@ public class ArithmeticOperations {
      * @throws ArithmeticException if a numeric overflow occurs during subtraction.
      */
     public static long subtractLong(long @NotNull ... numbers) {
-        if (Collection.isEmpty(numbers)) return 0L;
-        int length = Collection.length(numbers);
+        if (Array.isEmpty(numbers)) return 0L;
+        int length = Array.length(numbers);
         long result = numbers[0];
         for (int i = 1; i < length; i++) {
             result = Math.subtractExact(result, numbers[i]);
@@ -259,8 +259,8 @@ public class ArithmeticOperations {
      *                             a non-numeric (NaN) value is encountered during the computation.
      */
     public static float subtractFloat(float @NotNull ... numbers) {
-        if (Collection.isEmpty(numbers)) return 0.0f;
-        int length = Collection.length(numbers);
+        if (Array.isEmpty(numbers)) return 0.0f;
+        int length = Array.length(numbers);
         float result = numbers[0];
         for (int i = 1; i < length; i++) {
             result -= numbers[i];
@@ -285,8 +285,8 @@ public class ArithmeticOperations {
      *                             a non-numeric (NaN) value is encountered during the computation.
      */
     public static double subtractDouble(double @NotNull ... numbers) {
-        if (Collection.isEmpty(numbers)) return 0.0;
-        int length = Collection.length(numbers);
+        if (Array.isEmpty(numbers)) return 0.0;
+        int length = Array.length(numbers);
         double result = numbers[0];
         for (int i = 1; i < length; i++) {
             result -= numbers[i];
@@ -308,7 +308,7 @@ public class ArithmeticOperations {
      * @throws ArithmeticException if an overflow occurs during multiplication
      */
     public static byte mutiplyByte(byte @NotNull ... numbers) {
-        if (Collection.isEmpty(numbers)) return 1;
+        if (Array.isEmpty(numbers)) return 1;
 
         byte result = 1;
         for (byte number : numbers) {
@@ -326,7 +326,7 @@ public class ArithmeticOperations {
      * @throws ArithmeticException if an overflow occurs during multiplication.
      */
     public static short mutiplyShort(short @NotNull ... numbers) {
-        if (Collection.isEmpty(numbers)) return 1;
+        if (Array.isEmpty(numbers)) return 1;
 
         short result = 1;
         for (short number : numbers) {
@@ -346,7 +346,7 @@ public class ArithmeticOperations {
      * @throws ArithmeticException if an integer overflow occurs during multiplication.
      */
     public static int multiplyInt(int @NotNull ... numbers) {
-        if (Collection.isEmpty(numbers)) return 1;
+        if (Array.isEmpty(numbers)) return 1;
 
         int result = 1;
         for (int number : numbers) {
@@ -366,7 +366,7 @@ public class ArithmeticOperations {
      * @throws ArithmeticException if a numeric overflow occurs during multiplication.
      */
     public static long multiplyLong(long @NotNull ... numbers) {
-        if (Collection.isEmpty(numbers)) return 1L;
+        if (Array.isEmpty(numbers)) return 1L;
 
         long result = 1L;
         for (long number : numbers) {
@@ -387,7 +387,7 @@ public class ArithmeticOperations {
      *                             if a non-numeric (NaN) value is encountered during the computation.
      */
     public static float multiplyFloat(float @NotNull ... numbers) {
-        if (Collection.isEmpty(numbers)) return 1.0f;
+        if (Array.isEmpty(numbers)) return 1.0f;
 
         float result = 1.0f;
         for (float number : numbers) {
@@ -419,7 +419,7 @@ public class ArithmeticOperations {
      *                              or NaN due to overflow or invalid operations.
      */
     public static double multiplyDouble(double @NotNull ... numbers) {
-        if (Collection.isEmpty(numbers)) return 1.0;
+        if (Array.isEmpty(numbers)) return 1.0;
 
         double result = 1.0;
         for (double number : numbers) {
@@ -450,7 +450,7 @@ public class ArithmeticOperations {
      * @throws ArithmeticException if the divisor is zero
      */
     public static byte divideByte(byte dividend, byte divisor) {
-        ifTrueThrow(Primitives.isZero(divisor), () -> new ArithmeticException("Division by zero"));
+        ifTrueThrow(bytes.isZero(divisor), () -> new ArithmeticException("Division by zero"));
         return (byte) Math.divideExact(dividend, divisor);
     }
 
@@ -463,7 +463,7 @@ public class ArithmeticOperations {
      * @throws ArithmeticException if the divisor is zero
      */
     public static short divideShort(short dividend, short divisor) {
-        ifTrueThrow(Primitives.isZero(divisor), () -> new ArithmeticException("Division by zero"));
+        ifTrueThrow(shorts.isZero(divisor), () -> new ArithmeticException("Division by zero"));
         return (short) Math.divideExact(dividend, divisor);
     }
 
@@ -477,7 +477,7 @@ public class ArithmeticOperations {
      * @throws ArithmeticException If the divisor is zero.
      */
     public static int divideInt(int dividend, int divisor) {
-        ifTrueThrow(Primitives.isZero(divisor), () -> new ArithmeticException("Division by zero"));
+        ifTrueThrow(integers.isZero(divisor), () -> new ArithmeticException("Division by zero"));
         return Math.divideExact(dividend, divisor);
     }
 
@@ -490,7 +490,7 @@ public class ArithmeticOperations {
      * @throws ArithmeticException if the divisor is zero
      */
     public static long divideLong(long dividend, long divisor) {
-        ifTrueThrow(Primitives.isZero(divisor), () -> new ArithmeticException("Division by zero"));
+        ifTrueThrow(longs.isZero(divisor), () -> new ArithmeticException("Division by zero"));
         return Math.divideExact(dividend, divisor);
     }
 
@@ -499,7 +499,7 @@ public class ArithmeticOperations {
     }
 
     public static double divideDouble(double dividend, double divisor) {
-        ifTrueThrow(Primitives.isZero(divisor), () -> new ArithmeticException("Division by zero"));
+        ifTrueThrow(doubles.isZero(divisor), () -> new ArithmeticException("Division by zero"));
         return dividend / divisor;
     }
 
@@ -515,7 +515,7 @@ public class ArithmeticOperations {
      *                             nearest divisible number.
      */
     public static int divideNearestMultipleInt(int dividend, int divisor) {
-        ifTrueThrow(Primitives.isZero(divisor), () -> new ArithmeticException("Division by zero"));
+        ifTrueThrow(integers.isZero(divisor), () -> new ArithmeticException("Division by zero"));
 
         final int[] result = { dividend };
         whileTrue(
@@ -540,7 +540,7 @@ public class ArithmeticOperations {
      */
     public static double averageDouble(long @NotNull ... numbers) {
         ifTrueThrow(
-                Collection.isEmpty(numbers),
+                Array.isEmpty(numbers),
                 () -> new ArithmeticException("Cannot average an empty array")
         );
         return (double) sumLong(numbers) / numbers.length;
@@ -555,7 +555,7 @@ public class ArithmeticOperations {
      */
     public static float averageFloat(float @NotNull ... numbers) {
         ifTrueThrow(
-                Collection.isEmpty(numbers),
+                Array.isEmpty(numbers),
                 () -> new ArithmeticException("Cannot average an empty array")
         );
         return sumFloat(numbers) / numbers.length;
@@ -570,7 +570,7 @@ public class ArithmeticOperations {
      */
     public static double averageInt(int @NotNull ... numbers) {
         ifTrueThrow(
-                Collection.isEmpty(numbers),
+                Array.isEmpty(numbers),
                 () -> new ArithmeticException("Cannot average an empty array")
         );
         return (double) sumInt(numbers) / numbers.length;
@@ -586,7 +586,7 @@ public class ArithmeticOperations {
      */
     public static double averageDouble(double @NotNull ... numbers) {
         ifTrueThrow(
-                Collection.isEmpty(numbers),
+                Array.isEmpty(numbers),
                 () -> new ArithmeticException("Cannot average an empty array")
         );
         return sumDouble(numbers) / numbers.length;
@@ -601,7 +601,7 @@ public class ArithmeticOperations {
      */
     @Contract(pure = true)
     public static byte evenByte(byte number) {
-        byte valid = Primitives.requiredNonNegative(number);
+        byte valid = bytes.ensureNonNegative(number);
         byte result = 0;
         for (int i = 0; i <= valid; i += 2) {
             result = (byte) Math.addExact(result, i);
@@ -619,7 +619,7 @@ public class ArithmeticOperations {
      */
     @Contract(pure = true)
     public static byte oddByte(byte number) {
-        byte valid = Primitives.requiredNonNegative(number);
+        byte valid = bytes.ensureNonNegative(number);
         byte result = 0;
         for (int i = 1; i <= valid; i += 2) {
             result = (byte) Math.addExact(result, i);
@@ -638,7 +638,7 @@ public class ArithmeticOperations {
      */
     @Contract(pure = true)
     public static short evenShort(short number) {
-        short valid = Primitives.requiredNonNegative(number);
+        short valid = shorts.ensureNonNegative(number);
         short result = 0;
         for (int i = 0; i <= valid; i += 2) {
             result = (short) Math.addExact(result, i);
@@ -655,7 +655,7 @@ public class ArithmeticOperations {
      */
     @Contract(pure = true)
     public static short oddShort(short number) {
-        short valid = Primitives.requiredNonNegative(number);
+        short valid = shorts.ensureNonNegative(number);
         short result = 0;
         for (int i = 1; i <= valid; i += 2) {
             result = (short) Math.addExact(result, i);
@@ -672,8 +672,8 @@ public class ArithmeticOperations {
      */
     @Contract(pure = true)
     public static int evenInt(int number) {
-        int valid = Primitives.requiredNonNegative(number);
-        return IntStream.rangeClosed(0, valid).filter(Primitives::isEven).sum();
+        int valid = integers.ensureNonNegative(number);
+        return IntStream.rangeClosed(0, valid).filter(integers::isEven).sum();
     }
 
     /**
@@ -686,8 +686,8 @@ public class ArithmeticOperations {
      */
     @Contract(pure = true)
     public static int oddInt(int number) {
-        int valid = Primitives.requiredNonNegative(number);
-        return IntStream.rangeClosed(1, valid).filter(Primitives::isOdd).sum();
+        int valid = integers.ensureNonNegative(number);
+        return IntStream.rangeClosed(1, valid).filter(integers::isOdd).sum();
     }
 
     /**
@@ -699,7 +699,7 @@ public class ArithmeticOperations {
      */
     @Contract(pure = true)
     public static long evenLong(long number) {
-        long valid = Primitives.requiredNonNegative(number);
+        long valid = longs.ensureNonNegative(number);
         long result = 0L;
         for (long i = 0; i <= valid; i += 2) {
             result = Math.addExact(result, i);
@@ -716,7 +716,7 @@ public class ArithmeticOperations {
      */
     @Contract(pure = true)
     public static long oddLong(long number) {
-        long valid = Primitives.requiredNonNegative(number);
+        long valid = longs.ensureNonNegative(number);
         long result = 0L;
         for (long i = 1; i <= valid; i += 2) {
             result = Math.addExact(result, i);
@@ -734,7 +734,7 @@ public class ArithmeticOperations {
      */
     @Contract(pure = true)
     public static float evenFloat(int number) {
-        int valid = Primitives.requiredNonNegative(number);
+        int valid = integers.ensureNonNegative(number);
         float result = 0f;
         for (int i = 0; i <= valid; i += 2) {
             result += i;
@@ -758,7 +758,7 @@ public class ArithmeticOperations {
      */
     @Contract(pure = true)
     public static float oddFloat(int number) {
-        int valid = Primitives.requiredNonNegative(number);
+        int valid = integers.ensureNonNegative(number);
         float result = 0f;
         for (int i = 1; i <= valid; i += 2) {
             result += i;
@@ -781,7 +781,7 @@ public class ArithmeticOperations {
      */
     @Contract(pure = true)
     public static double evenDouble(long number) {
-        long valid = Primitives.requiredNonNegative(number);
+        long valid = longs.ensureNonNegative(number);
         double result = 0;
         for (long i = 0; i <= valid; i += 2) {
             result += i;
@@ -806,7 +806,7 @@ public class ArithmeticOperations {
      */
     @Contract(pure = true)
     public static double oddDouble(long number) {
-        long valid = Primitives.requiredNonNegative(number);
+        long valid = longs.ensureNonNegative(number);
         double result = 0;
         for (long i = 1; i <= valid; i += 2) {
             result += i;
@@ -846,7 +846,7 @@ public class ArithmeticOperations {
      */
     @Contract(pure = true)
     public static long moduloLong(long dividend, long divisor) {
-        ifTrueThrow(isZero(divisor), () -> new ArithmeticException("Division by zero"));
+        ifTrueThrow(longs.isZero(divisor), () -> new ArithmeticException("Division by zero"));
         return dividend % divisor;
     }
 
@@ -863,8 +863,8 @@ public class ArithmeticOperations {
      *                             while searching for the nearest divisible number
      */
     public static int moduloNearestMultiple(int dividend, int divisor) {
-        ifTrueThrow(isNegative(dividend), () -> new ArithmeticException("Negative dividend"));
-        ifTrueThrow(isNonPositive(divisor), () -> new ArithmeticException("Divisor must be positive"));
+        ifTrueThrow(integers.isNegative(dividend), () -> new ArithmeticException("Negative dividend"));
+        ifTrueThrow(integers.isNonPositive(divisor), () -> new ArithmeticException("Divisor must be positive"));
 
         final int[] result = { dividend };
         whileTrue(
@@ -919,11 +919,11 @@ public class ArithmeticOperations {
      */
     @Contract(pure = true)
     public static int gcd(int a, int b) {
-        if (isZero(a)) return b;
-        if (isZero(b)) return a;
+        if (integers.isZero(a)) return b;
+        if (integers.isZero(b)) return a;
 
         int r = a % b;
-        if (isZero(r)) return b;
+        if (integers.isZero(r)) return b;
 
         return gcd(b, r);
     }
@@ -938,7 +938,7 @@ public class ArithmeticOperations {
      */
     @Contract(pure = true)
     public static int lcm(int a, int b) {
-        if (isZero(a) || isZero(b)) return 0;
+        if (integers.isZero(a) || integers.isZero(b)) return 0;
         return Math.abs(a / gcd(a, b) * b);
     }
 
@@ -952,7 +952,7 @@ public class ArithmeticOperations {
      */
     @Contract(pure = true)
     public static int pow(int base, int exponent) {
-        ifTrueThrow(isNegative(exponent), () -> new ArithmeticException("Negative exponent"));
+        ifTrueThrow(integers.isNegative(exponent), () -> new ArithmeticException("Negative exponent"));
         return powerBySquaring(base, exponent);
     }
 
@@ -966,7 +966,7 @@ public class ArithmeticOperations {
      */
     @Contract(pure = true)
     public static int pow(int base, long exponent) {
-        ifTrueThrow(isNegative(exponent), () -> new ArithmeticException("Negative exponent"));
+        ifTrueThrow(longs.isNegative(exponent), () -> new ArithmeticException("Negative exponent"));
         return powerBySquaring(base, exponent);
     }
 
@@ -980,12 +980,12 @@ public class ArithmeticOperations {
 
     @ApiStatus.Internal
     private static int computePower(long exponent, int result, int b) {
-        while (isPositive(exponent)) {
-            if (isOdd(exponent)) {
+        while (longs.isPositive(exponent)) {
+            if (longs.isOdd(exponent)) {
                 result = Math.multiplyExact(result, b);
             }
             exponent >>= 1;
-            if (isPositive(exponent)) {
+            if (longs.isPositive(exponent)) {
                 b = Math.multiplyExact(b, b);
             }
         }
@@ -1005,7 +1005,7 @@ public class ArithmeticOperations {
      * @throws ArithmeticException if the result of the exponentiation is infinite or invalid
      */
     public static double pow(double base, double exponent) {
-        ifTrueThrow(isNegative(exponent), () -> new ArithmeticException("Negative exponent"));
+        ifTrueThrow(doubles.isNegative(exponent), () -> new ArithmeticException("Negative exponent"));
 
         double result = Math.pow(base, exponent);
 
@@ -1024,7 +1024,7 @@ public class ArithmeticOperations {
      */
     @Contract(pure = true)
     public static int sqrtInt(int value) {
-        ifTrueThrow(isNegative(value), () -> new ArithmeticException("Negative value"));
+        ifTrueThrow(integers.isNegative(value), () -> new ArithmeticException("Negative value"));
         return (int) Math.round(Math.sqrt(value));
     }
 
@@ -1038,7 +1038,7 @@ public class ArithmeticOperations {
      */
     @Contract(pure = true)
     public static double sqrt(double value) {
-        ifTrueThrow(isNegative(value), () -> new ArithmeticException("Negative value"));
+        ifTrueThrow(doubles.isNegative(value), () -> new ArithmeticException("Negative value"));
         return Math.sqrt(value);
     }
 }

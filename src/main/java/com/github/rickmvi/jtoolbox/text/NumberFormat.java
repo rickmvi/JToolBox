@@ -17,7 +17,7 @@
  */
 package com.github.rickmvi.jtoolbox.text;
 
-import com.github.rickmvi.jtoolbox.console.utils.convert.PrimitiveConverter;
+import com.github.rickmvi.jtoolbox.console.utils.convert.TypeCaster;
 import com.github.rickmvi.jtoolbox.text.internal.NumberFormatStyle;
 import com.github.rickmvi.jtoolbox.text.internal.NumberFormatter;
 import org.jetbrains.annotations.Contract;
@@ -47,7 +47,7 @@ public class NumberFormat {
      * @return the formatted string
      */
     public static String format(Object value, @NotNull NumberFormatStyle style) {
-        return style.format(PrimitiveConverter.toDouble(value));
+        return style.format(TypeCaster.toDouble(value));
     }
 
     /**

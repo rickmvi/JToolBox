@@ -17,8 +17,10 @@
  */
 package com.github.rickmvi.jtoolbox.utils;
 
+import com.github.rickmvi.jtoolbox.utils.primitives.Primitives;
 import com.github.rickmvi.jtoolbox.control.Iteration;
-import com.github.rickmvi.jtoolbox.control.ActionRepeater;
+import com.github.rickmvi.jtoolbox.control.Repeater;
+
 import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
@@ -27,9 +29,9 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-import static com.github.rickmvi.jtoolbox.control.ConditionalHelper.ifTrue;
+import static com.github.rickmvi.jtoolbox.control.Conditionals.ifTrue;
 
-public class CollectionUtils {
+public class ArrayUtils {
 
     @Contract(pure = true)
     public static int length(byte @NotNull [] array) {
@@ -209,13 +211,13 @@ public class CollectionUtils {
     public static int @NotNull [] concat(int @NotNull [] first, int @NotNull []... rest) {
         int totalLength = first.length;
         for (int[] array : rest) {
-            totalLength = ArithmeticOperations.sumInt(totalLength, array.length);
+            totalLength = MathOperations.sumInt(totalLength, array.length);
         }
         int[] result = Arrays.copyOf(first, totalLength);
         int offset = first.length;
         for (int[] array : rest) {
             System.arraycopy(array, 0, result, offset, array.length);
-            offset = ArithmeticOperations.sumInt(offset, array.length);
+            offset = MathOperations.sumInt(offset, array.length);
         }
         return result;
     }
@@ -233,7 +235,7 @@ public class CollectionUtils {
      * @throws NullPointerException if the array is null
      */
     public static int indexOf(byte @NotNull [] array, byte element) {
-        return Iteration.findFirstIndexMatching(array.length, i -> Primitives.equals(array[i], element));
+        return Iteration.findFirstIndexMatching(array.length, i -> Primitives.bytes.equals(array[i], element));
     }
 
     /**
@@ -246,7 +248,7 @@ public class CollectionUtils {
      * @throws NullPointerException if the array is null
      */
     public static int indexOf(short @NotNull [] array, short element) {
-        return Iteration.findFirstIndexMatching(array.length, i -> Primitives.equals(array[i], element));
+        return Iteration.findFirstIndexMatching(array.length, i -> Primitives.shorts.equals(array[i], element));
     }
 
     /**
@@ -261,7 +263,7 @@ public class CollectionUtils {
      * @throws NullPointerException if the {@code array} is null
      */
     public static int indexOf(int @NotNull [] array, int element) {
-        return Iteration.findFirstIndexMatching(array.length, i -> Primitives.equals(array[i], element));
+        return Iteration.findFirstIndexMatching(array.length, i -> Primitives.integers.equals(array[i], element));
     }
 
     /**
@@ -274,7 +276,7 @@ public class CollectionUtils {
      * @throws NullPointerException if the specified array is null.
      */
     public static int indexOf(long @NotNull [] array, long element) {
-        return Iteration.findFirstIndexMatching(array.length, i -> Primitives.equals(array[i], element));
+        return Iteration.findFirstIndexMatching(array.length, i -> Primitives.longs.equals(array[i], element));
     }
 
     /**
@@ -288,7 +290,7 @@ public class CollectionUtils {
      * @throws NullPointerException if the provided array is null
      */
     public static int indexOf(float @NotNull [] array, float element) {
-        return Iteration.findFirstIndexMatching(array.length, i -> Primitives.equals(array[i], element));
+        return Iteration.findFirstIndexMatching(array.length, i -> Primitives.floats.equals(array[i], element));
     }
 
     /**
@@ -301,7 +303,7 @@ public class CollectionUtils {
      * @throws NullPointerException if the provided array is null
      */
     public static int indexOf(double @NotNull [] array, double element) {
-        return Iteration.findFirstIndexMatching(array.length, i -> Primitives.equals(array[i], element));
+        return Iteration.findFirstIndexMatching(array.length, i -> Primitives.doubles.equals(array[i], element));
     }
 
     /**
@@ -315,7 +317,7 @@ public class CollectionUtils {
      * @throws NullPointerException if the provided array is null.
      */
     public static int indexOf(char @NotNull [] array, char element) {
-        return Iteration.findFirstIndexMatching(array.length, i -> Primitives.equals(array[i], element));
+        return Iteration.findFirstIndexMatching(array.length, i -> Primitives.chars.equals(array[i], element));
     }
 
     /**
@@ -329,7 +331,7 @@ public class CollectionUtils {
      * @throws NullPointerException if the provided array is null
      */
     public static int indexOf(boolean @NotNull [] array, boolean element) {
-        return Iteration.findFirstIndexMatching(array.length, i -> Primitives.equals(array[i], element));
+        return Iteration.findFirstIndexMatching(array.length, i -> Primitives.booleans.equals(array[i], element));
     }
 
     /**
@@ -341,7 +343,7 @@ public class CollectionUtils {
      * @throws NullPointerException if the provided array is null
      */
     public static int lastIndexOf(byte @NotNull [] array, byte element) {
-        return Iteration.findLastIndexMatching(array.length, i -> Primitives.equals(array[i], element));
+        return Iteration.findLastIndexMatching(array.length, i -> Primitives.bytes.equals(array[i], element));
     }
 
     /**
@@ -355,7 +357,7 @@ public class CollectionUtils {
      * @throws NullPointerException if the provided array is null
      */
     public static int lastIndexOf(short @NotNull [] array, short element) {
-        return Iteration.findLastIndexMatching(array.length, i -> Primitives.equals(array[i], element));
+        return Iteration.findLastIndexMatching(array.length, i -> Primitives.shorts.equals(array[i], element));
     }
 
     /**
@@ -367,7 +369,7 @@ public class CollectionUtils {
      * @throws NullPointerException if the provided array is null
      */
     public static int lastIndexOf(int @NotNull [] array, int element) {
-        return Iteration.findLastIndexMatching(array.length, i -> Primitives.equals(array[i], element));
+        return Iteration.findLastIndexMatching(array.length, i -> Primitives.integers.equals(array[i], element));
     }
 
     /**
@@ -380,20 +382,20 @@ public class CollectionUtils {
      * @throws NullPointerException if the provided array is null
      */
     public static int lastIndexOf(long @NotNull [] array, long element) {
-        return Iteration.findLastIndexMatching(array.length, i -> Primitives.equals(array[i], element));
+        return Iteration.findLastIndexMatching(array.length, i -> Primitives.longs.equals(array[i], element));
     }
 
     /**
      * Finds the last index in the given array where the specified element occurs.
      * This method searches from the end of the array towards the beginning.
      *
-     * @param array the array to search, must not be null
+     * @param array the array to search must not be null
      * @param element the floating-point value to find in the array
      * @return the last index of the specified element in the array, or -1 if the element is not found
      * @throws NullPointerException if the array is null
      */
     public static int lastIndexOf(float @NotNull [] array, float element) {
-        return Iteration.findLastIndexMatching(array.length, i -> Primitives.equals(array[i], element));
+        return Iteration.findLastIndexMatching(array.length, i -> Primitives.floats.equals(array[i], element));
     }
 
     /**
@@ -406,7 +408,7 @@ public class CollectionUtils {
      * @throws NullPointerException if the array is null.
      */
     public static int lastIndexOf(double @NotNull [] array, double element) {
-        return Iteration.findLastIndexMatching(array.length, i -> Primitives.equals(array[i], element));
+        return Iteration.findLastIndexMatching(array.length, i -> Primitives.doubles.equals(array[i], element));
     }
 
     /**
@@ -419,21 +421,21 @@ public class CollectionUtils {
      * @throws NullPointerException if the provided array is null
      */
     public static int lastIndexOf(char @NotNull [] array, char element) {
-        return Iteration.findLastIndexMatching(array.length, i -> Primitives.equals(array[i], element));
+        return Iteration.findLastIndexMatching(array.length, i -> Primitives.chars.equals(array[i], element));
     }
 
     /**
      * Returns the index of the last occurrence of the specified element in the given boolean array,
      * or -1 if the array does not contain the element.
      *
-     * @param array the boolean array to search, must not be null
+     * @param array the boolean array to search must not be null
      * @param element the boolean value to find in the array
      * @return the index of the last occurrence of the specified element in the array,
      *         or -1 if the element is not found
      * @throws NullPointerException if the array is null
      */
     public static int lastIndexOf(boolean @NotNull [] array, boolean element) {
-        return Iteration.findLastIndexMatching(array.length, i -> Primitives.equals(array[i], element));
+        return Iteration.findLastIndexMatching(array.length, i -> Primitives.booleans.equals(array[i], element));
     }
 
     /**
@@ -595,7 +597,7 @@ public class CollectionUtils {
      * @throws NullPointerException if the input array is {@code null}
      */
     public static boolean contains(byte @NotNull [] array, byte element) {
-        return Iteration.anyMatch(array.length, i -> Primitives.equals(array[i], element));
+        return Iteration.anyMatch(array.length, i -> Primitives.bytes.equals(array[i], element));
     }
 
     /**
@@ -607,7 +609,7 @@ public class CollectionUtils {
      * @throws NullPointerException if the array is null
      */
     public static boolean contains(short @NotNull [] array, short element) {
-        return Iteration.anyMatch(array.length, i -> Primitives.equals(array[i], element));
+        return Iteration.anyMatch(array.length, i -> Primitives.shorts.equals(array[i], element));
     }
 
     /**
@@ -619,7 +621,7 @@ public class CollectionUtils {
      * @throws NullPointerException if the array is null
      */
     public static boolean contains(int @NotNull [] array, int element) {
-        return Iteration.anyMatch(array.length, i -> Primitives.equals(array[i], element));
+        return Iteration.anyMatch(array.length, i -> Primitives.integers.equals(array[i], element));
     }
 
     /**
@@ -631,7 +633,7 @@ public class CollectionUtils {
      * @throws NullPointerException if the array is null
      */
     public static boolean contains(long @NotNull [] array, long element) {
-        return Iteration.anyMatch(array.length, i -> Primitives.equals(array[i], element));
+        return Iteration.anyMatch(array.length, i -> Primitives.longs.equals(array[i], element));
     }
 
     /**
@@ -643,7 +645,7 @@ public class CollectionUtils {
      * @throws NullPointerException if the input array is null
      */
     public static boolean contains(float @NotNull [] array, float element) {
-        return Iteration.anyMatch(array.length, i -> Primitives.equals(array[i], element));
+        return Iteration.anyMatch(array.length, i -> Primitives.floats.equals(array[i], element));
     }
 
     /**
@@ -655,7 +657,7 @@ public class CollectionUtils {
      * @throws NullPointerException if the input array is null
      */
     public static boolean contains(double @NotNull [] array, double element) {
-        return Iteration.anyMatch(array.length, i -> Primitives.equals(array[i], element));
+        return Iteration.anyMatch(array.length, i -> Primitives.doubles.equals(array[i], element));
     }
 
     /**
@@ -667,7 +669,7 @@ public class CollectionUtils {
      * @throws NullPointerException if the array is null
      */
     public static boolean contains(char @NotNull [] array, char element) {
-        return Iteration.anyMatch(array.length, i -> Primitives.equals(array[i], element));
+        return Iteration.anyMatch(array.length, i -> Primitives.chars.equals(array[i], element));
     }
 
     /**
@@ -681,7 +683,7 @@ public class CollectionUtils {
     @Contract(pure = true)
     public static boolean contains(boolean @NotNull [] array, boolean element) {
         for (boolean b : array) {
-            if (Primitives.equals(b, element)) {
+            if (Primitives.booleans.equals(b, element)) {
                 return true;
             }
         }
@@ -710,13 +712,13 @@ public class CollectionUtils {
     /**
      * Checks if the given byte array is empty.
      *
-     * @param array the byte array to check for emptiness; must not be null.
-     * @return {@code true} if the array is empty (contains no elements); {@code false} otherwise.
-     * @throws NullPointerException if the provided array is null.
+     * @param array the byte array to check; must not be null
+     * @return {@code true} if the array is empty (has zero length), {@code false} otherwise
+     * @throws NullPointerException if the provided array is null
      */
     @Contract(pure = true)
     public static boolean isEmpty(byte @NotNull [] array) {
-        return Primitives.isZero(array.length);
+        return Primitives.integers.isZero(array.length);
     }
 
     /**
@@ -728,7 +730,7 @@ public class CollectionUtils {
      */
     @Contract(pure = true)
     public static boolean isEmpty(short @NotNull [] array) {
-        return Primitives.isZero(array.length);
+        return Primitives.integers.isZero(array.length);
     }
 
     /**
@@ -740,7 +742,7 @@ public class CollectionUtils {
      */
     @Contract(pure = true)
     public static boolean isEmpty(int @NotNull [] array) {
-        return Primitives.isZero(array.length);
+        return Primitives.integers.isZero(array.length);
     }
 
     /**
@@ -752,7 +754,7 @@ public class CollectionUtils {
      */
     @Contract(pure = true)
     public static boolean isEmpty(long @NotNull [] array) {
-        return Primitives.isZero(array.length);
+        return Primitives.integers.isZero(array.length);
     }
 
     /**
@@ -764,7 +766,7 @@ public class CollectionUtils {
      */
     @Contract(pure = true)
     public static boolean isEmpty(float @NotNull [] array) {
-        return Primitives.isZero(array.length);
+        return Primitives.integers.isZero(array.length);
     }
 
     /**
@@ -776,7 +778,7 @@ public class CollectionUtils {
      */
     @Contract(pure = true)
     public static boolean isEmpty(double @NotNull [] array) {
-        return Primitives.isZero(array.length);
+        return Primitives.integers.isZero(array.length);
     }
 
     /**
@@ -788,7 +790,7 @@ public class CollectionUtils {
      */
     @Contract(pure = true)
     public static boolean isEmpty(char @NotNull [] array) {
-        return Primitives.isZero(array.length);
+        return Primitives.integers.isZero(array.length);
     }
 
     /**
@@ -800,7 +802,7 @@ public class CollectionUtils {
      */
     @Contract(pure = true)
     public static boolean isEmpty(boolean @NotNull [] array) {
-        return Primitives.isZero(array.length);
+        return Primitives.integers.isZero(array.length);
     }
 
     /**
@@ -818,7 +820,7 @@ public class CollectionUtils {
         byte[] result = new byte[array.length - 1];
         int index = 0;
         for (byte i : array) {
-            if (Primitives.notEquals(i, element)) {
+            if (Primitives.bytes.notEquals(i, element)) {
                 result[index++] = i;
             }
         }
@@ -841,7 +843,7 @@ public class CollectionUtils {
         short[] result = new short[array.length - 1];
         int index = 0;
         for (short i : array) {
-            if (Primitives.notEquals(i, element)) {
+            if (Primitives.shorts.notEquals(i, element)) {
                 result[index++] = i;
             }
         }
@@ -860,11 +862,11 @@ public class CollectionUtils {
      */
     @Contract(pure = true)
     public static int @NotNull [] remove(int @NotNull [] array, int element) {
-        int count = (int) Arrays.stream(array).filter(i -> Primitives.notEquals(i, element)).count();
+        int count = (int) Arrays.stream(array).filter(i -> Primitives.integers.notEquals(i, element)).count();
         int[] result = new int[count];
         int index = 0;
         for (int i : array) {
-            if (Primitives.notEquals(i, element)) {
+            if (Primitives.integers.notEquals(i, element)) {
                 result[index++] = i;
             }
         }
@@ -883,11 +885,11 @@ public class CollectionUtils {
      */
     @Contract(pure = true)
     public static long @NotNull [] remove(long @NotNull [] array, long element) {
-        int count = (int) Arrays.stream(array).filter(i -> Primitives.notEquals(i, element)).count();
+        int count = (int) Arrays.stream(array).filter(i -> Primitives.longs.notEquals(i, element)).count();
         long[] result = new long[count];
         int index = 0;
         for (long i : array) {
-            if (Primitives.notEquals(i, element)) {
+            if (Primitives.longs.notEquals(i, element)) {
                 result[index++] = i;
             }
         }
@@ -911,7 +913,7 @@ public class CollectionUtils {
         float[] result = new float[array.length - 1];
         int index = 0;
         for (float i : array) {
-            if (Primitives.notEquals(i, element)) {
+            if (Primitives.floats.notEquals(i, element)) {
                 result[index++] = i;
             }
         }
@@ -929,11 +931,11 @@ public class CollectionUtils {
      */
     @Contract(pure = true)
     public static double @NotNull [] remove(double @NotNull [] array, double element) {
-        int count = (int) Arrays.stream(array).filter(i -> Primitives.notEquals(i, element)).count();
+        int count = (int) Arrays.stream(array).filter(i -> Primitives.doubles.notEquals(i, element)).count();
         double[] result = new double[count];
         int index = 0;
         for (double i : array) {
-            if (Primitives.notEquals(i, element)) {
+            if (Primitives.doubles.notEquals(i, element)) {
                 result[index++] = i;
             }
         }
@@ -954,7 +956,7 @@ public class CollectionUtils {
         char[] result = new char[array.length - 1];
         int index = 0;
         for (char i : array) {
-            if (Primitives.notEquals(i, element)) {
+            if (Primitives.chars.notEquals(i, element)) {
                 result[index++] = i;
             }
         }
@@ -979,7 +981,7 @@ public class CollectionUtils {
         boolean[] result = new boolean[array.length - 1];
         int index = 0;
         for (boolean i : array) {
-            if (Primitives.notEquals(i, element)) {
+            if (Primitives.booleans.notEquals(i, element)) {
                 result[index++] = i;
             }
         }
@@ -1291,7 +1293,7 @@ public class CollectionUtils {
         int[] start = {0};
         int[] end = {array.length - 1};
 
-        ActionRepeater.whileTrue(() -> start[0] < end[0], () -> {
+        Repeater.whileTrue(() -> start[0] < end[0], () -> {
             byte tmp = array[start[0]];
             array[start[0]] = array[end[0]];
             array[end[0]] = tmp;
@@ -1305,7 +1307,7 @@ public class CollectionUtils {
         int[] start = {0};
         int[] end = {array.length - 1};
 
-        ActionRepeater.whileTrue(() -> start[0] < end[0], () -> {
+        Repeater.whileTrue(() -> start[0] < end[0], () -> {
             short tmp = array[start[0]];
             array[start[0]] = array[end[0]];
             array[end[0]] = tmp;
@@ -1319,7 +1321,7 @@ public class CollectionUtils {
         int[] start = {0};
         int[] end = {array.length - 1};
 
-        ActionRepeater.whileTrue(() -> start[0] < end[0], () -> {
+        Repeater.whileTrue(() -> start[0] < end[0], () -> {
             int tmp = array[start[0]];
             array[start[0]] = array[end[0]];
             array[end[0]] = tmp;
@@ -1333,7 +1335,7 @@ public class CollectionUtils {
         int[] start = {0};
         int[] end = {array.length - 1};
 
-        ActionRepeater.whileTrue(() -> start[0] < end[0], () -> {
+        Repeater.whileTrue(() -> start[0] < end[0], () -> {
             long tmp = array[start[0]];
             array[start[0]] = array[end[0]];
             array[end[0]] = tmp;
@@ -1347,7 +1349,7 @@ public class CollectionUtils {
         int[] start = {0};
         int[] end = {array.length - 1};
 
-        ActionRepeater.whileTrue(() -> start[0] < end[0], () -> {
+        Repeater.whileTrue(() -> start[0] < end[0], () -> {
             float tmp = array[start[0]];
             array[start[0]] = array[end[0]];
             array[end[0]] = tmp;
@@ -1361,7 +1363,7 @@ public class CollectionUtils {
         int[] start = {0};
         int[] end = {array.length - 1};
 
-        ActionRepeater.whileTrue(() -> start[0] < end[0], () -> {
+        Repeater.whileTrue(() -> start[0] < end[0], () -> {
             double tmp = array[start[0]];
             array[start[0]] = array[end[0]];
             array[end[0]] = tmp;
@@ -1375,7 +1377,7 @@ public class CollectionUtils {
         int[] start = {0};
         int[] end = {array.length - 1};
 
-        ActionRepeater.whileTrue(() -> start[0] < end[0], () -> {
+        Repeater.whileTrue(() -> start[0] < end[0], () -> {
             char tmp = array[start[0]];
             array[start[0]] = array[end[0]];
             array[end[0]] = tmp;
@@ -1389,7 +1391,7 @@ public class CollectionUtils {
         int[] start = {0};
         int[] end = {array.length - 1};
 
-        ActionRepeater.whileTrue(() -> start[0] < end[0], () -> {
+        Repeater.whileTrue(() -> start[0] < end[0], () -> {
             boolean tmp = array[start[0]];
             array[start[0]] = array[end[0]];
             array[end[0]] = tmp;

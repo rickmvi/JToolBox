@@ -17,9 +17,9 @@
  */
 package com.github.rickmvi.jtoolbox.text;
 
-import com.github.rickmvi.jtoolbox.console.utils.convert.PrimitiveConverter;
+import com.github.rickmvi.jtoolbox.console.utils.convert.TypeCaster;
 
-import com.github.rickmvi.jtoolbox.console.utils.convert.ObjectStringConverter;
+import com.github.rickmvi.jtoolbox.console.utils.convert.Stringifier;
 import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.Nullable;
 
@@ -55,28 +55,28 @@ public enum FormatToken {
     STRING("s") {
         @Override
         public String format(Object args1) {
-            return ObjectStringConverter.valueOf(args1);
+            return Stringifier.valueOf(args1);
         }
     },
 
     SPACE("n"){
       @Override
       public String format(Object value) {
-          return ObjectStringConverter.valueOf(value).replace("%n", System.lineSeparator());
+          return Stringifier.valueOf(value).replace("%n", System.lineSeparator());
       }
     },
 
     INT("i") {
         @Override
         public String format(Object value) {
-            return ObjectStringConverter.valueOf(PrimitiveConverter.toInt(value));
+            return Stringifier.valueOf(TypeCaster.toInt(value));
         }
     },
 
     LONG("l") {
         @Override
         public String format(Object value) {
-            return ObjectStringConverter.valueOf(PrimitiveConverter.toLong(value));
+            return Stringifier.valueOf(TypeCaster.toLong(value));
         }
     },
 
@@ -84,7 +84,7 @@ public enum FormatToken {
         private final DecimalFormat format = new DecimalFormat("###0.00");
         @Override
         public String format(Object value) {
-            return Formatted.format( "%dp{0}", PrimitiveConverter.toDouble(value));
+            return Formatted.format( "%dp{0}", TypeCaster.toDouble(value));
         }
     },
 
@@ -92,7 +92,7 @@ public enum FormatToken {
         private final DecimalFormat format = new DecimalFormat("0.##E0");
         @Override
         public String format(Object value) {
-            return format.format(PrimitiveConverter.toDouble(value));
+            return format.format(TypeCaster.toDouble(value));
         }
     },
 
@@ -100,21 +100,21 @@ public enum FormatToken {
         private final DecimalFormat format = new DecimalFormat("#,##0.00");
         @Override
         public String format(Object value) {
-            return format.format(PrimitiveConverter.toDouble(value));
+            return format.format(TypeCaster.toDouble(value));
         }
     },
 
     UPPER("u") {
         @Override
         public String format(Object value) {
-            return ObjectStringConverter.valueOf(value).toUpperCase(Locale.ROOT);
+            return Stringifier.valueOf(value).toUpperCase(Locale.ROOT);
         }
     },
 
     LOWER("lc") {
         @Override
         public String format(Object value) {
-            return ObjectStringConverter.valueOf(value).toLowerCase(Locale.ROOT);
+            return Stringifier.valueOf(value).toLowerCase(Locale.ROOT);
         }
     },
 

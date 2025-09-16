@@ -32,7 +32,7 @@ import org.jetbrains.annotations.NotNull;
  * It also provides methods to safely check for the presence of input data and
  * to close the underlying scanner resource when no longer needed.
  */
-public interface InputReader {
+public interface InputScanner {
 
     /**
      * Initializes the scanner using the default input source (usually {@code System.in}).

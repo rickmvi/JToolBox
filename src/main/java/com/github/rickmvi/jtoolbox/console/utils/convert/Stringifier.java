@@ -22,10 +22,10 @@ import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-import java.util.Arrays;
 import java.util.Collection;
-import java.util.Map;
 import java.util.Objects;
+import java.util.Arrays;
+import java.util.Map;
 
 /**
  * A utility class providing methods for generating a string representation of various objects.
@@ -33,7 +33,7 @@ import java.util.Objects;
  * maps, and other object types. Default values are provided to replace {@code null} when needed.
  */
 @lombok.experimental.UtilityClass
-public class ObjectStringConverter {
+public class Stringifier {
 
     /**
      * Converts the given object to its string representation.
@@ -147,7 +147,7 @@ public class ObjectStringConverter {
     @ApiStatus.Internal
     private static @NotNull String joinCollection(@NotNull Collection<?> col) {
         return "[" + col.stream()
-                .map(ObjectStringConverter::toString)
+                .map(Stringifier::toString)
                 .reduce((a, b) -> a + ", " + b).orElse("") + "]";
     }
 

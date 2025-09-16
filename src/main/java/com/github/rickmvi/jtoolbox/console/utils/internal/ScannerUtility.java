@@ -17,14 +17,14 @@
  */
 package com.github.rickmvi.jtoolbox.console.utils.internal;
 
-import com.github.rickmvi.jtoolbox.console.utils.convert.BooleanConverter;
+import com.github.rickmvi.jtoolbox.console.utils.convert.BooleanParser;
 import com.github.rickmvi.jtoolbox.console.utils.convert.SafeNumberParser;
 import com.github.rickmvi.jtoolbox.console.utils.Location;
 
 import static com.github.rickmvi.jtoolbox.debug.SLogger.warn;
 
-import com.github.rickmvi.jtoolbox.console.utils.InputHandler;
-import com.github.rickmvi.jtoolbox.control.ConditionalHelper;
+import com.github.rickmvi.jtoolbox.console.utils.ScannerHandler;
+import com.github.rickmvi.jtoolbox.control.Conditionals;
 import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
 
@@ -32,16 +32,16 @@ import java.util.Optional;
 import java.util.Scanner;
 
 /**
- * Internal implementation of the {@link InputReader} interface.
+ * Internal implementation of the {@link InputScanner} interface.
  * <p>
  * This class handles low-level operations for console input using {@link Scanner},
  * including validation, localization, safe reading, and type conversion.
  * It provides robust handling of user input, encapsulating common input
  * operations and converting raw strings into typed values.
  * <p>
- * This class is used internally by the public-facing {@link InputHandler}.
+ * This class is used internally by the public-facing {@link ScannerHandler}.
  */
-public class ReaderUtility implements InputReader, AutoCloseable {
+public class ScannerUtility implements InputScanner, AutoCloseable {
 
     /**
      * Internal {@link Scanner} instance wrapped in an {@link Optional}.
@@ -201,7 +201,7 @@ public class ReaderUtility implements InputReader, AutoCloseable {
     @Override
     @Contract(pure = true)
     public boolean nextBoolean() {
-        return BooleanConverter.toBoolean(nextSafe());
+        return BooleanParser.toBoolean(nextSafe());
     }
 
     /**
@@ -236,7 +236,7 @@ public class ReaderUtility implements InputReader, AutoCloseable {
      * @throws IllegalStateException if the scanner is not present
      */
     private void validate() {
-        ConditionalHelper.ifTrueThrow(scanner.isEmpty(), () ->
+        Conditionals.ifTrueThrow(scanner.isEmpty(), () ->
                 new IllegalStateException("Mistake: Scanner not initialized. Call InputHandler.init() first."));
     }
 }

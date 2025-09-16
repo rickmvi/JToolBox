@@ -17,23 +17,24 @@
  */
 package com.github.rickmvi.jtoolbox.text;
 
-import com.github.rickmvi.jtoolbox.console.utils.convert.ObjectStringConverter;
+import com.github.rickmvi.jtoolbox.console.utils.convert.Stringifier;
 import com.github.rickmvi.jtoolbox.template.TemplateFormatter;
 import com.github.rickmvi.jtoolbox.collections.map.MapUtils;
 import com.github.rickmvi.jtoolbox.control.ActionMapper;
+import com.github.rickmvi.jtoolbox.debug.SLogger;
 
 import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
 
-import java.util.function.Function;
 import java.util.regex.Pattern;
 import java.util.regex.Matcher;
 import java.util.HashMap;
 import java.util.Map;
 
-import static com.github.rickmvi.jtoolbox.control.ConditionalHelper.ifTrueThrow;
-import static com.github.rickmvi.jtoolbox.control.ActionRepeater.whileTrue;
+import static com.github.rickmvi.jtoolbox.control.Repeater.whileTrue;
+import static com.github.rickmvi.jtoolbox.collections.array.Array.length;
+import static com.github.rickmvi.jtoolbox.utils.primitives.Primitives.integers;
 
 /**
  * Utility class for advanced string formatting and templating.
@@ -106,7 +107,7 @@ public final class Formatted {
         for (Object arg : args) {
             template = GENERIC_PATTERN
                     .matcher(template)
-                    .replaceFirst(Matcher.quoteReplacement(ObjectStringConverter.valueOf(arg)));
+                    .replaceFirst(Matcher.quoteReplacement(Stringifier.valueOf(arg)));
         }
 
         return printfTokens(template, args);
@@ -276,14 +277,18 @@ public final class Formatted {
 
         whileTrue(matcher::find, () -> {
             String token = matcher.group(1);
-            int index = Integer.parseInt(matcher.group(2));
 
-            ifTrueThrow(index >= args.length, () -> {
-                throw new IllegalArgumentException(
-                        "Invalid argument index {" + index + "} used in placeholder '%" + token + "{" + index + "}'. " +
-                        "Total arguments available: " + args.length
-                );
-            });
+            int index = -1;
+            try {
+                index = Integer.parseInt(matcher.group(2));
+            } catch (NumberFormatException e) {
+                SLogger.error("Invalid index format in placeholder '{}'", e, matcher.group(2));
+            }
+
+            if (integers.isNegative(index) || integers.isGreaterOrEqual(index, length(args))) {
+                matcher.appendReplacement(buffer, "");
+                return;
+            }
 
             Object value = args[index];
             String replacement = ActionMapper.returning(token,
@@ -296,7 +301,6 @@ public final class Formatted {
                     "S",  () -> String.valueOf(value).toUpperCase(),
                     "lc", () -> String.valueOf(value).toLowerCase()
             ), () -> "");
-
             matcher.appendReplacement(buffer, Matcher.quoteReplacement(replacement));
         });
 
@@ -322,7 +326,7 @@ public final class Formatted {
             try {
                 replacement = String.format(formatSpecifier, args[argIndex[0]++]);
             } catch (Exception e) {
-                replacement = ObjectStringConverter.valueOf(args[argIndex[0] - 1]);
+                replacement = Stringifier.valueOf(args[argIndex[0] - 1]);
             }
 
             matcher.appendReplacement(buffer, Matcher.quoteReplacement(replacement));
