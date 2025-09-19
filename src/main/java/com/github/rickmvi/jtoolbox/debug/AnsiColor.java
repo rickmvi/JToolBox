@@ -17,9 +17,10 @@
  */
 package com.github.rickmvi.jtoolbox.debug;
 
-import com.github.rickmvi.jtoolbox.control.Conditionals;
+import com.github.rickmvi.jtoolbox.control.Condition;
 import com.github.rickmvi.jtoolbox.debug.log.LogLevel;
 
+import com.github.rickmvi.jtoolbox.utils.constants.Constants;
 import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
 
@@ -34,16 +35,16 @@ import org.jetbrains.annotations.NotNull;
  */
 @lombok.RequiredArgsConstructor(access = lombok.AccessLevel.PRIVATE)
 public enum AnsiColor {
-    BLACK   ("\u001B[30m"),
-    BLUE    ("\u001B[34m"),
-    BOLD    ("\u001B[1m"),
-    CYAN    ("\u001B[36m"),
-    GREEN   ("\u001B[32m"),
-    MAGENTA ("\u001B[35m"),
-    RED     ("\u001B[31m"),
-    RESET   ("\u001B[0m"),
-    WHITE   ("\u001B[37m"),
-    YELLOW  ("\u001B[33m");
+    BLACK   ( Constants.BLACK   ),
+    BLUE    ( Constants.BLUE    ),
+    BOLD    ( Constants.BOLD    ),
+    CYAN    ( Constants.CYAN    ),
+    GREEN   ( Constants.GREEN   ),
+    MAGENTA ( Constants.MAGENTA ),
+    RED     ( Constants.RED     ),
+    RESET   ( Constants.RESET   ),
+    WHITE   ( Constants.WHITE   ),
+    YELLOW  ( Constants.YELLOW  );
 
     @lombok.Getter(value = lombok.AccessLevel.PUBLIC)
     private final String ansiCode;
@@ -58,7 +59,7 @@ public enum AnsiColor {
      */
     @Contract(pure = true)
     public static @NotNull AnsiColor valueOf(int ordinal) {
-        Conditionals.ifTrueThrow(
+        Condition.ifTrueThrow(
                 ordinal < 0 || ordinal >= VALUES.length,
                 () -> new IndexOutOfBoundsException("Invalid ordinal: " + ordinal)
         );

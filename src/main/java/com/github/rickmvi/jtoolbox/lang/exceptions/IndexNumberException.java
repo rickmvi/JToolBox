@@ -1,7 +1,5 @@
 package com.github.rickmvi.jtoolbox.lang.exceptions;
 
-import com.github.rickmvi.jtoolbox.text.Formatted;
-
 public class IndexNumberException extends RuntimeException {
     public IndexNumberException(String message) {
         super(message);
@@ -16,6 +14,6 @@ public class IndexNumberException extends RuntimeException {
     }
 
     public IndexNumberException(int index, int size) {
-        super(Formatted.format("Index {} out of bounds for length {}", index, size));
+        super(ErrorMessage.INDEX_OUT_OF_BOUNDS.format(index, size));
     }
 }

@@ -38,7 +38,7 @@ import java.util.Objects;
  * these methods will throw runtime exceptions like {@link NumberFormatException}.
  */
 @lombok.experimental.UtilityClass
-public class TypeCaster {
+public class TypeAdapter {
 
     /**
      * Converts the given object to an {@code int} value.

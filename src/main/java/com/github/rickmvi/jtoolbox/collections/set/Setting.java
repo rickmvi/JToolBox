@@ -41,7 +41,7 @@ import java.util.Set;
  * @since 1.0
  */
 @lombok.experimental.UtilityClass
-public class SetUtils {
+public class Setting {
 
     /**
      * Checks if the set contains a value, ignoring case.

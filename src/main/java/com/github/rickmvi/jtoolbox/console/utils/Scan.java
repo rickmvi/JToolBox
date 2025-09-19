@@ -17,7 +17,7 @@
  */
 package com.github.rickmvi.jtoolbox.console.utils;
 
-import com.github.rickmvi.jtoolbox.console.utils.internal.ScannerUtility;
+import com.github.rickmvi.jtoolbox.console.utils.internal.ScanUtility;
 
 import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
@@ -29,7 +29,7 @@ import java.util.Scanner;
  * <p>
  * This class provides static methods for initializing, reading, validating, and closing
  * input streams.
- * It wraps a core {@link ScannerUtility} instance to centralize
+ * It wraps a core {@link ScanUtility} instance to centralize
  * input logic, enabling features like locale management, pattern matching, and safe reads.
  * <p>
  * The methods are null-safe, optionally locale-aware, and ready for user input in
@@ -39,20 +39,20 @@ import java.util.Scanner;
  * @since 1.0
  */
 @lombok.experimental.UtilityClass
-public class ScannerHandler {
+public class Scan {
 
     /**
-     * A private, final, and static instance of {@link ScannerUtility} designed
+     * A private, final, and static instance of {@link ScanUtility} designed
      * to manage the internal handling of {@link Scanner} operations.
      * This singleton ensures streamlined input management with options like custom initialization,
      * locale settings, and various token or line reading methods.
      * <p>
      * This instance cannot be accessed directly due to its private access level
-     * but is used internally by the {@link ScannerHandler} class to provide
+     * but is used internally by the {@link Scan} class to provide
      * input scanning functionalities.
      */
     @lombok.Getter(value = lombok.AccessLevel.PRIVATE)
-    private final static ScannerUtility core = new ScannerUtility();
+    private final static ScanUtility core = new ScanUtility();
 
     /**
      * Initializes the internal {@link Scanner} using {@code System.in}.

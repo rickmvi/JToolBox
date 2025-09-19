@@ -1,10 +1,9 @@
 package com.github.rickmvi.jtoolbox.lang.exceptions;
 
-import com.github.rickmvi.jtoolbox.lang.message.ErrorMessage;
-
 public class InvalidStepOutOfBounds extends RuntimeException {
+
     public InvalidStepOutOfBounds() {
-        super(ErrorMessage.STEP_OUT_OF_BOUNDS.getMessage());
+        super(ErrorMessage.STEP_OUT_OF_BOUNDS.display());
     }
 
     public InvalidStepOutOfBounds(String message) {

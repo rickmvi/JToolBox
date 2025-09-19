@@ -19,7 +19,9 @@ package com.github.rickmvi.jtoolbox.debug;
 
 import com.github.rickmvi.jtoolbox.console.Out;
 import com.github.rickmvi.jtoolbox.debug.log.LogLevel;
-import com.github.rickmvi.jtoolbox.text.Formatted;
+import com.github.rickmvi.jtoolbox.text.StringFormatter;
+import com.github.rickmvi.jtoolbox.utils.constants.Constants;
+import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.Contract;
 
 import java.time.LocalDateTime;
@@ -39,9 +41,9 @@ import java.util.Set;
  * @since 1.0
  */
 @lombok.experimental.UtilityClass
-public class SLogger {
+public class Logger {
 
-    private static final DateTimeFormatter FORMATTER = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
+    private static final DateTimeFormatter FORMATTER = DateTimeFormatter.ofPattern(Constants.DATA_TIME_FORMAT);
     private static final Set<LogLevel> ENABLED_LEVELS = EnumSet.complementOf(EnumSet.of(LogLevel.OFF));
 
     /**
@@ -58,6 +60,7 @@ public class SLogger {
      * @param color the ANSI color code to apply
      * @return the colorized message if enabled, or the original message otherwise
      */
+    @ApiStatus.Internal
     @Contract(pure = true)
     private static String colorize(String message, String color) {
         return useAnsiColor ? color + message + AnsiColor.RESET.getAnsiCode() : message;
@@ -90,7 +93,7 @@ public class SLogger {
 
         String time = FORMATTER.format(LocalDateTime.now());
         String coloredLevel = colorize(level.name(), AnsiColor.getColor(level));
-        String message = Formatted.format(template, args);
+        String message = StringFormatter.format(template, args);
 
         Out.formatted("[{}] [{}] {}%n", time, coloredLevel, message);
     }
@@ -117,7 +120,7 @@ public class SLogger {
      * @param args the arguments to substitute into the template
      */
     public static void log(LogLevel level, String template, Throwable t, Object... args) {
-        log(level, Formatted.format(template, args));
+        log(level, StringFormatter.format(template, args));
         if (ENABLED_LEVELS.contains(level) && level != LogLevel.OFF && t != null)
             t.printStackTrace(System.out);
     }

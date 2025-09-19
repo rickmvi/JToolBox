@@ -15,15 +15,9 @@
  * You should have received a copy of the GNU Lesser General Public License
  * along with this library. If not, see <https://www.gnu.org/licenses/>.
  */
-package com.github.rickmvi.jtoolbox.utils;
+package com.github.rickmvi.jtoolbox.text.internal;
 
-import org.jetbrains.annotations.Nullable;
-
-import java.util.Objects;
-
-public class NullSafety {
-
-    public static boolean nonNull(@Nullable Object o) {
-        return Objects.nonNull(o) && !o.toString().isEmpty();
-    }
+@FunctionalInterface
+public interface NumberInterface {
+    String format(Object obj);
 }

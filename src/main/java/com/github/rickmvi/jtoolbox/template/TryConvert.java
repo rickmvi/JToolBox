@@ -17,7 +17,7 @@
  */
 package com.github.rickmvi.jtoolbox.template;
 
-import com.github.rickmvi.jtoolbox.debug.SLogger;
+import com.github.rickmvi.jtoolbox.debug.Logger;
 import org.jetbrains.annotations.Contract;
 
 import java.util.Objects;
@@ -70,9 +70,9 @@ public class TryConvert {
         try {
             return Optional.ofNullable(converter.apply(value));
         } catch (Exception e) {
-            SLogger.warn(
+            Logger.error(
                     "Failed to convert value: {} to type: {} ",
-                    e.getMessage() != null ? e.getMessage() : e.getClass().getSimpleName(),
+                    e,
                     value,
                     converter.getClass().getSimpleName()
             );

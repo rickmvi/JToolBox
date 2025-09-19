@@ -37,7 +37,7 @@ import java.util.Queue;
  * @since 1.0
  */
 @lombok.experimental.UtilityClass
-public class QueueUtils {
+public class Queuing {
 
     /**
      * Filters the given queue using a predicate and returns a new queue with the matched elements.

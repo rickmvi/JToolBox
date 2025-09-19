@@ -23,7 +23,6 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.Collection;
-import java.util.Objects;
 import java.util.Arrays;
 import java.util.Map;
 
@@ -47,7 +46,7 @@ public class Stringifier {
      */
     @Contract(value = "null -> !null", pure = true)
     public static String valueOf(@Nullable Object o) {
-        return Objects.isNull(o) ? "null" : String.valueOf(o);
+        return o == null || o.toString().isEmpty() ? "null" : String.valueOf(o);
     }
 
     /**
@@ -84,7 +83,7 @@ public class Stringifier {
      */
     @Contract("null,_-> param2")
     public static @NotNull String toString(@Nullable Object o, @NotNull String defaultValue) {
-        if (Objects.isNull(o)) return defaultValue;
+        if (o == null) return defaultValue;
 
         try {
             if (o instanceof String) return (String) o;
@@ -109,7 +108,7 @@ public class Stringifier {
             if (o.getClass().isArray()) return toArrayString(o);
 
             String result = o.toString();
-            if (Objects.isNull(result) || result.trim().isEmpty()) {
+            if (result == null || result.trim().isEmpty()) {
                 return o.getClass().getSimpleName() + "@" + Integer.toHexString(o.hashCode());
             }
             return result;
@@ -120,7 +119,7 @@ public class Stringifier {
 
     @Contract("null, _ -> param2")
     public static Object valueOf(Object o, Object defaultValue) {
-        if (Objects.isNull(o)) return defaultValue;
+        if (o == null) return defaultValue;
         try {
             if (o instanceof String) return o;
             if (o instanceof Number || o instanceof Boolean || o instanceof Character) return o.toString();

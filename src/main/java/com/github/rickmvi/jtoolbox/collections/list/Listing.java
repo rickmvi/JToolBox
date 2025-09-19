@@ -38,7 +38,7 @@ import java.util.function.Function;
  * @since 1.0
  */
 @lombok.experimental.UtilityClass
-public class ListUtils {
+public class Listing {
 
     /**
      * Checks if the given list is empty or null.

@@ -18,13 +18,13 @@
 package com.github.rickmvi.jtoolbox.console.utils.internal;
 
 import com.github.rickmvi.jtoolbox.console.utils.convert.BooleanParser;
-import com.github.rickmvi.jtoolbox.console.utils.convert.SafeNumberParser;
+import com.github.rickmvi.jtoolbox.console.utils.convert.NumberParser;
 import com.github.rickmvi.jtoolbox.console.utils.Location;
 
-import static com.github.rickmvi.jtoolbox.debug.SLogger.warn;
+import static com.github.rickmvi.jtoolbox.debug.Logger.warn;
 
-import com.github.rickmvi.jtoolbox.console.utils.ScannerHandler;
-import com.github.rickmvi.jtoolbox.control.Conditionals;
+import com.github.rickmvi.jtoolbox.console.utils.Scan;
+import com.github.rickmvi.jtoolbox.control.Condition;
 import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
 
@@ -32,16 +32,16 @@ import java.util.Optional;
 import java.util.Scanner;
 
 /**
- * Internal implementation of the {@link InputScanner} interface.
+ * Internal implementation of the {@link InputScan} interface.
  * <p>
  * This class handles low-level operations for console input using {@link Scanner},
  * including validation, localization, safe reading, and type conversion.
  * It provides robust handling of user input, encapsulating common input
  * operations and converting raw strings into typed values.
  * <p>
- * This class is used internally by the public-facing {@link ScannerHandler}.
+ * This class is used internally by the public-facing {@link Scan}.
  */
-public class ScannerUtility implements InputScanner, AutoCloseable {
+public class ScanUtility implements InputScan, AutoCloseable {
 
     /**
      * Internal {@link Scanner} instance wrapped in an {@link Optional}.
@@ -149,14 +149,14 @@ public class ScannerUtility implements InputScanner, AutoCloseable {
 
     /**
      * Reads the next token and parses it into an {@code int}.
-     * Falls back to safe parsing via {@link SafeNumberParser#toInt(String)}.
+     * Falls back to safe parsing via {@link NumberParser#toInt(String)}.
      *
      * @return the parsed integer value, or {@code 0} if invalid
      */
     @Override
     @Contract(pure = true)
     public int nextInt() {
-        return SafeNumberParser.toInt(nextSafe());
+        return NumberParser.toInt(nextSafe());
     }
 
     /**
@@ -167,7 +167,7 @@ public class ScannerUtility implements InputScanner, AutoCloseable {
     @Override
     @Contract(pure = true)
     public long nextLong() {
-        return SafeNumberParser.toLong(nextSafe());
+        return NumberParser.toLong(nextSafe());
     }
 
     /**
@@ -178,7 +178,7 @@ public class ScannerUtility implements InputScanner, AutoCloseable {
     @Override
     @Contract(pure = true)
     public float nextFloat() {
-        return SafeNumberParser.toFloat(nextSafe());
+        return NumberParser.toFloat(nextSafe());
     }
 
     /**
@@ -189,7 +189,7 @@ public class ScannerUtility implements InputScanner, AutoCloseable {
     @Override
     @Contract(pure = true)
     public double nextDouble() {
-        return SafeNumberParser.toDouble(nextSafe());
+        return NumberParser.toDouble(nextSafe());
     }
 
     /**
@@ -236,7 +236,7 @@ public class ScannerUtility implements InputScanner, AutoCloseable {
      * @throws IllegalStateException if the scanner is not present
      */
     private void validate() {
-        Conditionals.ifTrueThrow(scanner.isEmpty(), () ->
+        Condition.ifTrueThrow(scanner.isEmpty(), () ->
                 new IllegalStateException("Mistake: Scanner not initialized. Call InputHandler.init() first."));
     }
 }

@@ -17,16 +17,17 @@
  */
 package com.github.rickmvi.jtoolbox.text;
 
-import com.github.rickmvi.jtoolbox.console.utils.convert.TypeCaster;
-import com.github.rickmvi.jtoolbox.text.internal.NumberFormatStyle;
-import com.github.rickmvi.jtoolbox.text.internal.NumberFormatter;
+import com.github.rickmvi.jtoolbox.console.utils.convert.TypeAdapter;
+import com.github.rickmvi.jtoolbox.text.internal.NumberStyle;
+import com.github.rickmvi.jtoolbox.text.internal.NumberInterface;
+import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
 
 /**
- * Utility class for formatting numeric values using predefined styles from {@link NumberFormatStyle}.
+ * Utility class for formatting numeric values using predefined styles from {@link NumberStyle}.
  * <p>
- * Also provides reusable instances of {@link NumberFormatter} for common styles.
+ * Also provides reusable instances of {@link NumberInterface} for common styles.
  * </p>
  *
  * Examples:
@@ -39,40 +40,35 @@ import org.jetbrains.annotations.NotNull;
 @lombok.experimental.UtilityClass
 public class NumberFormat {
 
-    /**
-     * Formats a generic value using the given formatting style.
-     *
-     * @param value the object to be converted (supports {@link Number}, {@code String}, etc.)
-     * @param style the formatting style to apply
-     * @return the formatted string
-     */
-    public static String format(Object value, @NotNull NumberFormatStyle style) {
-        return style.format(TypeCaster.toDouble(value));
-    }
 
     /**
-     * Creates a {@link NumberFormatter} from the specified style.
+     * Creates a {@link NumberInterface} from the specified style.
      *
      * @param style the formatting style
-     * @return a functional instance of {@link NumberFormatter}
+     * @return a functional instance of {@link NumberInterface}
      */
     @Contract(pure = true)
-    public static @NotNull NumberFormatter of(NumberFormatStyle style) {
+    public static @NotNull NumberInterface of(NumberStyle style) {
         return value -> format(value, style);
     }
 
+    @ApiStatus.Internal
+    private static String format(Object value, @NotNull NumberStyle style) {
+        return style.format(TypeAdapter.toDouble(value));
+    }
+
     /** Formatter with comma as a decimal separator */
-    public static final NumberFormatter DECIMAL_COMMA = of(NumberFormatStyle.DECIMAL_COMMA);
+    public static final NumberInterface DECIMAL_COMMA = of(NumberStyle.DECIMAL_COMMA);
 
     /** Formatter with dot as a decimal separator */
-    public static final NumberFormatter DECIMAL_POINT = of(NumberFormatStyle.DECIMAL_POINT);
+    public static final NumberInterface DECIMAL_POINT = of(NumberStyle.DECIMAL_POINT);
 
     /** Formatter for integers with a thousand separator */
-    public static final NumberFormatter INTEGER       = of(NumberFormatStyle.INTEGER);
+    public static final NumberInterface INTEGER       = of(NumberStyle.INTEGER);
 
     /** Formatter for percentages with two decimal places */
-    public static final NumberFormatter PERCENT       = of(NumberFormatStyle.PERCENT);
+    public static final NumberInterface PERCENT       = of(NumberStyle.PERCENT);
 
     /** Formatter in scientific notation */
-    public static final NumberFormatter SCIENTIFIC    = of(NumberFormatStyle.SCIENTIFIC);
+    public static final NumberInterface SCIENTIFIC    = of(NumberStyle.SCIENTIFIC);
 }

@@ -47,7 +47,11 @@ public class Repeater {
      *                  the loop is terminated immediately.
      * @throws NullPointerException if {@code condition} or {@code cancel} is {@code null}.
      */
-    public static void whileTrueCancelable(@NotNull BooleanSupplier condition, Runnable action, @NotNull BooleanSupplier cancel) {
+    public static void whileTrueCancelable(
+            @NotNull BooleanSupplier condition,
+            Runnable action,
+            @NotNull BooleanSupplier cancel
+    ) {
         while (condition.getAsBoolean() && !cancel.getAsBoolean()) action.run();
     }
 
@@ -58,7 +62,11 @@ public class Repeater {
      * @param action    the action to execute
      * @param cancel    the supplier that determines if execution should be canceled
      */
-    public static void whileTrueCancelable(@NotNull BooleanSupplier condition, Runnable action, Supplier<Boolean> cancel) {
+    public static void whileTrueCancelable(
+            @NotNull BooleanSupplier condition,
+            Runnable action,
+            Supplier<Boolean> cancel
+    ) {
         while (condition.getAsBoolean() && !cancel.get()) action.run();
     }
 
