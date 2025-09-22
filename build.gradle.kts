@@ -25,7 +25,7 @@ tasks.test {
 }
 
 mavenPublishing {
-    coordinates(group.toString(), "jtoolbox", version.toString())
+    coordinates(group.toString(), "utility", version.toString())
 
     pom {
         name.set("JToolBox")
