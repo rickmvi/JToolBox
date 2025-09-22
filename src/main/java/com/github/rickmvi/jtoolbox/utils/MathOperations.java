@@ -510,6 +510,7 @@ public class MathOperations {
 
     public static double divideDouble(double dividend, double divisor) {
         ifTrueThrow(Primitives.isZero(divisor), () -> new ArithmeticException(Constants.DIVISION_BY_ZERO));
+
         return dividend / divisor;
     }
 

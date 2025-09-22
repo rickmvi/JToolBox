@@ -34,6 +34,7 @@ import static com.github.rickmvi.jtoolbox.text.StringFormatter.format;
  * @author Rick M. Viana
  * @since 1.1
  */
+@SuppressWarnings("unused")
 public final class Primitives {
 
     @Contract(value = " -> fail", pure = true)

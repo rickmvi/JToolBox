@@ -26,7 +26,7 @@ public enum ErrorMessage {
     EMPTY_ARRAY         (Constants.EMPTY_ARRAY),
     STEP_OUT_OF_BOUNDS  (Constants.STEP_OUT_OF_BOUNDS);
 
-    @lombok.Getter(value = lombok.AccessLevel.PRIVATE, onMethod_ = @Contract(pure = true))
+    @lombok.Getter(value = lombok.AccessLevel.PRIVATE)
     private final String message;
 
     @Contract(pure = true)
