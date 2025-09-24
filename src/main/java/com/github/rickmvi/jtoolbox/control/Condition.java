@@ -48,6 +48,33 @@ public class Condition {
         return !condition ? supplier.get() : defaultValue;
     }
 
+    /* ========================== Runnable-based ========================== */
+
+    public static void runIfTrueElse(
+            boolean condition,
+            @NotNull Runnable whenTrue,
+            @NotNull Runnable orElse
+    ) {
+        if (condition) {
+            whenTrue.run();
+        } else {
+            orElse.run();
+        }
+    }
+
+    public static void runIfFalseElse(
+            boolean condition,
+            @NotNull Runnable whenFalse,
+            @NotNull Runnable orElse
+    ) {
+        if (!condition) {
+            whenFalse.run();
+        } else {
+            orElse.run();
+        }
+    }
+
+
     /* ========================== Supplier-based ========================== */
 
     public static <R> R supplyIfTrueElse(
