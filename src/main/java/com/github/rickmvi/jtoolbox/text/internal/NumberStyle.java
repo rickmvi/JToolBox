@@ -18,6 +18,7 @@
 package com.github.rickmvi.jtoolbox.text.internal;
 
 import com.github.rickmvi.jtoolbox.utils.constants.Constants;
+import lombok.Getter;
 import org.jetbrains.annotations.Contract;
 
 import java.text.DecimalFormat;
@@ -56,7 +57,7 @@ public enum NumberStyle {
     /** Scientific notation format (e.g., 1.23E3) */
     SCIENTIFIC    (Constants.SCIENTIFIC);
 
-    @lombok.Getter(value = lombok.AccessLevel.PUBLIC)
+    @Getter(value = lombok.AccessLevel.PUBLIC)
     private final DecimalFormat format;
 
     /**

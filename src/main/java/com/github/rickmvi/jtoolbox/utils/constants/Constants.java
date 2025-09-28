@@ -4,7 +4,8 @@ public class Constants {
 
     // --- Regex ---
     public static final String GENERIC            = "\\{}";
-    public static final String PLACEHOLDERS_REGEX = "%(dc|dp|i|p|sc|S|lc)\\{(\\d+)}";
+    public static final String GENERIC_OPTIONAL   = "\"\\\\{(\\\\d+)(?::(dc|dp|i|p|sc|S|lc))?}\"";
+    public static final String PLACEHOLDERS_REGEX = "$(dc|dp|i|p|sc|S|lc)\\{(\\d+)}";
 
     // --- Number Formats ---
     public static final String DECIMAL_COMMA  = "#,##0.00";

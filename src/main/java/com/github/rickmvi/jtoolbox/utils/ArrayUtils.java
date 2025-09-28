@@ -30,6 +30,56 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
+/**
+ * Utility class for working with arrays of primitive types in a safe and efficient way.
+ * <p>
+ * This class provides methods to perform common array operations, including:
+ * <ul>
+ *     <li>Getting the length of arrays safely, returning 0 for null or empty arrays</li>
+ *     <li>Concatenating multiple arrays into one, preserving order</li>
+ *     <li>Finding the first and last index of elements within arrays</li>
+ *     <li>Copying a range of elements from an array into a new array</li>
+ * </ul>
+ * </p>
+ *
+ * <p>
+ * All methods are static and designed to handle primitive types:
+ * {@code byte}, {@code short}, {@code int}, {@code long}, {@code float},
+ * {@code double}, {@code char}, and {@code boolean}.
+ * </p>
+ *
+ * <h2>Usage Examples:</h2>
+ * <pre>{@code
+ * // Concatenate two int arrays
+ * int[] combined = ArrayUtils.concat(new int[]{1,2}, new int[]{3,4});
+ *
+ * // Find the first index of an element
+ * int index = ArrayUtils.indexOf(3, combined);
+ *
+ * // Find the last index of an element
+ * int lastIndex = ArrayUtils.lastIndexOf(2, combined);
+ *
+ * // Copy a range of elements
+ * int[] subArray = ArrayUtils.copyRange(combined, 1, 3);
+ *
+ * // Get the length of an array safely
+ * int len = ArrayUtils.length(combined);
+ * }</pre>
+ *
+ * <h2>Notes:</h2>
+ * <ul>
+ *     <li>Methods throw {@link NullPointerException} if required arguments are null.</li>
+ *     <li>Methods like {@code concat} and {@code copyRange} may throw
+ *         {@link ArrayIndexOutOfBoundsException} if indices are invalid.</li>
+ *     <li>Designed for performance with primitive arrays and minimal overhead.</li>
+ *     <li>Relies on {@link Iteration} and {@link Primitives} for safe element comparisons and index operations.</li>
+ * </ul>
+ *
+ * @apiNote This class is abstract and cannot be instantiated. Use the static methods directly.
+ * @see Iteration
+ * @see Primitives
+ * @since 1.0
+ */
 public abstract class ArrayUtils {
 
     @Contract(pure = true)
@@ -210,13 +260,13 @@ public abstract class ArrayUtils {
     public static int @NotNull [] concat(int @NotNull [] first, int @NotNull []... rest) {
         int totalLength = first.length;
         for (int[] array : rest) {
-            totalLength = MathOperations.sumInt(totalLength, array.length);
+            totalLength = MathUtils.sumInt(totalLength, array.length);
         }
         int[] result = Arrays.copyOf(first, totalLength);
         int offset = first.length;
         for (int[] array : rest) {
             System.arraycopy(array, 0, result, offset, array.length);
-            offset = MathOperations.sumInt(offset, array.length);
+            offset = MathUtils.sumInt(offset, array.length);
         }
         return result;
     }
@@ -685,7 +735,7 @@ public abstract class ArrayUtils {
      * Checks if the given byte array is empty.
      *
      * @param array the byte array to check; must not be null
-     * @return {@code true} if the array is empty (has zero length), {@code false} otherwise
+     * @return {@code true} if the array is empty (i.e., its length is zero); {@code false} otherwise
      * @throws NullPointerException if the provided array is null
      */
     @Contract(pure = true)

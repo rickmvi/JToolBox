@@ -4,20 +4,20 @@ plugins {
 }
 
 group = "io.github.rickmvi"
-version = "1.10.05"
+version = "1.10.06"
 
 repositories {
     mavenCentral()
 }
 
 dependencies {
-    testImplementation(platform("org.junit:junit-bom:5.10.0"))
-    testImplementation("org.junit.jupiter:junit-jupiter")
+    testImplementation(platform(libs.junit))
+    testImplementation(libs.junitjupiter)
 
-    compileOnly("org.projectlombok:lombok:1.18.38")
-    annotationProcessor("org.projectlombok:lombok:1.18.38")
+    compileOnly(libs.lombok)
+    annotationProcessor(libs.lombok)
 
-    implementation("org.jetbrains:annotations:24.1.0")
+    implementation(libs.annotations)
 }
 
 tasks.test {

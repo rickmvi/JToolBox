@@ -107,7 +107,6 @@ public class Scan {
         return core.nextBoolean();
     }
 
-    @Contract(pure = true)
     public static String nextSafe() {
         return core.nextSafe();
     }

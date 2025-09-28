@@ -17,6 +17,7 @@
  */
 package com.github.rickmvi.jtoolbox.collections.queue;
 
+import lombok.experimental.UtilityClass;
 import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
 
@@ -36,7 +37,7 @@ import java.util.Queue;
  * @author Rick M. Viana
  * @since 1.0
  */
-@lombok.experimental.UtilityClass
+@UtilityClass
 public class Queuing {
 
     /**

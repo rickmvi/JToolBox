@@ -27,9 +27,47 @@ import java.util.Arrays;
 import java.util.Map;
 
 /**
- * A utility class providing methods for generating a string representation of various objects.
- * The methods in this class are designed to safely handle {@code null} inputs, collections, arrays,
- * maps, and other object types. Default values are provided to replace {@code null} when needed.
+ * Utility class for converting various Java objects into their string representations.
+ * <p>
+ * This class provides methods to safely convert objects of different types—including
+ * primitives, arrays, collections, maps, enums, and exceptions—into non-null
+ * strings. It ensures that null values are handled gracefully and provides default
+ * representations when needed.
+ * </p>
+ *
+ * <h2>Core Methods:</h2>
+ * <ul>
+ *     <li>{@link #valueOf(Object)} – Converts an object to string, returning "null" for null or empty values.</li>
+ *     <li>{@link #toString(Object)} – Converts an object to string, providing a default "null" for null objects.</li>
+ *     <li>{@link #toString(Object, String)} – Converts an object to string, using a custom default string if the object is null.</li>
+ *     <li>{@link #valueOf(Object, Object)} – Returns the object itself or its string representation, falling back to a default value.</li>
+ * </ul>
+ *
+ * <h2>Supported Types:</h2>
+ * <ul>
+ *     <li>String, Number, Boolean, Character</li>
+ *     <li>Enums (returns the enum name)</li>
+ *     <li>Exceptions (returns {@code Throwable.toString()})</li>
+ *     <li>Collections (converted to a comma-separated list within square brackets)</li>
+ *     <li>Maps (converted to key=value pairs within curly braces)</li>
+ *     <li>Arrays of any primitive or object type</li>
+ * </ul>
+ *
+ * <h2>Usage Examples:</h2>
+ * <pre>{@code
+ * String s1 = Stringifier.valueOf(null); // "null"
+ * String s2 = Stringifier.toString(123); // "123"
+ * String s3 = Stringifier.toString(new int[]{1,2,3}); // "[1, 2, 3]"
+ * String s4 = Stringifier.toString(Map.of("a", 1, "b", 2)); // "{a=1, b=2}"
+ * }</pre>
+ *
+ * <p>
+ * This class is a {@link lombok.experimental.UtilityClass}, so all methods are static
+ * and it cannot be instantiated.
+ * </p>
+ *
+ * @author Rick M. Viana
+ * @since 1.1
  */
 @lombok.experimental.UtilityClass
 public class Stringifier {

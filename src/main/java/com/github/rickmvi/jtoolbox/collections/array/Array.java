@@ -18,14 +18,14 @@
 package com.github.rickmvi.jtoolbox.collections.array;
 
 import com.github.rickmvi.jtoolbox.lang.exceptions.InvalidStartIndexException;
-import com.github.rickmvi.jtoolbox.utils.ArrayUtils;
 import com.github.rickmvi.jtoolbox.control.fors.Iteration;
+import com.github.rickmvi.jtoolbox.utils.ArrayUtils;
 import com.github.rickmvi.jtoolbox.control.ifs.If;
 
-import com.github.rickmvi.jtoolbox.utils.MathOperations;
-import lombok.experimental.UtilityClass;
+import com.github.rickmvi.jtoolbox.utils.MathUtils;
 import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
+import lombok.experimental.UtilityClass;
 
 import java.util.function.IntFunction;
 import java.util.function.Predicate;
@@ -40,6 +40,72 @@ import java.util.Set;
 
 import static com.github.rickmvi.jtoolbox.text.StringFormatter.format;
 
+/**
+ * Utility class for working with arrays in a functional and safe way.
+ * <p>
+ * This class extends {@link ArrayUtils} and provides additional methods for:
+ * <ul>
+ *     <li>Adding, removing, and inserting elements</li>
+ *     <li>Concatenation of arrays</li>
+ *     <li>Finding indices and checking containment</li>
+ *     <li>Copying, reversing, filtering, and mapping arrays</li>
+ *     <li>Converting arrays to {@link List} or {@link Set}</li>
+ *     <li>Sorting arrays of various types</li>
+ *     <li>Summing numeric arrays</li>
+ *     <li>Repeating values to create arrays</li>
+ *     <li>Joining arrays into strings</li>
+ *     <li>Getting distinct elements</li>
+ * </ul>
+ * </p>
+ *
+ * <h2>Examples:</h2>
+ * <pre>{@code
+ * // Adding an element
+ * Integer[] arr = {1, 2, 3};
+ * arr = Array.add(arr, 4); // [1, 2, 3, 4]
+ *
+ * // Removing an element
+ * arr = Array.remove(arr, 1); // [1, 3, 4]
+ *
+ * // Concatenating arrays
+ * Integer[] b = {5, 6};
+ * arr = Array.concat(arr, b); // [1, 3, 4, 5, 6]
+ *
+ * // Mapping an array
+ * String[] sArr = Array.map(arr, Object::toString, String[]::new);
+ *
+ * // Filtering an array
+ * Integer[] filtered = Array.filter(arr, i -> i % 2 == 0, Integer[]::new); // [4, 6]
+ *
+ * // Getting distinct elements
+ * Integer[] distinct = Array.distinct(new Integer[]{1,2,2,3}, Integer[]::new); // [1,2,3]
+ *
+ * // Reversing an array
+ * Integer[] reversed = Array.reversed(arr); // [6,5,4,3,1]
+ *
+ * // Summing numeric arrays
+ * int sum = Array.sum(new int[]{1,2,3}); // 6
+ *
+ * // Repeating a value
+ * Integer[] repeated = Array.repeat(7, 3, Integer[]::new); // [7,7,7]
+ * }</pre>
+ *
+ * <h2>Notes:</h2>
+ * <ul>
+ *     <li>All array parameters must not be {@code null} unless explicitly allowed.</li>
+ *     <li>Methods that modify arrays (like {@code remove}, {@code reverseInPlace}) return new arrays or modify in place depending on the method.</li>
+ *     <li>Methods are designed to work with generics and preserve type safety using {@link IntFunction} generators.</li>
+ *     <li>Index-based methods throw {@link InvalidStartIndexException} or {@link IndexOutOfBoundsException} when indices are invalid.</li>
+ *     <li>Numeric operations delegate to {@link MathUtils} for type-specific calculations.</li>
+ * </ul>
+ *
+ * @apiNote This class provides functional and safe alternatives to {@link java.util.Arrays} methods,
+ *          with added convenience for generics, type safety, and array manipulation.
+ * @see ArrayUtils
+ * @see Iteration
+ * @see Arrays
+ * @since 1.0
+ */
 @UtilityClass
 public class Array extends ArrayUtils {
 
@@ -457,7 +523,7 @@ public class Array extends ArrayUtils {
      */
     @Contract(pure = true)
     public static int sum(int @NotNull [] array) {
-        return MathOperations.sumInt(array);
+        return MathUtils.sumInt(array);
     }
 
     /**
@@ -469,7 +535,7 @@ public class Array extends ArrayUtils {
      */
     @Contract(pure = true)
     public static long sum(long @NotNull [] array) {
-        return MathOperations.sumLong(array);
+        return MathUtils.sumLong(array);
     }
 
     /**
@@ -481,7 +547,7 @@ public class Array extends ArrayUtils {
      */
     @Contract(pure = true)
     public static float sum(float @NotNull [] array) {
-        return MathOperations.sumFloat(array);
+        return MathUtils.sumFloat(array);
     }
 
     /**
@@ -493,7 +559,7 @@ public class Array extends ArrayUtils {
      */
     @Contract(pure = true)
     public static double sum(double @NotNull [] array) {
-        return MathOperations.sumDouble(array);
+        return MathUtils.sumDouble(array);
     }
 
     /* ==================================== REPEAT METHOD ========================================= */

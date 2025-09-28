@@ -20,6 +20,7 @@ package com.github.rickmvi.jtoolbox.text;
 import com.github.rickmvi.jtoolbox.console.utils.convert.TypeAdapter;
 import com.github.rickmvi.jtoolbox.text.internal.NumberStyle;
 import com.github.rickmvi.jtoolbox.text.internal.NumberInterface;
+import lombok.experimental.UtilityClass;
 import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
@@ -37,9 +38,8 @@ import org.jetbrains.annotations.NotNull;
  * String result = formatter.format(123456); // "1.23E5"
  * }</pre>
  */
-@lombok.experimental.UtilityClass
+@UtilityClass
 public class NumberFormat {
-
 
     /**
      * Creates a {@link NumberInterface} from the specified style.
@@ -53,7 +53,7 @@ public class NumberFormat {
     }
 
     @ApiStatus.Internal
-    private static String format(Object value, @NotNull NumberStyle style) {
+    public static String format(Object value, @NotNull NumberStyle style) {
         return style.format(TypeAdapter.toDouble(value));
     }
 

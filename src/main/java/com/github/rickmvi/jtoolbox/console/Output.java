@@ -20,7 +20,6 @@ package com.github.rickmvi.jtoolbox.console;
 import com.github.rickmvi.jtoolbox.console.utils.convert.Stringifier;
 import com.github.rickmvi.jtoolbox.text.StringFormatter;
 import com.github.rickmvi.jtoolbox.control.ifs.If;
-import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -28,8 +27,36 @@ import java.io.PrintStream;
 import java.util.function.Consumer;
 
 /**
+ * Utility interface for console output operations.
+ * <p>
+ * Provides static methods to print, write, and format text to the standard output
+ * or error streams. All methods handle {@code null} inputs gracefully, ignoring
+ * them without throwing exceptions.
+ * <p>
+ * This interface is designed to simplify console I/O in a fluent and safe manner,
+ * integrating with {@link If} for conditional execution and {@link Stringifier} /
+ * {@link StringFormatter} for conversion and formatting.
+ *
+ * <h2>Usage Examples:</h2>
+ * <pre>{@code
+ * Output.print("Hello, World!");
+ * Output.write("Line with newline");
+ * Output.formatted("Hello, %s!", "Joao");
+ * Output.formatted("Hello, {}!", "Maria");
+ * Output.newline();
+ * Output.to(System.err, "Error message");
+ * Output.withOut(out -> out.println("Custom output logic"));
+ * Output.withErr(err -> err.println("Custom error logic"));
+ * }</pre>
+ *
+ * <p>
+ * All methods are static and can be called without instantiating the interface.
+ * </p>
+ *
+ * @see StringFormatter
+ * @see Stringifier
  * @author Rick M. Viana
- * @since 1.3
+ * @since 1.4
  */
 public interface Output {
 
@@ -37,19 +64,16 @@ public interface Output {
         If.runTrue(o != null, () -> System.out.print(Stringifier.toString(o))).run();
     }
 
-    @Contract(pure = true)
     static void write(Object o) {
         If.runTrue(o != null, () -> System.out.println(Stringifier.toString(o))).run();
     }
 
-    @Contract(pure = true)
-    static void printf(Object format, Object @Nullable ... args) {
-        If.runTrue(format != null, () -> System.out.printf(Stringifier.toString(format), args)).run();
-    }
-
     static void formatted(Object format, Object @Nullable ... args) {
-        If.runTrue(format != null,
-                () -> print(StringFormatter.format(Stringifier.toString(format), args))).run();
+        If.runTrue(format != null, () -> {
+            String raw = Stringifier.toString(format);
+            String formatted = StringFormatter.format(raw, args);
+            System.out.printf(formatted, args);
+        }).run();
     }
 
     static void newline() {

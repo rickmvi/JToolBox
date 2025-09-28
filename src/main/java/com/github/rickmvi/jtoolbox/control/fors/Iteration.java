@@ -28,6 +28,7 @@ import com.github.rickmvi.jtoolbox.utils.Primitives;
 import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.Nullable;
 import org.jetbrains.annotations.NotNull;
+import lombok.experimental.UtilityClass;
 
 import java.util.concurrent.CompletableFuture;
 import java.util.function.IntPredicate;
@@ -38,9 +39,67 @@ import java.util.ArrayList;
 import java.util.Objects;
 import java.util.List;
 
-
+/**
+ * Utility class for performing functional-style iterations over ranges and arrays of integers.
+ * <p>
+ * This class provides a variety of iteration methods, including:
+ * <ul>
+ *     <li>Iteration over ranges in ascending or descending order</li>
+ *     <li>Iteration with custom steps</li>
+ *     <li>Iteration with early cancellation</li>
+ *     <li>Finding first or last matching indices</li>
+ *     <li>Collecting mapped values conditionally</li>
+ *     <li>Asynchronous iteration using {@link CompletableFuture}</li>
+ * </ul>
+ * </p>
+ *
+ * <p>
+ * All methods are static and designed to work efficiently with primitive integers or generic mapped values.
+ * </p>
+ *
+ * <h2>Examples:</h2>
+ * <pre>{@code
+ * // Iterate from 0 to 9 with step 2
+ * Iteration.forEachRange(0, 10, 2, i -> System.out.print(i + " "));
+ * // Output: 0 2 4 6 8
+ *
+ * // Iterate descending from 10 to 0
+ * Iteration.forEachRangeDescending(10, 0, 2, i -> System.out.print(i + " "));
+ * // Output: 10 8 6 4 2 0
+ *
+ * // Iterate first half of array
+ * Iteration.forEachHalf(new int[]{1,2,3,4}, i -> System.out.println(i));
+ * // Output: 0 1
+ *
+ * // Find first matching index
+ * int idx = Iteration.findFirstIndexMatching(5, i -> i > 2);
+ * // idx -> 3
+ *
+ * // Collect all matching values
+ * List<String> values = Iteration.collectAllMatching(5, i -> i % 2 == 0 ? "even" + i : null);
+ * // values -> ["even0", "even2", "even4"]
+ *
+ * // Run iteration asynchronously
+ * Iteration.forEachAsync(3, i -> System.out.println("Async: " + i)).join();
+ * }</pre>
+ *
+ * <h2>Notes:</h2>
+ * <ul>
+ *     <li>Throws {@link InvalidStartIndexException}, {@link InvalidEndIndexException}, or {@link InvalidStepOutOfBounds} for invalid ranges or steps.</li>
+ *     <li>All {@code IntConsumer} and {@code IntFunction} arguments must not be null.</li>
+ *     <li>Supports generic mapping and filtering of values through {@code findFirstMatchingValue} and {@code collectAllMatching}.</li>
+ *     <li>Marked as {@link Deprecated} and uses {@link lombok.experimental.UtilityClass} for static-only usage.</li>
+ * </ul>
+ *
+ * @apiNote This class is designed for integer-based iteration patterns and functional-style loops.
+ * @see CompletableFuture
+ * @see IntConsumer
+ * @see IntFunction
+ * @since 1.0
+ * @deprecated This class is deprecated and may be replaced in future versions with updated iteration utilities.
+ */
 @Deprecated
-@lombok.experimental.UtilityClass
+@UtilityClass
 public class Iteration {
 
     /**

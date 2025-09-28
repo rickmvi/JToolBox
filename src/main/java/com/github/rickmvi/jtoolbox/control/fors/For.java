@@ -9,6 +9,60 @@ import java.util.function.Function;
 import java.util.function.Predicate;
 import java.util.concurrent.CompletableFuture;
 
+/**
+ * Functional iteration utility interface for processing sequences of elements.
+ * <p>
+ * Provides a fluent and uniform API to iterate, filter, map, and collect values
+ * from ranges of numbers or generic collections.
+ * </p>
+ *
+ * <h2>Core Capabilities:</h2>
+ * <ul>
+ *     <li>{@link #forEach(Consumer)} – Iterate through each element sequentially.</li>
+ *     <li>{@link #forEachAsync(Consumer)} – Iterate asynchronously using a {@link CompletableFuture}.</li>
+ *     <li>{@link #anyMatch(Predicate)} – Test whether any element satisfies a condition.</li>
+ *     <li>{@link #findFirst(Predicate)} / {@link #findLast(Predicate)} – Search for the first or last element matching a condition.</li>
+ *     <li>{@link #findFirstValue(Function)} – Apply a mapper to elements and return the first non-null result.</li>
+ *     <li>{@link #collect(Function)} – Transform elements with a mapper and collect non-null results into a {@link List}.</li>
+ * </ul>
+ *
+ * <h2>Static Factory Methods:</h2>
+ * <p>
+ * Supports iteration over primitive ranges or collections:
+ * <ul>
+ *     <li>{@link #range(int, int)} / {@link #range(long, long)} / {@link #range(double, double)} – Inclusive ascending ranges.</li>
+ *     <li>{@link #rangeDescentive(int, int)} / {@link #rangeDescentive(long, long)} / {@link #rangeDescentive(double, double)} – Inclusive descending ranges.</li>
+ *     <li>{@link #range(int, int, int)} / {@link #range(long, long, long)} / {@link #range(double, double, double)} – Ranges with custom step values.</li>
+ *     <li>{@link #of(Iterable)} / {@link #of(Object...)} – Create a For from a collection or array of elements.</li>
+ * </ul>
+ * </p>
+ *
+ * <h2>Usage Examples:</h2>
+ * <pre>{@code
+ * // Iterate over an integer range
+ * For.range(1, 5).forEach(System.out::println);
+ *
+ * // Find first even number in a range
+ * Integer firstEven = For.range(1, 10)
+ *                        .findFirst(i -> i % 2 == 0);
+ *
+ * // Map elements to strings and collect results
+ * List<String> words = For.of("a", "bb", "ccc")
+ *                         .collect(String::toUpperCase);
+ *
+ * // Async iteration
+ * For.range(1, 3).forEachAsync(i -> System.out.println("Async: " + i));
+ * }</pre>
+ *
+ * <p>
+ * This interface unifies iteration over numeric ranges and generic collections,
+ * providing a functional and fluent alternative to standard for-loops.
+ * </p>
+ *
+ * @param <T> the type of elements to iterate over
+ * @author Rick
+ * @since 1.0
+ */
 public interface For<T> {
 
     void forEach(Consumer<T> action);

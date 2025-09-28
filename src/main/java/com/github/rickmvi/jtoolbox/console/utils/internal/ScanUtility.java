@@ -20,12 +20,16 @@ package com.github.rickmvi.jtoolbox.console.utils.internal;
 import com.github.rickmvi.jtoolbox.console.utils.convert.BooleanParser;
 import com.github.rickmvi.jtoolbox.console.utils.convert.NumberParser;
 import com.github.rickmvi.jtoolbox.console.utils.Location;
+import lombok.AccessLevel;
+
+import lombok.Getter;
+import lombok.Setter;
 
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Contract;
-import com.github.rickmvi.jtoolbox.utils.SafeExecutor;
 import com.github.rickmvi.jtoolbox.control.ifs.If;
 import com.github.rickmvi.jtoolbox.console.utils.Scan;
+import com.github.rickmvi.jtoolbox.utils.SafeExecutor;
 import com.github.rickmvi.jtoolbox.utils.constants.Constants;
 
 import java.util.Optional;
@@ -47,8 +51,8 @@ public class ScanUtility implements InputScan, AutoCloseable {
      * Internal {@link Scanner} instance wrapped in an {@link Optional}.
      * Ensures that initialization is checked before each operation.
      */
-    @lombok.Getter
-    @lombok.Setter(value = lombok.AccessLevel.PRIVATE)
+    @Getter
+    @Setter(value = AccessLevel.PRIVATE)
     private Optional<Scanner> scanner = Optional.empty();
 
     /**
@@ -234,7 +238,6 @@ public class ScanUtility implements InputScan, AutoCloseable {
      * @throws IllegalStateException if the scanner is not present
      */
     private void validate() {
-        If.trueThrow(scanner.isEmpty(),
-                () -> new IllegalStateException(Constants.SCANNER_NOT_INITIALIZED));
+        If.trueThrow(scanner.isEmpty(), () -> new IllegalStateException(Constants.SCANNER_NOT_INITIALIZED));
     }
 }

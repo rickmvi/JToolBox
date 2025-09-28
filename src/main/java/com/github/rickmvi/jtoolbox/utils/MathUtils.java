@@ -18,24 +18,31 @@
 package com.github.rickmvi.jtoolbox.utils;
 
 
+import com.github.rickmvi.jtoolbox.utils.constants.Constants;
+import com.github.rickmvi.jtoolbox.text.StringFormatter;
 import com.github.rickmvi.jtoolbox.control.ifs.If;
 import com.github.rickmvi.jtoolbox.control.While;
-import com.github.rickmvi.jtoolbox.text.StringFormatter;
-import com.github.rickmvi.jtoolbox.utils.constants.Constants;
 import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
+import lombok.experimental.UtilityClass;
 
 import java.util.stream.IntStream;
 
 import static com.github.rickmvi.jtoolbox.utils.ArrayUtils.length;
 
 /**
- * Utility class providing arithmetic operations for Primitives, Primitives, floats, and Primitives
- * including a sum, subtraction, multiplication, division, average, and modulo.
+ * Provides utility methods for performing basic mathematical operations
+ * including addition, subtraction, and multiplication across primitive
+ * numeric data types such as {@code byte}, {@code short}, {@code int},
+ * {@code long}, {@code float}, and {@code double}.
+ * <p>
+ * The methods in this class ensure arithmetic precision and will throw
+ * exceptions in cases of overflow, underflow, or invalid input.
  */
-@lombok.experimental.UtilityClass
-public class MathOperations {
+@UtilityClass
+@SuppressWarnings("unused")
+public class MathUtils {
 
     /**
      * Calculates the sum of an array of byte values.
@@ -43,7 +50,7 @@ public class MathOperations {
      *
      * @param numbers an array of byte values to be summed; must not be null
      * @return the sum of the provided byte values
-     * @throws NullPointerException if the numbers array is null
+     * @throws NullPointerException if the number array is null
      * @throws ArithmeticException if the result overflows the byte range
      */
     public static byte sumByte(byte @NotNull ... numbers) {
@@ -315,7 +322,7 @@ public class MathOperations {
      * @throws IllegalArgumentException if the input array is null
      * @throws ArithmeticException if an overflow occurs during multiplication
      */
-    public static byte mutiplyByte(byte @NotNull ... numbers) {
+    public static byte multiplyByte(byte @NotNull ... numbers) {
         if (ArrayUtils.isEmpty(numbers)) return 1;
 
         byte result = 1;
@@ -333,7 +340,7 @@ public class MathOperations {
      * @throws NullPointerException if the input array is null.
      * @throws ArithmeticException if an overflow occurs during multiplication.
      */
-    public static short mutiplyShort(short @NotNull ... numbers) {
+    public static short multiplyShort(short @NotNull ... numbers) {
         if (ArrayUtils.isEmpty(numbers)) return 1;
 
         short result = 1;

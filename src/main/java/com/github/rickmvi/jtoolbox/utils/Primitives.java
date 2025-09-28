@@ -29,8 +29,9 @@ import lombok.experimental.UtilityClass;
 import java.util.function.Supplier;
 
 /**
- * @author Rick M. Viana
- * @since 1.1
+ * Utility class for primitive type operations.
+ * Provides methods for comparison, validation, and other operations
+ * across various primitive types such as byte, short, int, long, and float.
  */
 @UtilityClass
 @SuppressWarnings("unused")

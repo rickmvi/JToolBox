@@ -24,6 +24,44 @@ import java.util.concurrent.CompletableFuture;
 import java.util.function.BooleanSupplier;
 import java.util.function.Supplier;
 
+/**
+ * Utility interface providing while loop abstractions.
+ * <p>
+ * Supports standard while loops, cancelable loops, and asynchronous execution.
+ * Provides functional and fluent alternatives to traditional while-loop syntax.
+ * </p>
+ *
+ * <h2>Core Methods:</h2>
+ * <ul>
+ *     <li>{@link #runTrue(BooleanSupplier, Runnable)} – Executes the action while the condition evaluates to true.</li>
+ *     <li>{@link #trueCancelable(BooleanSupplier, Runnable, BooleanSupplier)} – Executes the action while the condition is true and the cancel supplier is false.</li>
+ *     <li>{@link #trueCancelable(BooleanSupplier, Runnable, Supplier)} – Variation of the cancelable loop using a generic {@link Supplier} for cancellation.</li>
+ *     <li>{@link #whileTrueAsync(BooleanSupplier, Runnable)} – Executes a while loop asynchronously, returning a {@link CompletableFuture}.</li>
+ * </ul>
+ *
+ * <h2>Usage Examples:</h2>
+ * <pre>{@code
+ * // Standard while loop
+ * While.runTrue(() -> counter < 5, () -> counter++);
+ *
+ * // Cancelable loop
+ * While.trueCancelable(
+ *     () -> counter < 10,
+ *     () -> counter++,
+ *     () -> shouldCancel
+ * );
+ *
+ * // Async loop
+ * CompletableFuture<Void> future = While.whileTrueAsync(
+ *     () -> counter < 5,
+ *     () -> counter++
+ * );
+ * future.join();
+ * }</pre>
+ *
+ * @author Rick
+ * @since 1.1
+ */
 public interface While {
 
     static void runTrue(@NotNull BooleanSupplier condition, Runnable action) {

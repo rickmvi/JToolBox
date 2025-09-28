@@ -17,6 +17,7 @@
  */
 package com.github.rickmvi.jtoolbox.collections.set;
 
+import lombok.experimental.UtilityClass;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.function.Predicate;
@@ -40,7 +41,7 @@ import java.util.Set;
  * @author Rick M. Viana
  * @since 1.0
  */
-@lombok.experimental.UtilityClass
+@UtilityClass
 public class Setting {
 
     /**

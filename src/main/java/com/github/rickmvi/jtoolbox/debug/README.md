@@ -6,7 +6,7 @@ O pacote `debug` fornece uma solução simples e extensível para logs com supor
 
 ## 📘 Visão Geral
 
-- `SLogger`: Logger estático e utilitário com suporte a cores e mensagens parametrizadas.
+- `Logger`: Logger estático e utilitário com suporte a cores e mensagens parametrizadas.
 - `LogLevel`: Enumeração dos níveis de log disponíveis.
 - `AnsiColor`: Enumeração de códigos ANSI para colorir a saída no terminal.
 
@@ -17,7 +17,7 @@ O pacote `debug` fornece uma solução simples e extensível para logs com supor
 ### Importação
 
 ```java
-
+import com.github.rickmvi.jtoolbox.debug.Logger;
 ```
 ---
 ### 📤 Log básico
@@ -57,7 +57,7 @@ error("Erro ao dividir: {}", e, e.getMessage());
 ### 🎨 Habilitar cores ANSI (Linux/macOS/Terminais com suporte)
 
 ```java
-SLogger.setUseAnsiColor(true);
+Logger.setUseAnsiColor(true);
 info("Mensagem colorida!");
 ```
 ---
@@ -90,15 +90,13 @@ ___
 
 ### 📦 Estrutura de Classes
 
-* `SLogger`: Logger estático com métodos para cada nível (`info`, `error`, etc).
-
+* `Logger`: Logger estático com métodos para cada nível (`info`, `error`, etc).
 * `LogLevel`: Enumeração (`TRACE`, `DEBUG`, ..., `OFF`).
-
 * `AnsiColor`: Mapeia `LogLevel` para códigos ANSI de cor.
 
 ___
 
 ### 🧰 Dependências necessárias
 
-* `Formatted.format(...)`: Template-style string formatter (semelhante a SLF4J).
-* `Out.printLine(...)`: Método utilitário para saída no console.
+* `StringFormatter.format(...)`: Template-style string formatter (semelhante a SLF4J).
+* `Output.write(...)`: Método utilitário para saída no console.

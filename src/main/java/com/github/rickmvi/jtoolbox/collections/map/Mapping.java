@@ -17,6 +17,7 @@
  */
 package com.github.rickmvi.jtoolbox.collections.map;
 
+import lombok.experimental.UtilityClass;
 import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
 
@@ -38,7 +39,7 @@ import java.util.Map;
  * @author Rick M. Viana
  * @since 1.0
  */
-@lombok.experimental.UtilityClass
+@UtilityClass
 public class Mapping {
 
     /* ========================== Case Handling ========================== */
@@ -107,13 +108,6 @@ public class Mapping {
     }
 
     /* ========================== String Replacements ========================== */
-
-    public static @NotNull String replace(
-            @NotNull String target,
-            @NotNull Map<String, Object> replacements
-    ) {
-        return getReplacement(target, replacements);
-    }
 
     public static @NotNull String getReplacement(
             @NotNull String target,

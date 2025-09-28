@@ -21,6 +21,10 @@ import com.github.rickmvi.jtoolbox.utils.constants.Constants;
 import com.github.rickmvi.jtoolbox.text.StringFormatter;
 import com.github.rickmvi.jtoolbox.debug.log.LogLevel;
 import com.github.rickmvi.jtoolbox.console.Output;
+import lombok.AccessLevel;
+import lombok.Getter;
+import lombok.Setter;
+import lombok.experimental.UtilityClass;
 import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.Contract;
 
@@ -40,17 +44,17 @@ import java.time.format.DateTimeFormatter;
  * @author Rick M. Viana
  * @since 1.0
  */
-@lombok.experimental.UtilityClass
+@UtilityClass
 public class Logger {
 
-    private static final DateTimeFormatter FORMATTER = DateTimeFormatter.ofPattern(Constants.DATA_TIME_FORMAT);
+    private static final DateTimeFormatter FORMATTER  = DateTimeFormatter.ofPattern(Constants.DATA_TIME_FORMAT);
     private static final Set<LogLevel> ENABLED_LEVELS = EnumSet.complementOf(EnumSet.of(LogLevel.OFF));
 
     /**
      * Gets whether ANSI color output is enabled for log messages.
      */
-    @lombok.Getter(value = lombok.AccessLevel.PUBLIC)
-    @lombok.Setter(value = lombok.AccessLevel.PUBLIC)
+    @Getter(value = AccessLevel.PUBLIC)
+    @Setter(value = AccessLevel.PUBLIC)
     private static boolean useAnsiColor = false;
 
     /**
@@ -75,7 +79,7 @@ public class Logger {
     public static void log(LogLevel level, String message) {
         if (!ENABLED_LEVELS.contains(level) || level == LogLevel.OFF) return;
 
-        String time = FORMATTER.format(LocalDateTime.now());
+        String time         = FORMATTER.format(LocalDateTime.now());
         String coloredLevel = colorize(level.name(), AnsiColor.getColor(level));
 
         Output.formatted("[{}] [{}] {}%n", time, coloredLevel, message);
@@ -91,9 +95,9 @@ public class Logger {
     public static void log(LogLevel level, String template, Object... args) {
         if (!ENABLED_LEVELS.contains(level) || level == LogLevel.OFF) return;
 
-        String time = FORMATTER.format(LocalDateTime.now());
+        String time         = FORMATTER.format(LocalDateTime.now());
         String coloredLevel = colorize(level.name(), AnsiColor.getColor(level));
-        String message = StringFormatter.format(template, args);
+        String message      = StringFormatter.format(template, args);
 
         Output.formatted("[{}] [{}] {}%n", time, coloredLevel, message);
     }
