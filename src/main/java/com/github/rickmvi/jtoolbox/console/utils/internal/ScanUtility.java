@@ -21,12 +21,12 @@ import com.github.rickmvi.jtoolbox.console.utils.convert.BooleanParser;
 import com.github.rickmvi.jtoolbox.console.utils.convert.NumberParser;
 import com.github.rickmvi.jtoolbox.console.utils.Location;
 
-import static com.github.rickmvi.jtoolbox.debug.Logger.warn;
-
-import com.github.rickmvi.jtoolbox.console.utils.Scan;
-import com.github.rickmvi.jtoolbox.control.Condition;
-import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Contract;
+import com.github.rickmvi.jtoolbox.utils.SafeExecutor;
+import com.github.rickmvi.jtoolbox.control.ifs.If;
+import com.github.rickmvi.jtoolbox.console.utils.Scan;
+import com.github.rickmvi.jtoolbox.utils.constants.Constants;
 
 import java.util.Optional;
 import java.util.Scanner;
@@ -210,14 +210,12 @@ public class ScanUtility implements InputScan, AutoCloseable {
      * @return the next token or {@code ""} if an error occurs
      */
     @Override
-    @Contract(pure = true)
     public String nextSafe() {
-        try {
-            return next();
-        } catch (Exception e) {
-            warn("nextSafe() failed. Returning empty string. Cause: {}", e, e.getMessage());
-            return "";
-        }
+        return SafeExecutor.attemptOrElseGet(
+                this::next,
+                () -> "",
+                Constants.NEXTSAFE_FAILED
+        );
     }
 
     /**
@@ -236,7 +234,7 @@ public class ScanUtility implements InputScan, AutoCloseable {
      * @throws IllegalStateException if the scanner is not present
      */
     private void validate() {
-        Condition.ifTrueThrow(scanner.isEmpty(), () ->
-                new IllegalStateException("Mistake: Scanner not initialized. Call InputHandler.init() first."));
+        If.trueThrow(scanner.isEmpty(),
+                () -> new IllegalStateException(Constants.SCANNER_NOT_INITIALIZED));
     }
 }

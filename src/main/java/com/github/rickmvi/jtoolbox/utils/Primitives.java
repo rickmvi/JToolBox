@@ -17,32 +17,24 @@
  */
 package com.github.rickmvi.jtoolbox.utils;
 
-import com.github.rickmvi.jtoolbox.debug.Logger;
+import com.github.rickmvi.jtoolbox.control.ifs.If;
 import com.github.rickmvi.jtoolbox.utils.constants.Constants;
+import com.github.rickmvi.jtoolbox.debug.Logger;
 import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.Contract;
-import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+import org.jetbrains.annotations.NotNull;
+import lombok.experimental.UtilityClass;
 
 import java.util.function.Supplier;
-
-import static com.github.rickmvi.jtoolbox.control.Condition.ifTrueThrow;
-import static com.github.rickmvi.jtoolbox.control.Condition.messageOrDefault;
-import static com.github.rickmvi.jtoolbox.text.StringFormatter.format;
 
 /**
  * @author Rick M. Viana
  * @since 1.1
  */
+@UtilityClass
 @SuppressWarnings("unused")
 public final class Primitives {
-
-    @Contract(value = " -> fail", pure = true)
-    private Primitives() {
-        throw new AssertionError(
-                format("No {}.Primitives instances for you!", this.getClass().getPackage().getName())
-        );
-    }
 
     /* ================================= Byte Methods  ================================= */
 
@@ -103,14 +95,13 @@ public final class Primitives {
 
     @Contract(value = "_ -> param1", pure = true)
     public static byte requiredNonNegative(byte value) {
-        ifTrueThrow(isNegative(value), Primitives::getValueCannotBeNegative);
+        If.trueThrow(isNegative(value), Primitives::getValueCannotBeNegative);
         return nonNegative(value);
     }
 
     @Contract(pure = true)
     public static byte requiredNonNegative(byte value, byte fallback) {
         if (isNegative(value)) {
-            Logger.warn(Constants.NON_NEGATIVE);
             if (isNegative(fallback)) return 0;
             return nonNegative(fallback);
         }
@@ -119,9 +110,9 @@ public final class Primitives {
 
     @Contract(value = "_, _ -> param1", pure = true)
     public static byte requiredNonNegative(byte value, @Nullable Supplier<String> supplierMessage) {
-        ifTrueThrow(isNegative(value), () -> {
+        If.trueThrow(isNegative(value), () -> {
             throw new IllegalArgumentException(
-                    messageOrDefault(supplierMessage, Constants.NON_NEGATIVE));
+                    If.messageOrDefault(supplierMessage, Constants.NON_NEGATIVE));
         });
         return nonNegative(value);
     }
@@ -133,13 +124,12 @@ public final class Primitives {
 
     @Contract("_ -> param1")
     public static byte requiredPositive(byte value) {
-        ifTrueThrow(isNonPositive(value), Primitives::getValueMustBePositive);
+        If.trueThrow(isNonPositive(value), Primitives::getValueMustBePositive);
         return nonNegativeNonZero(value);
     }
 
     public static byte requiredPositive(byte value, byte fallback) {
         if (isNonPositive(value)) {
-            Logger.warn(Constants.POSITIVE_VALUE);
             if (isNonPositive(fallback)) return 1;
             return nonNegativeNonZero(fallback);
         }
@@ -148,9 +138,9 @@ public final class Primitives {
 
     @Contract("_, _ -> param1")
     public static byte requiredPositive(byte value, Supplier<String> supplierMessage) {
-        ifTrueThrow(isNonPositive(value), () -> {
+        If.trueThrow(isNonPositive(value), () -> {
             throw new IllegalArgumentException(
-                    messageOrDefault(supplierMessage, Constants.POSITIVE_VALUE));
+                    If.messageOrDefault(supplierMessage, Constants.POSITIVE_VALUE));
         });
         return nonNegativeNonZero(value);
     }
@@ -244,14 +234,13 @@ public final class Primitives {
 
     @Contract(value = "_ -> param1", pure = true)
     public static short requiredNonNegative(short value) {
-        ifTrueThrow(isNegative(value), Primitives::getValueCannotBeNegative);
+        If.trueThrow(isNegative(value), Primitives::getValueCannotBeNegative);
         return nonNegative(value);
     }
 
     @Contract(pure = true)
     public static short requiredNonNegative(short value, short fallback) {
         if (isNegative(value)) {
-            Logger.warn(Constants.NON_NEGATIVE);
             if (isNegative(fallback)) return 0;
             return nonNegative(fallback);
         }
@@ -260,9 +249,9 @@ public final class Primitives {
 
     @Contract("_, _ -> param1")
     public static short requiredNonNegative(short value, Supplier<String> supplierMessage) {
-        ifTrueThrow(isNegative(value), () -> {
+        If.trueThrow(isNegative(value), () -> {
             throw new IllegalArgumentException(
-                    messageOrDefault(supplierMessage, Constants.NON_NEGATIVE));
+                    If.messageOrDefault(supplierMessage, Constants.NON_NEGATIVE));
         });
         return nonNegative(value);
     }
@@ -274,13 +263,12 @@ public final class Primitives {
 
     @Contract("_ -> param1")
     public static short requiredPositive(short value) {
-        ifTrueThrow(isNonPositive(value), Primitives::getValueMustBePositive);
+        If.trueThrow(isNonPositive(value), Primitives::getValueMustBePositive);
         return nonNegativeNonZero(value);
     }
 
     public static short requiredPositive(short value, short fallback) {
         if (isNonPositive(value)) {
-            Logger.warn(Constants.POSITIVE_VALUE);
             if (isNonPositive(fallback)) return 1;
             return nonNegativeNonZero(fallback);
         }
@@ -289,9 +277,9 @@ public final class Primitives {
 
     @Contract("_, _ -> param1")
     public static short requiredPositive(short value, Supplier<String> supplierMessage) {
-        ifTrueThrow(isNegative(value), () -> {
+        If.trueThrow(isNegative(value), () -> {
             throw new IllegalArgumentException(
-                    messageOrDefault(supplierMessage, Constants.POSITIVE_VALUE));
+                    If.messageOrDefault(supplierMessage, Constants.POSITIVE_VALUE));
         });
         return nonNegativeNonZero(value);
     }
@@ -368,31 +356,26 @@ public final class Primitives {
         return equals(x, y) || isGreaterThan(x, y);
     }
 
-    @Contract(pure = true)
     public static boolean isLessOrEqual(int x, int y) {
         return equals(x, y) || isLessThan(x, y);
     }
 
-    @Contract(pure = true)
     public static boolean isGreaterOrEqualOrNegative(int x, int y) {
         return isGreaterOrEqual(x, y) || isNegative(x);
     }
 
-    @Contract(pure = true)
     public static boolean isLessOrEqualOrIsNegative(int x, int y) {
         return isLessOrEqual(x, y) || isNegative(x);
     }
 
     @Contract(value = "_ -> param1", pure = true)
     public static int requiredNonNegative(int value) {
-        ifTrueThrow(isNegative(value), Primitives::getValueCannotBeNegative);
+        If.trueThrow(isNegative(value), Primitives::getValueCannotBeNegative);
         return nonNegative(value);
     }
 
-    @Contract(pure = true)
     public static int requiredNonNegative(int value, int fallback) {
         if (isNegative(value)) {
-            Logger.warn(Constants.NON_NEGATIVE);
             if (isNegative(fallback)) return 0;
             return nonNegative(fallback);
         }
@@ -401,9 +384,9 @@ public final class Primitives {
 
     @Contract("_, _ -> param1")
     public static int requiredNonNegative(int value, Supplier<String> supplierMessage) {
-        ifTrueThrow(isNegative(value), () -> {
+        If.trueThrow(isNegative(value), () -> {
             throw new IllegalArgumentException(
-                    messageOrDefault(supplierMessage, Constants.NON_NEGATIVE));
+                    If.messageOrDefault(supplierMessage, Constants.NON_NEGATIVE));
         });
         return nonNegative(value);
     }
@@ -415,13 +398,12 @@ public final class Primitives {
 
     @Contract("_ -> param1")
     public static int requiredPositive(int value) {
-        ifTrueThrow(isNonPositive(value), Primitives::getValueMustBePositive);
+        If.trueThrow(isNonPositive(value), Primitives::getValueMustBePositive);
         return nonNegativeNonZero(value);
     }
 
     public static int requiredPositive(int value, int fallback) {
         if (isNonPositive(value)) {
-            Logger.warn(Constants.POSITIVE_VALUE);
             if (isNonPositive(fallback)) return 1;
             return nonNegativeNonZero(fallback);
         }
@@ -430,9 +412,9 @@ public final class Primitives {
 
     @Contract("_, _ -> param1")
     public static int requiredPositive(int value, Supplier<String> supplierMessage) {
-        ifTrueThrow(isNegative(value), () -> {
+        If.trueThrow(isNegative(value), () -> {
             throw new IllegalArgumentException(
-                    messageOrDefault(supplierMessage, Constants.POSITIVE_VALUE));
+                    If.messageOrDefault(supplierMessage, Constants.POSITIVE_VALUE));
         });
         return nonNegativeNonZero(value);
     }
@@ -531,7 +513,7 @@ public final class Primitives {
 
     @Contract(value = "_ -> param1", pure = true)
     public static long requiredNonNegative(long value) {
-        ifTrueThrow(isNegative(value), Primitives::getValueCannotBeNegative);
+        If.trueThrow(isNegative(value), Primitives::getValueCannotBeNegative);
         return nonNegative(value);
     }
 
@@ -547,9 +529,9 @@ public final class Primitives {
 
     @Contract("_, _ -> param1")
     public static long requiredNonNegative(long value, Supplier<String> supplierMessage) {
-        ifTrueThrow(isNegative(value), () -> {
+        If.trueThrow(isNegative(value), () -> {
             throw new IllegalArgumentException(
-                    messageOrDefault(supplierMessage, Constants.NON_NEGATIVE));
+                    If.messageOrDefault(supplierMessage, Constants.NON_NEGATIVE));
         });
         return nonNegative(value);
     }
@@ -561,13 +543,12 @@ public final class Primitives {
 
     @Contract("_ -> param1")
     public static long requiredPositive(long value) {
-        ifTrueThrow(isNonPositive(value), Primitives::getValueMustBePositive);
+        If.trueThrow(isNonPositive(value), Primitives::getValueMustBePositive);
         return nonNegativeNonZero(value);
     }
 
     public static long requiredPositive(long value, long fallback) {
         if (isNonPositive(value)) {
-            Logger.warn(Constants.POSITIVE_VALUE);
             if (isNonPositive(fallback)) return 1L;
             return nonNegativeNonZero(fallback);
         }
@@ -576,9 +557,9 @@ public final class Primitives {
 
     @Contract("_, _ -> param1")
     public static long requiredPositive(long value, Supplier<String> supplierMessage) {
-        ifTrueThrow(isNonPositive(value), () -> {
+        If.trueThrow(isNonPositive(value), () -> {
             throw new IllegalArgumentException(
-                    messageOrDefault(supplierMessage, Constants.POSITIVE_VALUE));
+                    If.messageOrDefault(supplierMessage, Constants.POSITIVE_VALUE));
         });
         return nonNegativeNonZero(value);
     }
@@ -672,14 +653,13 @@ public final class Primitives {
 
     @Contract(value = "_ -> param1", pure = true)
     public static float requiredNonNegative(float value) {
-        ifTrueThrow(isNegative(value), Primitives::getValueCannotBeNegative);
+        If.trueThrow(isNegative(value), Primitives::getValueCannotBeNegative);
         return nonNegative(value);
     }
 
     @Contract(pure = true)
     public static float requiredNonNegative(float value, float fallback) {
         if (isNegative(value)) {
-            Logger.warn(Constants.NON_NEGATIVE);
             if (isNegative(fallback)) return 0.0f;
             return nonNegative(fallback);
         }
@@ -688,10 +668,10 @@ public final class Primitives {
 
     @Contract("_, _ -> param1")
     public static float requiredNonNegative(float value, Supplier<String> supplierMessage) {
-        ifTrueThrow(isNegative(value), () -> {
+        If.trueThrow(isNegative(value), () -> {
             throw new
                     IllegalArgumentException(
-                    messageOrDefault(supplierMessage, Constants.NON_NEGATIVE));
+                    If.messageOrDefault(supplierMessage, Constants.NON_NEGATIVE));
         });
         return nonNegative(value);
     }
@@ -703,13 +683,12 @@ public final class Primitives {
 
     @Contract("_ -> param1")
     public static float requiredPositive(float value) {
-        ifTrueThrow(isNonPositive(value), Primitives::getValueMustBePositive);
+        If.trueThrow(isNonPositive(value), Primitives::getValueMustBePositive);
         return nonNegativeNonZero(value);
     }
 
     public static float requiredPositive(float value, float fallback) {
         if (isNonPositive(value)) {
-            Logger.warn(Constants.POSITIVE_VALUE);
             if (isNonPositive(fallback)) return 1.0f;
             return nonNegativeNonZero(fallback);
         }
@@ -718,9 +697,9 @@ public final class Primitives {
 
     @Contract("_, _ -> param1")
     public static float requiredPositive(float value, Supplier<String> supplierMessage) {
-        ifTrueThrow(isNonPositive(value), () -> {
+        If.trueThrow(isNonPositive(value), () -> {
             throw new IllegalArgumentException(
-                    messageOrDefault(supplierMessage, Constants.POSITIVE_VALUE));
+                    If.messageOrDefault(supplierMessage, Constants.POSITIVE_VALUE));
         });
         return nonNegativeNonZero(value);
     }
@@ -819,14 +798,13 @@ public final class Primitives {
 
     @Contract("_ -> param1")
     public static double requiredNonNegative(double value) {
-        ifTrueThrow(isNegative(value), Primitives::getValueCannotBeNegative);
+        If.trueThrow(isNegative(value), Primitives::getValueCannotBeNegative);
         return nonNegative(value);
     }
 
     @Contract(pure = true)
     public static double requiredNonNegative(double value, double fallback) {
         if (isNegative(value)) {
-            Logger.warn(Constants.NON_NEGATIVE);
             if (isNegative(fallback)) return 0.0d;
             return nonNegative(fallback);
         }
@@ -835,9 +813,9 @@ public final class Primitives {
 
     @Contract("_, _ -> param1")
     public static double requiredNonNegative(double value, Supplier<String> supplierMessage) {
-        ifTrueThrow(isNegative(value), () -> {
+        If.trueThrow(isNegative(value), () -> {
             throw new IllegalArgumentException(
-                    messageOrDefault(supplierMessage, Constants.NON_NEGATIVE));
+                    If.messageOrDefault(supplierMessage, Constants.NON_NEGATIVE));
         });
         return nonNegative(value);
     }
@@ -849,13 +827,12 @@ public final class Primitives {
 
     @Contract("_ -> param1")
     public static double requiredPositive(double value) {
-        ifTrueThrow(isNonPositive(value), Primitives::getValueMustBePositive);
+        If.trueThrow(isNonPositive(value), Primitives::getValueMustBePositive);
         return nonNegativeNonZero(value);
     }
 
     public static double requiredPositive(double value, double fallback) {
         if (isNonPositive(value)) {
-            Logger.warn(Constants.POSITIVE_VALUE);
             if (isNonPositive(fallback)) return 1.0d;
             return nonNegativeNonZero(fallback);
         }
@@ -864,9 +841,9 @@ public final class Primitives {
 
     @Contract("_, _ -> param1")
     public static double requiredPositive(double value, Supplier<String> supplierMessage) {
-        ifTrueThrow(isNonPositive(value), () -> {
+        If.trueThrow(isNonPositive(value), () -> {
             throw new IllegalArgumentException(
-                    messageOrDefault(supplierMessage, Constants.POSITIVE_VALUE));
+                    If.messageOrDefault(supplierMessage, Constants.POSITIVE_VALUE));
         });
         return nonNegativeNonZero(value);
     }

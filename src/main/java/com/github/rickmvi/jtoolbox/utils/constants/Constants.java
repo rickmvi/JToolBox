@@ -4,7 +4,7 @@ public class Constants {
 
     // --- Regex ---
     public static final String GENERIC            = "\\{}";
-    public static final String PLACEHOLDERS_REGEX = "%(dc|dp|in|p|sc|S)\\{(\\d+)}";
+    public static final String PLACEHOLDERS_REGEX = "%(dc|dp|i|p|sc|S|lc)\\{(\\d+)}";
 
     // --- Number Formats ---
     public static final String DECIMAL_COMMA  = "#,##0.00";
@@ -73,5 +73,8 @@ public class Constants {
     public static final String INVALID_EXPONENTIATION    = "Invalid exponentiation result";
     public static final String AVERAGE_EMPTY_ARRAY       = "Cannot average an empty array";
     public static final String OVERFLOW_DIVISIBLE_NUMBER = "Overflow while searching nearest divisible number";
+
+    public static final String NEXTSAFE_FAILED           = "nextSafe() failed. Returning empty string. Cause: {}";
+    public static final String SCANNER_NOT_INITIALIZED   = "Mistake: Scanner not initialized. Call Scan.init() first.";
 
 }

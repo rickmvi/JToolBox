@@ -17,12 +17,13 @@
  */
 package com.github.rickmvi.jtoolbox.console.utils.convert;
 
-import com.github.rickmvi.jtoolbox.utils.Try;
+import com.github.rickmvi.jtoolbox.utils.SafeExecutor;
 
 import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.Nullable;
 import org.jetbrains.annotations.NotNull;
 
+import java.util.function.Function;
 import java.util.function.Supplier;
 import java.util.Optional;
 
@@ -33,7 +34,7 @@ import java.util.Optional;
  * such as {@code int}, {@code long}, {@code double}, and {@code float} with
  * support for default fallback values and lazy fallback suppliers.
  * <p>
- * All parsing operations use the {@link Try} utility for safe conversions,
+ * All parsing operations use the {@link SafeExecutor} utility for safe conversions,
  * avoiding unchecked exceptions and enabling use of {@link Optional} where appropriate.
  * <p>
  * Methods are overloaded to support:
@@ -67,7 +68,7 @@ public class NumberParser {
      * @return the parsed integer or the fallback value on failure
      */
     public static int toInt(@Nullable String value, int fallback) {
-        return Try.convert(value, Integer::parseInt).orElse(fallback);
+        return SafeExecutor.convert(value, Integer::parseInt).orElse(fallback);
     }
 
     /**
@@ -78,7 +79,8 @@ public class NumberParser {
      * @return the parsed integer or the fallback value supplied
      */
     public static int toInt(@Nullable String value, @NotNull Supplier<Integer> fallback) {
-        return Try.convert(value, Integer::parseInt).orElseGet(fallback);
+        return SafeExecutor.convert(value, Integer::parseInt).orElseGet(fallback);
+        
     }
 
     /**
@@ -89,7 +91,7 @@ public class NumberParser {
      */
     @Contract("null -> !null")
     public static Optional<Integer> toIntOptional(@Nullable String value) {
-        return Try.convert(value, Integer::parseInt);
+        return SafeExecutor.convert(value, Integer::parseInt);
     }
 
     /**
@@ -110,7 +112,7 @@ public class NumberParser {
      * @return the parsed long or the fallback value on failure
      */
     public static long toLong(@Nullable String value, long fallback) {
-        return Try.convert(value, Long::parseLong).orElse(fallback);
+        return SafeExecutor.convert(value, Long::parseLong).orElse(fallback);
     }
 
     /**
@@ -121,7 +123,7 @@ public class NumberParser {
      * @return the parsed long or the fallback value supplied
      */
     public static long toLong(@Nullable String value, @NotNull Supplier<Long> fallback) {
-        return Try.convert(value, Long::parseLong).orElseGet(fallback);
+        return SafeExecutor.convert(value, Long::parseLong).orElseGet(fallback);
     }
 
     /**
@@ -132,7 +134,7 @@ public class NumberParser {
      */
     @Contract("null -> !null")
     public static Optional<Long> toLongOptional(@Nullable String value) {
-        return Try.convert(value, Long::parseLong);
+        return SafeExecutor.convert(value, Long::parseLong);
     }
 
     /**
@@ -153,7 +155,7 @@ public class NumberParser {
      * @return the parsed double or the fallback value on failure
      */
     public static double toDouble(@Nullable String value, double fallback) {
-        return Try.convert(value, Double::parseDouble).orElse(fallback);
+        return SafeExecutor.convert(value, Double::parseDouble).orElse(fallback);
     }
 
     /**
@@ -164,7 +166,7 @@ public class NumberParser {
      * @return the parsed double or the fallback value supplied
      */
     public static double toDouble(@Nullable String value, @NotNull Supplier<Double> fallback) {
-        return Try.convert(value, Double::parseDouble).orElseGet(fallback);
+        return SafeExecutor.convert(value, Double::parseDouble).orElseGet(fallback);
     }
 
     /**
@@ -175,7 +177,7 @@ public class NumberParser {
      */
     @Contract("null -> !null")
     public static Optional<Double> toDoubleOptional(@Nullable String value) {
-        return Try.convert(value, Double::parseDouble);
+        return SafeExecutor.convert(value, Double::parseDouble);
     }
 
     /**
@@ -196,7 +198,7 @@ public class NumberParser {
      * @return the parsed float or the fallback value on failure
      */
     public float toFloat(@Nullable String value, float fallback) {
-        return Try.convert(value, Float::parseFloat).orElse(fallback);
+        return SafeExecutor.convert(value, Float::parseFloat).orElse(fallback);
     }
 
     /**
@@ -207,7 +209,7 @@ public class NumberParser {
      * @return the parsed float or the fallback value supplied
      */
     public float toFloat(@Nullable String value, @NotNull Supplier<Float> fallback) {
-        return Try.convert(value, Float::parseFloat).orElseGet(fallback);
+        return SafeExecutor.convert(value, Float::parseFloat).orElseGet(fallback);
     }
 
     /**
@@ -217,6 +219,44 @@ public class NumberParser {
      * @return an {@link Optional} containing the parsed float or empty if invalid
      */
     public Optional<Float> toFloatOptional(@Nullable String value) {
-        return Try.convert(value, Float::parseFloat);
+        return SafeExecutor.convert(value, Float::parseFloat);
     }
+
+    /**
+     * Converts a string to a specific {@code Number} type using the provided parser function.
+     * If the string cannot be parsed or is {@code null}, the specified fallback value is returned.
+     *
+     * @param <T>       the type of {@code Number} to be returned
+     * @param value     the string to convert, may be {@code null}
+     * @param parser    a {@link Function} that converts the string to the desired {@code Number} type,
+     *                  must not be {@code null}
+     * @param fallback  the fallback value to be returned if parsing fails, must not be {@code null}
+     * @return the parsed {@code Number} of type {@code T}, or the fallback value if parsing fails
+     * @throws NullPointerException if the provided {@code parser} or {@code fallback} is {@code null}
+     */
+    @Contract("_, _, !null -> !null")
+    public static <T extends Number> T toNumber(
+            @Nullable String value,
+            @NotNull Function<String, T> parser,
+            T fallback
+    ) {
+        return SafeExecutor.convert(value, parser).orElse(fallback);
+    }
+
+    public static int toIntOrElse(String value, int fallback) {
+        return toNumber(value, Integer::parseInt, fallback);
+    }
+
+    public static long toLongOrElse(String value, long fallback) {
+        return toNumber(value, Long::parseLong, fallback);
+    }
+
+    public static double toDoubleOrElse(String value, double fallback) {
+        return toNumber(value, Double::parseDouble, fallback);
+    }
+
+    public static float toFloatOrElse(String value, float fallback) {
+        return toNumber(value, Float::parseFloat, fallback);
+    }
+
 }

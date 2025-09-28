@@ -17,17 +17,17 @@
  */
 package com.github.rickmvi.jtoolbox.debug;
 
-import com.github.rickmvi.jtoolbox.console.Out;
-import com.github.rickmvi.jtoolbox.debug.log.LogLevel;
-import com.github.rickmvi.jtoolbox.text.StringFormatter;
 import com.github.rickmvi.jtoolbox.utils.constants.Constants;
+import com.github.rickmvi.jtoolbox.text.StringFormatter;
+import com.github.rickmvi.jtoolbox.debug.log.LogLevel;
+import com.github.rickmvi.jtoolbox.console.Output;
 import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.Contract;
 
+import java.util.Set;
+import java.util.EnumSet;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
-import java.util.EnumSet;
-import java.util.Set;
 
 /**
  * A simple logging utility class that provides colored console output with timestamp and log level information.
@@ -78,7 +78,7 @@ public class Logger {
         String time = FORMATTER.format(LocalDateTime.now());
         String coloredLevel = colorize(level.name(), AnsiColor.getColor(level));
 
-        Out.formatted("[{}] [{}] {}%n", time, coloredLevel, message);
+        Output.formatted("[{}] [{}] {}%n", time, coloredLevel, message);
     }
 
     /**
@@ -95,7 +95,7 @@ public class Logger {
         String coloredLevel = colorize(level.name(), AnsiColor.getColor(level));
         String message = StringFormatter.format(template, args);
 
-        Out.formatted("[{}] [{}] {}%n", time, coloredLevel, message);
+        Output.formatted("[{}] [{}] {}%n", time, coloredLevel, message);
     }
 
     /**

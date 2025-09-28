@@ -15,13 +15,14 @@
  * You should have received a copy of the GNU Lesser General Public License
  * along with this library. If not, see <https://www.gnu.org/licenses/>.
  */
-package com.github.rickmvi.jtoolbox.control;
+package com.github.rickmvi.jtoolbox.control.fors;
 
 import com.github.rickmvi.jtoolbox.lang.exceptions.InvalidStartIndexException;
 import com.github.rickmvi.jtoolbox.lang.exceptions.InvalidEndIndexException;
 import com.github.rickmvi.jtoolbox.lang.exceptions.InvalidStepOutOfBounds;
 import com.github.rickmvi.jtoolbox.lang.exceptions.ErrorMessage;
 import com.github.rickmvi.jtoolbox.collections.array.Array;
+import com.github.rickmvi.jtoolbox.control.ifs.If;
 
 import com.github.rickmvi.jtoolbox.utils.Primitives;
 import org.jetbrains.annotations.Contract;
@@ -38,6 +39,7 @@ import java.util.Objects;
 import java.util.List;
 
 
+@Deprecated
 @lombok.experimental.UtilityClass
 public class Iteration {
 
@@ -54,7 +56,7 @@ public class Iteration {
         int finish = Primitives.requiredPositive(end);
         int stepVal = Primitives.requiredPositive(step);
 
-        Condition.ifTrueThrow(start > end, () -> new InvalidEndIndexException(start, end));
+        If.trueThrow(start > end, () -> new InvalidEndIndexException(start, end));
 
         IntConsumer act = Objects.requireNonNull(action);
         for (int i = init; i < finish; i += stepVal) act.accept(i);
@@ -71,9 +73,9 @@ public class Iteration {
     public static void forEachRangeDescending(int start, int end, int step, IntConsumer action) {
         IntConsumer act = Objects.requireNonNull(action);
 
-        Condition.ifTrueThrow(Primitives.isNonPositive(step), InvalidStepOutOfBounds::new);
-        Condition.ifTrueThrow(start > end, () -> new InvalidEndIndexException(start, end));
-        Condition.ifTrueThrow(Primitives.isNegative(start), InvalidStartIndexException::new);
+        If.trueThrow(Primitives.isNonPositive(step), InvalidStepOutOfBounds::new);
+        If.trueThrow(start > end, () -> new InvalidEndIndexException(start, end));
+        If.trueThrow(Primitives.isNegative(start), InvalidStartIndexException::new);
         for (int i = start; i >= end; i -= step) act.accept(i);
     }
 
@@ -88,8 +90,8 @@ public class Iteration {
     public static void forEachInRange(int start, int end, @NotNull IntConsumer action) {
         IntConsumer act = Objects.requireNonNull(action);
 
-        Condition.ifTrueThrow(start > end, () -> new InvalidEndIndexException(start, end));
-        Condition.ifTrueThrow(Primitives.isNegative(start), InvalidStartIndexException::new);
+        If.trueThrow(start > end, () -> new InvalidEndIndexException(start, end));
+        If.trueThrow(Primitives.isNegative(start), InvalidStartIndexException::new);
         for (int i = start; i < end; i++) act.accept(i);
     }
 
@@ -102,7 +104,7 @@ public class Iteration {
      * }</pre>
      */
     public static void forEachIndex(int repetitions, @NotNull IntConsumer action) {
-        Condition.ifTrueThrow(Primitives.isNegative(repetitions), InvalidStepOutOfBounds::new);
+        If.trueThrow(Primitives.isNegative(repetitions), InvalidStepOutOfBounds::new);
         for (int i = 0; i < repetitions; i++) action.accept(i);
     }
 
@@ -117,7 +119,7 @@ public class Iteration {
     public static void forEachDescending(int times, IntConsumer action) {
         IntConsumer act = Objects.requireNonNull(action);
 
-        Condition.ifTrueThrow(times < 0, IllegalArgumentException::new);
+        If.trueThrow(times < 0, IllegalArgumentException::new);
         for (int i = times - 1; i >= 0; i--) act.accept(i);
     }
 
@@ -132,7 +134,7 @@ public class Iteration {
     public static void forEachDescending(int start, int end, IntConsumer action) {
         IntConsumer act = Objects.requireNonNull(action);
 
-        Condition.ifTrueThrow(start < end, IllegalArgumentException::new);
+        If.trueThrow(start < end, IllegalArgumentException::new);
         for (int i = start; i >= end; i--) act.accept(i);
     }
 
@@ -148,7 +150,7 @@ public class Iteration {
         IntConsumer act = Objects.requireNonNull(action);
         Supplier<Boolean> can = Objects.requireNonNull(cancel);
 
-        Condition.ifTrueThrow(times < 0, IllegalArgumentException::new);
+        If.trueThrow(times < 0, IllegalArgumentException::new);
         for (int i = 0; i < times && !can.get(); i++) act.accept(i);
     }
 
@@ -196,10 +198,10 @@ public class Iteration {
     public static void forEachHalf(int length, IntConsumer action) {
         IntConsumer act = Objects.requireNonNull(action);
 
-        Condition.ifTrueThrow(
+        If.trueThrow(
                 Primitives.isZero(length),
                 () -> new InvalidEndIndexException(0, length));
-        Condition.ifTrueThrow(
+        If.trueThrow(
                 Primitives.isNegative(length),
                 () -> new InvalidEndIndexException(length, 0, ErrorMessage.INDEX_NEGATIVE));
 

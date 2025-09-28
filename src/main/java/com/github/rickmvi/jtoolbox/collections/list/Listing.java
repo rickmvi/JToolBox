@@ -17,7 +17,8 @@
  */
 package com.github.rickmvi.jtoolbox.collections.list;
 
-import com.github.rickmvi.jtoolbox.control.Iteration;
+import com.github.rickmvi.jtoolbox.collections.array.Array;
+import com.github.rickmvi.jtoolbox.control.fors.For;
 import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
 
@@ -75,7 +76,7 @@ public class Listing {
      */
     public static <T> @NotNull T @NotNull [] reverseArray(@NotNull T[] array) {
         T[] result = Arrays.copyOf(array, array.length);
-        Iteration.forEachHalf(array, i -> {
+        For.range(0, (Array.length(array)-1) / 2).forEach(i -> {
             T temp = result[i];
             result[i] = result[array.length - 1 - i];
             result[array.length - 1 - i] = temp;

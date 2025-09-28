@@ -17,22 +17,23 @@
  */
 package com.github.rickmvi.jtoolbox.text;
 
+import com.github.rickmvi.jtoolbox.console.utils.convert.NumberParser;
 import com.github.rickmvi.jtoolbox.console.utils.convert.Stringifier;
-import com.github.rickmvi.jtoolbox.control.Repeater;
-import com.github.rickmvi.jtoolbox.debug.Logger;
 import com.github.rickmvi.jtoolbox.collections.map.Mapping;
+import com.github.rickmvi.jtoolbox.control.While;
+import com.github.rickmvi.jtoolbox.debug.Logger;
 
 import com.github.rickmvi.jtoolbox.utils.constants.Constants;
 import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.NotNull;
 
+import java.util.Map;
 import java.util.regex.Pattern;
 import java.util.regex.Matcher;
-import java.util.Map;
 
+import static com.github.rickmvi.jtoolbox.utils.Primitives.isNegative;
 import static com.github.rickmvi.jtoolbox.collections.array.Array.length;
 import static com.github.rickmvi.jtoolbox.utils.Primitives.isGreaterThan;
-import static com.github.rickmvi.jtoolbox.utils.Primitives.isNegative;
 
 @lombok.experimental.UtilityClass
 public final class StringFormatter {
@@ -74,7 +75,7 @@ public final class StringFormatter {
         Matcher matcher = tokenIndex.matcher(template);
         StringBuffer buffer = new StringBuffer();
 
-        Repeater.whileTrue(matcher::find, () -> {
+        While.runTrue(matcher::find, () -> {
             String token = matcher.group(1);
 
             int index = -1;
@@ -97,7 +98,7 @@ public final class StringFormatter {
     @ApiStatus.Internal
     private static int getIndex(int index, @NotNull Matcher matcher) {
         try {
-            index = Integer.parseInt(matcher.group(2));
+            index = NumberParser.toInt(matcher.group(2));
         } catch (NumberFormatException e) {
             Logger.error("Invalid index format in placeholder '{}'", e, matcher.group(2));
         }
@@ -110,7 +111,7 @@ public final class StringFormatter {
                 Map.of(
                         "dc", () -> NumberFormat.DECIMAL_COMMA.format(value),
                         "dp", () -> NumberFormat.DECIMAL_POINT.format(value),
-                        "in", () -> NumberFormat.INTEGER.format(value),
+                        "i",  () -> NumberFormat.INTEGER.format(value),
                         "p",  () -> NumberFormat.PERCENT.format(value),
                         "sc", () -> NumberFormat.SCIENTIFIC.format(value),
                         "S",  () -> String.valueOf(value).toUpperCase(),

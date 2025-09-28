@@ -15,15 +15,16 @@
  * You should have received a copy of the GNU Lesser General Public License
  * along with this library. If not, see <https://www.gnu.org/licenses/>.
  */
-package com.github.rickmvi.jtoolbox.control;
+package com.github.rickmvi.jtoolbox.control.ifs;
 
+import lombok.experimental.UtilityClass;
 import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
 
-import java.util.function.Supplier;
 import java.util.Optional;
+import java.util.function.Supplier;
 
-@lombok.experimental.UtilityClass
+@UtilityClass
 public class Condition {
 
     /* ========================== Executors ========================== */
@@ -55,11 +56,11 @@ public class Condition {
             @NotNull Runnable whenTrue,
             @NotNull Runnable orElse
     ) {
-        if (condition) {
-            whenTrue.run();
-        } else {
+        if (!condition) {
             orElse.run();
+            return;
         }
+        whenTrue.run();
     }
 
     public static void runIfFalseElse(
@@ -67,11 +68,11 @@ public class Condition {
             @NotNull Runnable whenFalse,
             @NotNull Runnable orElse
     ) {
-        if (!condition) {
-            whenFalse.run();
-        } else {
+        if (condition) {
             orElse.run();
+            return;
         }
+        whenFalse.run();
     }
 
 
@@ -121,19 +122,18 @@ public class Condition {
 
     /* ========================== Message Helpers ========================== */
 
+    @Deprecated
+    @Contract("null, _ -> param2")
     public static String messageOrDefault(
             Supplier<String> messageSupplier,
             String defaultMessage
     ) {
-        return supplyByCondition(
-                messageSupplier == null,
-                () -> defaultMessage,
-                messageSupplier
-        );
+        return messageSupplier == null ? defaultMessage : messageSupplier.get();
     }
 
     /* ========================== Throw Helpers ========================== */
 
+    @Deprecated
     @Contract("true, _ -> fail")
     public static void ifTrueThrow(
             boolean condition,

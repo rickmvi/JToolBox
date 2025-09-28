@@ -17,9 +17,11 @@
  */
 package com.github.rickmvi.jtoolbox.utils;
 
-import com.github.rickmvi.jtoolbox.control.Iteration;
-import com.github.rickmvi.jtoolbox.control.Repeater;
+import com.github.rickmvi.jtoolbox.control.fors.For;
+import com.github.rickmvi.jtoolbox.control.ifs.If;
+import com.github.rickmvi.jtoolbox.control.fors.Iteration;
 
+import com.github.rickmvi.jtoolbox.control.While;
 import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
@@ -27,8 +29,6 @@ import org.jetbrains.annotations.NotNull;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-
-import static com.github.rickmvi.jtoolbox.control.Condition.ifTrue;
 
 public abstract class ArrayUtils {
 
@@ -569,7 +569,7 @@ public abstract class ArrayUtils {
      * @throws NullPointerException if the input array is {@code null}
      */
     public static boolean contains(byte @NotNull [] array, byte element) {
-        return Iteration.anyMatch(array.length, i -> Primitives.equals(array[i], element));
+        return For.range(0, array.length -1).anyMatch(i -> Primitives.equals(array[i], element));
     }
 
     /**
@@ -581,7 +581,7 @@ public abstract class ArrayUtils {
      * @throws NullPointerException if the array is null
      */
     public static boolean contains(short @NotNull [] array, short element) {
-        return Iteration.anyMatch(array.length, i -> Primitives.equals(array[i], element));
+        return For.range(0, array.length -1).anyMatch(i -> Primitives.equals(array[i], element));
     }
 
     /**
@@ -593,7 +593,7 @@ public abstract class ArrayUtils {
      * @throws NullPointerException if the array is null
      */
     public static boolean contains(int @NotNull [] array, int element) {
-        return Iteration.anyMatch(array.length, i -> Primitives.equals(array[i], element));
+        return For.range(0, array.length -1).anyMatch(i -> Primitives.equals(array[i], element));
     }
 
     /**
@@ -605,7 +605,7 @@ public abstract class ArrayUtils {
      * @throws NullPointerException if the array is null
      */
     public static boolean contains(long @NotNull [] array, long element) {
-        return Iteration.anyMatch(array.length, i -> Primitives.equals(array[i], element));
+        return For.range(0, array.length -1).anyMatch(i -> Primitives.equals(array[i], element));
     }
 
     /**
@@ -617,7 +617,7 @@ public abstract class ArrayUtils {
      * @throws NullPointerException if the input array is null
      */
     public static boolean contains(float @NotNull [] array, float element) {
-        return Iteration.anyMatch(array.length, i -> Primitives.equals(array[i], element));
+        return For.range(0, array.length -1).anyMatch(i -> Primitives.equals(array[i], element));
     }
 
     /**
@@ -629,7 +629,7 @@ public abstract class ArrayUtils {
      * @throws NullPointerException if the input array is null
      */
     public static boolean contains(double @NotNull [] array, double element) {
-        return Iteration.anyMatch(array.length, i -> Primitives.equals(array[i], element));
+        return For.range(0, array.length -1).anyMatch(i -> Primitives.equals(array[i], element));
     }
 
     /**
@@ -641,7 +641,7 @@ public abstract class ArrayUtils {
      * @throws NullPointerException if the array is null
      */
     public static boolean contains(char @NotNull [] array, char element) {
-        return Iteration.anyMatch(array.length, i -> Primitives.equals(array[i], element));
+        return For.range(0, array.length -1).anyMatch(i -> Primitives.equals(array[i], element));
     }
 
     /**
@@ -1006,7 +1006,7 @@ public abstract class ArrayUtils {
         int[] start = {0};
         int[] end = {array.length - 1};
 
-        Repeater.whileTrue(() -> start[0] < end[0], () -> {
+        While.runTrue(() -> start[0] < end[0], () -> {
             byte tmp = array[start[0]];
             array[start[0]] = array[end[0]];
             array[end[0]] = tmp;
@@ -1033,7 +1033,7 @@ public abstract class ArrayUtils {
         int[] start = {0};
         int[] end = {array.length - 1};
 
-        Repeater.whileTrue(() -> start[0] < end[0], () -> {
+        While.runTrue(() -> start[0] < end[0], () -> {
             short tmp = array[start[0]];
             array[start[0]] = array[end[0]];
             array[end[0]] = tmp;
@@ -1060,7 +1060,7 @@ public abstract class ArrayUtils {
         int[] start = {0};
         int[] end = {array.length - 1};
 
-        Repeater.whileTrue(() -> start[0] < end[0], () -> {
+        While.runTrue(() -> start[0] < end[0], () -> {
             int tmp = array[start[0]];
             array[start[0]] = array[end[0]];
             array[end[0]] = tmp;
@@ -1087,7 +1087,7 @@ public abstract class ArrayUtils {
         int[] start = {0};
         int[] end = {array.length - 1};
 
-        Repeater.whileTrue(() -> start[0] < end[0], () -> {
+        While.runTrue(() -> start[0] < end[0], () -> {
             long tmp = array[start[0]];
             array[start[0]] = array[end[0]];
             array[end[0]] = tmp;
@@ -1114,7 +1114,7 @@ public abstract class ArrayUtils {
         int[] start = {0};
         int[] end = {array.length - 1};
 
-        Repeater.whileTrue(() -> start[0] < end[0], () -> {
+        While.runTrue(() -> start[0] < end[0], () -> {
             float tmp = array[start[0]];
             array[start[0]] = array[end[0]];
             array[end[0]] = tmp;
@@ -1141,7 +1141,7 @@ public abstract class ArrayUtils {
         int[] start = {0};
         int[] end = {array.length - 1};
 
-        Repeater.whileTrue(() -> start[0] < end[0], () -> {
+        While.runTrue(() -> start[0] < end[0], () -> {
             double tmp = array[start[0]];
             array[start[0]] = array[end[0]];
             array[end[0]] = tmp;
@@ -1169,7 +1169,7 @@ public abstract class ArrayUtils {
         int[] start = {0};
         int[] end = {array.length - 1};
 
-        Repeater.whileTrue(() -> start[0] < end[0], () -> {
+        While.runTrue(() -> start[0] < end[0], () -> {
             char tmp = array[start[0]];
             array[start[0]] = array[end[0]];
             array[end[0]] = tmp;
@@ -1196,7 +1196,7 @@ public abstract class ArrayUtils {
         int[] start = {0};
         int[] end = {array.length - 1};
 
-        Repeater.whileTrue(() -> start[0] < end[0], () -> {
+        While.runTrue(() -> start[0] < end[0], () -> {
             boolean tmp = array[start[0]];
             array[start[0]] = array[end[0]];
             array[end[0]] = tmp;
@@ -1217,8 +1217,9 @@ public abstract class ArrayUtils {
      */
     public static byte @NotNull [] filter(byte @NotNull [] array, byte @NotNull [] filter) {
         byte[] result = new byte[array.length];
-        Iteration.forEachIndex(array.length, i ->
-                ifTrue(contains(filter, array[i]), () -> result[i] = array[i]));
+        For.range(0, length(array) - 1).forEach(i ->
+                If.runTrue(contains(filter, array[i]), () -> result[i] = array[i]).run());
+
         return result;
     }
 
@@ -1234,8 +1235,8 @@ public abstract class ArrayUtils {
      */
     public static short @NotNull [] filter(short @NotNull [] array, short @NotNull [] filter) {
         short[] result = new short[array.length];
-        Iteration.forEachIndex(array.length, i ->
-                ifTrue(contains(filter, array[i]), () -> result[i] = array[i]));
+        For.range(0, length(array) - 1).forEach(i ->
+                If.runTrue(contains(filter, array[i]), () -> result[i] = array[i]).run());
         return result;
     }
 
@@ -1250,8 +1251,8 @@ public abstract class ArrayUtils {
      */
     public static int @NotNull [] filter(int @NotNull [] array, int @NotNull [] filter) {
         int[] result = new int[array.length];
-        Iteration.forEachIndex(array.length, i ->
-                ifTrue(contains(filter, array[i]), () -> result[i] = array[i]));
+        For.range(0, length(array) - 1).forEach(i ->
+                If.runTrue(contains(filter, array[i]), () -> result[i] = array[i]).run());
         return result;
     }
 
@@ -1268,8 +1269,8 @@ public abstract class ArrayUtils {
      */
     public static long @NotNull [] filter(long @NotNull [] array, long @NotNull [] filter) {
         long[] result = new long[array.length];
-        Iteration.forEachIndex(array.length, i ->
-                ifTrue(contains(filter, array[i]), () -> result[i] = array[i]));
+        For.range(0, length(array) - 1).forEach(i ->
+                If.runTrue(contains(filter, array[i]), () -> result[i] = array[i]).run());
         return result;
     }
 
@@ -1286,8 +1287,8 @@ public abstract class ArrayUtils {
      */
     public static float @NotNull [] filter(float @NotNull [] array, float @NotNull [] filter) {
         float[] result = new float[array.length];
-        Iteration.forEachIndex(array.length, i ->
-                ifTrue(contains(filter, array[i]), () -> result[i] = array[i]));
+        For.range(0, length(array) - 1).forEach(i ->
+                If.runTrue(contains(filter, array[i]), () -> result[i] = array[i]).run());
         return result;
     }
 
@@ -1301,8 +1302,8 @@ public abstract class ArrayUtils {
      */
     public static double @NotNull [] filter(double @NotNull [] array, double @NotNull [] filter) {
         double[] result = new double[array.length];
-        Iteration.forEachIndex(array.length, i ->
-                ifTrue(contains(filter, array[i]), () -> result[i] = array[i]));
+        For.range(0, length(array) - 1).forEach(i ->
+                If.runTrue(contains(filter, array[i]), () -> result[i] = array[i]).run());
         return result;
     }
 
@@ -1320,8 +1321,8 @@ public abstract class ArrayUtils {
      */
     public static char @NotNull [] filter(char @NotNull [] array, char @NotNull [] filter) {
         char[] result = new char[array.length];
-        Iteration.forEachIndex(array.length, i ->
-                ifTrue(contains(filter, array[i]), () -> result[i] = array[i]));
+        For.range(0, array.length - 1).forEach(i ->
+                If.runTrue(contains(filter, array[i]), () -> result[i] = array[i]).run());
         return result;
     }
 
@@ -1338,8 +1339,9 @@ public abstract class ArrayUtils {
      */
     public static boolean @NotNull [] filter(boolean @NotNull [] array, boolean @NotNull [] filter) {
         boolean[] result = new boolean[array.length];
-        Iteration.forEachIndex(array.length, i ->
-                ifTrue(contains(filter, array[i]), () -> result[i] = array[i]));
+        For.range(0, array.length - 1).forEach(i -> {
+            If.runTrue(contains(filter, array[i]), () -> result[i] = array[i]).run();
+        });
         return result;
     }
 
@@ -1360,14 +1362,13 @@ public abstract class ArrayUtils {
 
         for (char c : number.toCharArray()) {
             int digit = Character.getNumericValue(c);
-            ifTrue(digit >= 0 && digit <= 9, () -> result.add(digit));
+            If.runTrue(digit >= 0 && digit <= 9, () -> result.add(digit)).run();
         }
 
         if (result.isEmpty()) return new int[0];
 
         int[] arr = new int[result.size()];
-        Iteration.forEachIndex(result.size(), i -> arr[i] = result.get(i));
-
+        For.range(0, result.size() - 1).forEach(i -> arr[i] = result.get(i));
         return arr;
     }
 }

@@ -17,6 +17,7 @@
  */
 package com.github.rickmvi.jtoolbox.template;
 
+import com.github.rickmvi.jtoolbox.control.While;
 import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
 
