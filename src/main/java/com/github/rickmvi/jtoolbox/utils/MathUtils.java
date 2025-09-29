@@ -19,7 +19,7 @@ package com.github.rickmvi.jtoolbox.utils;
 
 
 import com.github.rickmvi.jtoolbox.utils.constants.Constants;
-import com.github.rickmvi.jtoolbox.text.StringFormatter;
+import com.github.rickmvi.jtoolbox.text.StringFormat;
 import com.github.rickmvi.jtoolbox.control.ifs.If;
 import com.github.rickmvi.jtoolbox.control.While;
 import org.jetbrains.annotations.ApiStatus;
@@ -43,6 +43,22 @@ import static com.github.rickmvi.jtoolbox.utils.ArrayUtils.length;
 @UtilityClass
 @SuppressWarnings("unused")
 public class MathUtils {
+
+    public static double random() {
+        return Math.random();
+    }
+
+    public static double random(double min, double max) {
+        return Math.random() * (subtractDouble(max, min)) + min;
+    }
+
+    public static double random(double min, double max, double delta) {
+        return Math.random() * (subtractDouble(max, min)) + min + delta;
+    }
+
+    public static double random(double min, double max, double delta, double minDelta, double maxDelta) {
+        return Math.random() * (subtractDouble(max, min)) + min + delta * (Math.random() * (subtractDouble(maxDelta, minDelta)) + minDelta);
+    }
 
     /**
      * Calculates the sum of an array of byte values.
@@ -141,7 +157,7 @@ public class MathUtils {
             );
             If.trueThrow(Float.isNaN(result), () ->
                     new ArithmeticException(
-                            StringFormatter.format(Constants.INVALID_OPERATION, "float"))
+                            StringFormat.format(Constants.INVALID_OPERATION, "float"))
             );
         }
         return result;
@@ -169,7 +185,7 @@ public class MathUtils {
             );
             If.trueThrow(Double.isNaN(result), () ->
                     new ArithmeticException(
-                            StringFormatter.format(Constants.INVALID_OPERATION, "double"))
+                            StringFormat.format(Constants.INVALID_OPERATION, "double"))
             );
         }
         return result;
@@ -280,7 +296,7 @@ public class MathUtils {
                     new ArithmeticException(Constants.SUBTRACT_OVERFLOW));
             If.trueThrow(Float.isNaN(result), () ->
                     new ArithmeticException(
-                            StringFormatter.format(Constants.INVALID_OPERATION, "float"))
+                            StringFormat.format(Constants.INVALID_OPERATION, "float"))
             );
         }
         return result;
@@ -308,7 +324,7 @@ public class MathUtils {
                     new ArithmeticException(Constants.SUBTRACT_OVERFLOW));
             If.trueThrow(Double.isNaN(result), () ->
                     new ArithmeticException(
-                            StringFormatter.format(Constants.INVALID_OPERATION, "double"))
+                            StringFormat.format(Constants.INVALID_OPERATION, "double"))
             );
         }
         return result;
@@ -415,7 +431,7 @@ public class MathUtils {
             If.trueThrow(
                     Float.isNaN(result),
                     () -> new ArithmeticException(
-                            StringFormatter.format(Constants.INVALID_OPERATION, "float"))
+                            StringFormat.format(Constants.INVALID_OPERATION, "float"))
             );
         }
         return result;
@@ -448,7 +464,7 @@ public class MathUtils {
             If.trueThrow(
                     Double.isNaN(result),
                     () -> new ArithmeticException(
-                            StringFormatter.format(Constants.INVALID_OPERATION, "double"))
+                            StringFormat.format(Constants.INVALID_OPERATION, "double"))
             );
         }
         return result;
@@ -761,7 +777,7 @@ public class MathUtils {
             );
             If.trueThrow(Float.isNaN(result), () ->
                     new ArithmeticException(
-                            StringFormatter.format(Constants.INVALID_OPERATION, "float"))
+                            StringFormat.format(Constants.INVALID_OPERATION, "float"))
             );
         }
         return result;
@@ -786,7 +802,7 @@ public class MathUtils {
             );
             If.trueThrow(Float.isNaN(result), () ->
                     new ArithmeticException(
-                            StringFormatter.format(Constants.INVALID_OPERATION, "float"))
+                            StringFormat.format(Constants.INVALID_OPERATION, "float"))
             );
         }
         return result;
@@ -810,7 +826,7 @@ public class MathUtils {
             );
             If.trueThrow(Double.isNaN(result), () ->
                     new ArithmeticException(
-                            StringFormatter.format(Constants.INVALID_OPERATION, "double"))
+                            StringFormat.format(Constants.INVALID_OPERATION, "double"))
             );
         }
         return result;
@@ -836,7 +852,7 @@ public class MathUtils {
             );
             If.trueThrow(Double.isNaN(result), () ->
                     new ArithmeticException(
-                            StringFormatter.format(Constants.INVALID_OPERATION, "double"))
+                            StringFormat.format(Constants.INVALID_OPERATION, "double"))
             );
         }
         return result;

@@ -18,7 +18,7 @@
 package com.github.rickmvi.jtoolbox.console;
 
 import com.github.rickmvi.jtoolbox.console.utils.convert.Stringifier;
-import com.github.rickmvi.jtoolbox.text.StringFormatter;
+import com.github.rickmvi.jtoolbox.text.StringFormat;
 import com.github.rickmvi.jtoolbox.control.ifs.If;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -35,7 +35,7 @@ import java.util.function.Consumer;
  * <p>
  * This interface is designed to simplify console I/O in a fluent and safe manner,
  * integrating with {@link If} for conditional execution and {@link Stringifier} /
- * {@link StringFormatter} for conversion and formatting.
+ * {@link StringFormat} for conversion and formatting.
  *
  * <h2>Usage Examples:</h2>
  * <pre>{@code
@@ -43,6 +43,7 @@ import java.util.function.Consumer;
  * Output.write("Line with newline");
  * Output.formatted("Hello, %s!", "Joao");
  * Output.formatted("Hello, {}!", "Maria");
+ * Output.formatted("Hello, {1:U}!", "Maria", "Joao");
  * Output.newline();
  * Output.to(System.err, "Error message");
  * Output.withOut(out -> out.println("Custom output logic"));
@@ -53,7 +54,7 @@ import java.util.function.Consumer;
  * All methods are static and can be called without instantiating the interface.
  * </p>
  *
- * @see StringFormatter
+ * @see StringFormat
  * @see Stringifier
  * @author Rick M. Viana
  * @since 1.4
@@ -61,19 +62,23 @@ import java.util.function.Consumer;
 public interface Output {
 
     static void print(Object o) {
-        If.runTrue(o != null, () -> System.out.print(Stringifier.toString(o))).run();
+        If.runTrue(o != null, () -> System.out.print(Stringifier.toString(o)))
+                .orElse(Output::newline);
+    }
+
+    static void printf(Object o, Object... args) {
+        If.runTrue(o != null, () -> System.out.printf(Stringifier.toString(o), args))
+                .orElse(Output::newline);
     }
 
     static void write(Object o) {
-        If.runTrue(o != null, () -> System.out.println(Stringifier.toString(o))).run();
+        If.runTrue(o != null, () -> System.out.println(Stringifier.toString(o)))
+                .orElse(Output::newline);
     }
 
     static void formatted(Object format, Object @Nullable ... args) {
-        If.runTrue(format != null, () -> {
-            String raw = Stringifier.toString(format);
-            String formatted = StringFormatter.format(raw, args);
-            System.out.printf(formatted, args);
-        }).run();
+        If.runTrue(format != null, () -> print(StringFormat.format(Stringifier.toString(format), args)))
+                .orElse(Output::newline);
     }
 
     static void newline() {
@@ -81,7 +86,8 @@ public interface Output {
     }
 
     static void to(PrintStream stream, Object text) {
-        If.runTrue(text != null, () -> stream.print(Stringifier.toString(text))).run();
+        If.runTrue(text != null, () -> stream.print(Stringifier.toString(text)))
+                .orElseThrow(() -> new IllegalArgumentException("Text cannot be null"));
     }
 
     static void withOut(@NotNull Consumer<PrintStream> action) {

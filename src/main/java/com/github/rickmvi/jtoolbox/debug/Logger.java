@@ -18,7 +18,7 @@
 package com.github.rickmvi.jtoolbox.debug;
 
 import com.github.rickmvi.jtoolbox.utils.constants.Constants;
-import com.github.rickmvi.jtoolbox.text.StringFormatter;
+import com.github.rickmvi.jtoolbox.text.StringFormat;
 import com.github.rickmvi.jtoolbox.debug.log.LogLevel;
 import com.github.rickmvi.jtoolbox.console.Output;
 import lombok.AccessLevel;
@@ -97,7 +97,7 @@ public class Logger {
 
         String time         = FORMATTER.format(LocalDateTime.now());
         String coloredLevel = colorize(level.name(), AnsiColor.getColor(level));
-        String message      = StringFormatter.format(template, args);
+        String message      = StringFormat.format(template, args);
 
         Output.formatted("[{}] [{}] {}%n", time, coloredLevel, message);
     }
@@ -124,7 +124,7 @@ public class Logger {
      * @param args the arguments to substitute into the template
      */
     public static void log(LogLevel level, String template, Throwable t, Object... args) {
-        log(level, StringFormatter.format(template, args));
+        log(level, StringFormat.format(template, args));
         if (ENABLED_LEVELS.contains(level) && level != LogLevel.OFF && t != null)
             t.printStackTrace(System.out);
     }

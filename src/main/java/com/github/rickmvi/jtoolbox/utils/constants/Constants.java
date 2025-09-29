@@ -4,15 +4,16 @@ public class Constants {
 
     // --- Regex ---
     public static final String GENERIC            = "\\{}";
-    public static final String GENERIC_OPTIONAL   = "\\{(\\d+)(?::(dc|dp|i|p|sc|S|lc))?}";
+    public static final String GENERIC_OPTIONAL   = "\\{(\\d+)(?::(dc|dp|i|p|sc|e|U|lc))?}";
     public static final String PLACEHOLDERS_REGEX = "$(dc|dp|i|p|sc|S|lc)\\{(\\d+)}";
 
     // --- Number Formats ---
-    public static final String DECIMAL_COMMA  = "#,##0.00";
+    public static final String DECIMAL_COMMA  = "#,###0.00";
     public static final String DECIMAL_POINT  = "###0.00";
     public static final String INTEGER        = "#,##0";
-    public static final String PERCENT        = "0.00'%'";
-    public static final String SCIENTIFIC     = "0.##E0";
+    public static final String PERCENT        = "#0.00%";
+    public static final String SCIENTIFIC     = "00.#######E0";
+    public static final String SCIENTIFIC_EXP = "##0.######E0";
 
     // --- Colors ---
     public static final String BLACK   = "\u001B[30m";

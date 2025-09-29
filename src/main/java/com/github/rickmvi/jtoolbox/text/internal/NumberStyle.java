@@ -38,7 +38,11 @@ import java.text.DecimalFormat;
  *     <li>{@code INTEGER} → "1.234"</li>
  *     <li>{@code PERCENT} → "12.50%"</li>
  *     <li>{@code SCIENTIFIC} → "1.23E3"</li>
+ *     <li>{@code SCIENTIFIC_EXP} → "1.23E3"</li>
  * </ul>
+ *
+ * @since 1.1
+ * @author Rick M. Viana
  */
 public enum NumberStyle {
 
@@ -55,7 +59,10 @@ public enum NumberStyle {
     PERCENT       (Constants.PERCENT),
 
     /** Scientific notation format (e.g., 1.23E3) */
-    SCIENTIFIC    (Constants.SCIENTIFIC);
+    SCIENTIFIC    (Constants.SCIENTIFIC),
+
+    /** Exponential format for numeric values (e.g., "1.23E3"). */
+    EXPONENTIATION(Constants.SCIENTIFIC_EXP);
 
     @Getter(value = lombok.AccessLevel.PUBLIC)
     private final DecimalFormat format;

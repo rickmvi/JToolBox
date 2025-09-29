@@ -109,7 +109,7 @@ public class Mapping {
 
     /* ========================== String Replacements ========================== */
 
-    public static @NotNull String getReplacement(
+    public static @NotNull String applyReplacements(
             @NotNull String target,
             @NotNull Map<String, Object> replacements
     ) {

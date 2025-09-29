@@ -56,19 +56,19 @@ import static com.github.rickmvi.jtoolbox.collections.array.Array.length;
  * <h2>Examples:</h2>
  * <pre>{@code
  * // Generic placeholder
- * String s = StringFormatter.format("Hello, {}!", "World"); // "Hello, World!"
+ * String s = StringFormat.format("Hello, {}!", "World"); // "Hello, World!"
  *
  * // Indexed placeholder
- * s = StringFormatter.format("Values: {1}, {0}", "first", "second"); // "Values: second, first"
+ * s = StringFormat.format("Values: {1}, {0}", "first", "second"); // "Values: second, first"
  *
  * // Token replacement
- * s = StringFormatter.format("Line break here:$nNext line"); // includes system line separator
+ * s = StringFormat.format("Line break here:$nNext line"); // includes system line separator
  *
  * // Numeric formatting
- * s = StringFormatter.format("Decimal: {0:dc}, Percent: {1:p}", 1234.56, 0.75); // "Decimal: 1.234,56, Percent: 75%"
+ * s = StringFormat.format("Decimal: {0:dc}, Percent: {1:p}", 1234.56, 0.75); // "Decimal: 1.234,56, Percent: 75%"
  *
  * // Uppercase/lowercase formatting
- * s = StringFormatter.format("Upper: {0:S}, Lower: {1:lc}", "hello", "WORLD"); // "Upper: HELLO, Lower: world"
+ * s = StringFormat.format("Upper: {0:u}, Lower: {1:lc}", "hello", "WORLD"); // "Upper: HELLO, Lower: world"
  * }</pre>
  *
  * <h2>Notes:</h2>
@@ -89,18 +89,18 @@ import static com.github.rickmvi.jtoolbox.collections.array.Array.length;
  * @since 1.1
  */
 @UtilityClass
-public final class StringFormatter {
+public final class StringFormat {
 
     private static final Pattern GENERIC_PATTERN     = Pattern.compile(Constants.GENERIC);
     private static final Pattern INDEXED_PATTERN     = Pattern.compile(Constants.GENERIC_OPTIONAL);
     private static final DateTimeFormatter DATE_TIME = DateTimeFormatter.ofPattern(Constants.DATE_TIME_FORMAT);
-
-    private static final Map<String, Object> TOKENS = Map.of(
+    private static final Map<String, Object> TOKENS  = Map.of(
             "$n", System.lineSeparator(),
             "$r", "\r",
             "$t", "\t",
             "$sp", " ",
-            "$tmp", DATE_TIME.format(LocalDateTime.now())
+            "$tmp", DATE_TIME.format(LocalDateTime.now()),
+            "$rand", Math.random() * 1000000000000000000L
     );
 
     /**
@@ -117,8 +117,8 @@ public final class StringFormatter {
      * @throws NullPointerException if the `templateString` or `args` is null.
      */
     public static @NotNull String format(@NotNull String templateString, Object @NotNull ... args) {
-        templateString = Mapping.getReplacement(templateString, TOKENS);
-        templateString = replaceIndexTokens(templateString, args);
+        templateString = Mapping.applyReplacements(templateString, TOKENS);
+        templateString = replacePlaceholders(templateString, args);
 
         for (Object arg : args) {
             templateString = GENERIC_PATTERN
@@ -129,7 +129,7 @@ public final class StringFormatter {
         return templateString;
     }
 
-    private static @NotNull String replaceIndexTokens(@NotNull String template, Object @NotNull ... args) {
+    private static @NotNull String replacePlaceholders(@NotNull String template, Object @NotNull ... args) {
         Matcher matcher = INDEXED_PATTERN.matcher(template);
         StringBuffer buffer = new StringBuffer();
 
@@ -137,13 +137,21 @@ public final class StringFormatter {
             int index = getIndexOrElse(matcher);
 
             if (isNegative(index) || isGreaterThan(index, length(args))) {
+                Logger.error(
+                        "Invalid index '{}' for placeholder '{}' (args length: {}). Valid range is [0..{}].",
+                        matcher.group(1),
+                        matcher.group(2),
+                        length(args),
+                        length(args) - 1
+                );
+
                 matcher.appendReplacement(buffer, "");
                 return;
             }
 
             Object value = args[index];
             String token = matcher.group(2);
-            String replacement = token == null ? Stringifier.valueOf(value) : returnToken(token, value);
+            String replacement = token == null ? Stringifier.valueOf(value) : formatTokenValue(token, value);
 
             matcher.appendReplacement(buffer, Matcher.quoteReplacement(replacement));
         });
@@ -152,6 +160,16 @@ public final class StringFormatter {
         return buffer.toString();
     }
 
+    /**
+     * Parses and retrieves the integer index from the provided {@link Matcher}.
+     * If the index cannot be parsed (due to invalid format or other errors),
+     * a default value of -1 is returned.
+     *
+     * @param matcher the {@code Matcher} containing the group from which the index will be extracted.
+     *                Must not be {@code null}.
+     * @return the parsed integer index if successful, or -1 as a default value if parsing fails.
+     * @throws NullPointerException if the {@code matcher} parameter is {@code null}.
+     */
     private static Integer getIndexOrElse(Matcher matcher) {
         return Try.of(() -> NumberParser.toInt(matcher.group(1)))
                 .onFailure(e -> Logger.error("Invalid index format '{}'", e, matcher.group(1)))
@@ -159,7 +177,7 @@ public final class StringFormatter {
     }
 
     @ApiStatus.Internal
-    private static @NotNull String returnToken(String token, Object value) {
+    private static @NotNull String formatTokenValue(String token, Object value) {
         return Mapping.returning(token,
                 Map.of(
                         "dc", () -> NumberFormat.DECIMAL_COMMA.format(value),
@@ -167,7 +185,8 @@ public final class StringFormatter {
                         "i",  () -> NumberFormat.INTEGER.format(value),
                         "p",  () -> NumberFormat.PERCENT.format(value),
                         "sc", () -> NumberFormat.SCIENTIFIC.format(value),
-                        "S",  () -> Stringifier.valueOf(value).toUpperCase(),
+                        "e",  () -> NumberFormat.EXPONENTIATION.format(value),
+                        "U",  () -> Stringifier.valueOf(value).toUpperCase(),
                         "lc", () -> Stringifier.valueOf(value).toLowerCase()
                 ), () -> "");
     }

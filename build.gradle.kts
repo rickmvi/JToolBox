@@ -4,7 +4,7 @@ plugins {
 }
 
 group = "io.github.rickmvi"
-version = "1.10.06"
+version = "1.10.08"
 
 repositories {
     mavenCentral()
@@ -25,7 +25,7 @@ tasks.test {
 }
 
 mavenPublishing {
-    coordinates(group.toString(), "utility", version.toString())
+    coordinates(group.toString(), "jtoolbox", version.toString())
 
     pom {
         name.set("JToolBox")

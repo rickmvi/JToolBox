@@ -18,7 +18,7 @@
 package com.github.rickmvi.jtoolbox.collections.array;
 
 import com.github.rickmvi.jtoolbox.lang.exceptions.InvalidStartIndexException;
-import com.github.rickmvi.jtoolbox.control.fors.Iteration;
+import com.github.rickmvi.jtoolbox.control.fors.For;
 import com.github.rickmvi.jtoolbox.utils.ArrayUtils;
 import com.github.rickmvi.jtoolbox.control.ifs.If;
 
@@ -38,7 +38,7 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Set;
 
-import static com.github.rickmvi.jtoolbox.text.StringFormatter.format;
+import static com.github.rickmvi.jtoolbox.text.StringFormat.format;
 
 /**
  * Utility class for working with arrays in a functional and safe way.
@@ -102,7 +102,7 @@ import static com.github.rickmvi.jtoolbox.text.StringFormatter.format;
  * @apiNote This class provides functional and safe alternatives to {@link java.util.Arrays} methods,
  *          with added convenience for generics, type safety, and array manipulation.
  * @see ArrayUtils
- * @see Iteration
+ * @see For
  * @see Arrays
  * @since 1.0
  */
@@ -112,7 +112,7 @@ public class Array extends ArrayUtils {
     /* ==================================== ADD METHOD ========================================= */
 
     public static <T> T @NotNull [] add(T @NotNull [] array, T element) {
-        T[] result = java.util.Arrays.copyOf(array, length(array) + 1);
+        T[] result = Arrays.copyOf(array, length(array) + 1);
         result[length(array)] = element;
         return result;
     }
@@ -120,7 +120,7 @@ public class Array extends ArrayUtils {
     public static <T> T @NotNull [] add(T @NotNull [] array, int index, T element) {
         If.trueThrow(index < 0 || index > array.length, () ->
                 new InvalidStartIndexException(format("Index: {}, Length: {}", index, length(array))));
-        T[] result = java.util.Arrays.copyOf(array, array.length + 1);
+        T[] result = Arrays.copyOf(array, array.length + 1);
 
         System.arraycopy(
                 array,
@@ -145,7 +145,7 @@ public class Array extends ArrayUtils {
      * @throws NullPointerException if the {@code second} array is null
      */
     public static <T> T @NotNull [] concat(T[] first, T @NotNull [] second) {
-        T[] result = java.util.Arrays.copyOf(first, first.length + second.length);
+        T[] result = Arrays.copyOf(first, first.length + second.length);
         System.arraycopy(second, 0, result, first.length, second.length);
         return result;
     }
@@ -164,7 +164,7 @@ public class Array extends ArrayUtils {
      * @throws NullPointerException If the provided array is null.
      */
     public static <T> int indexOf(T @NotNull [] array, T element) {
-        return Iteration.findFirstIndexMatching(length(array), i -> Objects.equals(array[i], element));
+        return For.range(0, length(array)).findFirst(i -> Objects.equals(array[i], element));
     }
 
     /**
@@ -179,7 +179,7 @@ public class Array extends ArrayUtils {
      * @throws NullPointerException if the array is null
      */
     public static <T> int lastIndexOf(T @NotNull [] array, T element) {
-        return Iteration.findLastIndexMatching(length(array), i -> Objects.equals(array[i], element));
+        return For.range(0, length(array)).findLast(i -> Objects.equals(array[i], element));
     }
 
     /* ==================================== CONTAINS METHOD ========================================= */
@@ -221,6 +221,11 @@ public class Array extends ArrayUtils {
     @Contract(pure = true)
     public static int length(Object[] array) {
         return isEmpty(array) ? 0 : array.length;
+    }
+
+    @Contract(pure = true)
+    public static int lastIndex(Object[] array) {
+        return isEmpty(array) ? -1 : array.length - 1;
     }
 
     /* =================================== COPY RANGE METHOD ======================================== */
@@ -329,10 +334,10 @@ public class Array extends ArrayUtils {
      */
     public static <T> @NotNull T @NotNull [] reversed(T @NotNull [] array) {
         T[] result = java.util.Arrays.copyOf(array, array.length);
-        Iteration.forEachHalf(array.length, i -> {
+        For.range(0, length(array) / 2).forEach(i -> {
             T t = result[i];
-            result[i] = result[array.length - i - 1];
-            result[array.length - i - 1] = t;
+            result[i] = result[length(array) - i - 1];
+            result[length(array) - i - 1] = t;
         });
         return result;
     }
@@ -348,7 +353,7 @@ public class Array extends ArrayUtils {
      * @throws NullPointerException If the array is null.
      */
     public static <T> void reverseInPlace(T @NotNull [] array) {
-        Iteration.forEachHalf(array.length, i -> {
+        For.range(0, array.length / 2).forEach(i -> {
             T t = array[i];
             array[i] = array[array.length - i - 1];
             array[array.length - i - 1] = t;
@@ -392,7 +397,7 @@ public class Array extends ArrayUtils {
      */
     public static <T, R> R[] map(T @NotNull [] array, @NotNull Function<T, R> mapper, @NotNull IntFunction<R[]> generator) {
         R[] result = generator.apply(array.length);
-        Iteration.forEachIndex(array.length, i -> result[i] = mapper.apply(array[i]));
+        For.range(0, length(array) - 1).forEach(i -> result[i] = mapper.apply(array[i]));
         return result;
     }
     /* ================================== DISTINCT METHOD ======================================= */
@@ -411,7 +416,7 @@ public class Array extends ArrayUtils {
      * @throws NullPointerException if either {@code array} or {@code generator} is {@code null}.
      */
     public static <T> T @NotNull [] distinct(T @NotNull [] array, @NotNull IntFunction<T[]> generator) {
-        return java.util.Arrays.stream(array).distinct().toArray(generator);
+        return Arrays.stream(array).distinct().toArray(generator);
     }
 
     /* ==================================== JOIN METHOD'S ========================================= */
@@ -430,7 +435,7 @@ public class Array extends ArrayUtils {
      */
     @Contract("_, _ -> new")
     public static @NotNull String join(Object @NotNull [] array, @NotNull String delimiter) {
-        return String.join(delimiter, java.util.Arrays.stream(array)
+        return String.join(delimiter, Arrays.stream(array)
                 .map(String::valueOf)
                 .toArray(String[]::new));
     }
@@ -450,7 +455,7 @@ public class Array extends ArrayUtils {
      */
     @Contract("_ -> !null")
     public static <T> List<T> toList(T[] array) {
-        return array == null ? Collections.emptyList() : java.util.Arrays.asList(array);
+        return array == null ? Collections.emptyList() : Arrays.asList(array);
     }
 
     /**
@@ -465,7 +470,7 @@ public class Array extends ArrayUtils {
      */
     @Contract("!null -> new")
     public static <T> @NotNull Set<T> toSet(T[] array) {
-        return array == null ? Collections.emptySet() : new LinkedHashSet<>(java.util.Arrays.asList(array));
+        return array == null ? Collections.emptySet() : new LinkedHashSet<>(Arrays.asList(array));
     }
 
     /* ==================================== SORT METHOD'S ========================================= */
@@ -479,7 +484,7 @@ public class Array extends ArrayUtils {
      * @throws NullPointerException if the provided {@code array} is {@code null}.
      */
     public static <T extends Comparable<? super T>> void sort(T @NotNull [] array) {
-        java.util.Arrays.sort(array);
+        Arrays.sort(array);
     }
 
     /**
@@ -489,7 +494,7 @@ public class Array extends ArrayUtils {
      * @throws NullPointerException if the provided {@code array} is {@code null}.
      */
     public static void sort(int @NotNull [] array) {
-        java.util.Arrays.sort(array);
+        Arrays.sort(array);
     }
 
     /**
@@ -499,7 +504,7 @@ public class Array extends ArrayUtils {
      * @throws NullPointerException if the provided {@code array} is {@code null}.
      */
     public static void sort(double @NotNull [] array) {
-        java.util.Arrays.sort(array);
+        Arrays.sort(array);
     }
 
     /**
@@ -509,7 +514,7 @@ public class Array extends ArrayUtils {
      * @throws NullPointerException if the provided {@code array} is {@code null}.
      */
     public static void sort(float @NotNull [] array) {
-        java.util.Arrays.sort(array);
+        Arrays.sort(array);
     }
 
     /* ==================================== SUM METHOD'S ========================================= */
@@ -521,7 +526,6 @@ public class Array extends ArrayUtils {
      * @return the sum of all the integer elements in the array.
      * @throws NullPointerException if the provided {@code array} is {@code null}.
      */
-    @Contract(pure = true)
     public static int sum(int @NotNull [] array) {
         return MathUtils.sumInt(array);
     }
@@ -533,7 +537,6 @@ public class Array extends ArrayUtils {
      * @return the sum of all the long elements in the array.
      * @throws NullPointerException if the provided {@code array} is {@code null}.
      */
-    @Contract(pure = true)
     public static long sum(long @NotNull [] array) {
         return MathUtils.sumLong(array);
     }
@@ -545,7 +548,6 @@ public class Array extends ArrayUtils {
      * @return the sum of all the float elements in the array.
      * @throws NullPointerException if the provided {@code array} is {@code null}.
      */
-    @Contract(pure = true)
     public static float sum(float @NotNull [] array) {
         return MathUtils.sumFloat(array);
     }
@@ -557,7 +559,6 @@ public class Array extends ArrayUtils {
      * @return the sum of all the double elements in the array.
      * @throws NullPointerException if the provided {@code array} is {@code null}.
      */
-    @Contract(pure = true)
     public static double sum(double @NotNull [] array) {
         return MathUtils.sumDouble(array);
     }

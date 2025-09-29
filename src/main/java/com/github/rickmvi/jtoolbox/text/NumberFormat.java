@@ -18,12 +18,12 @@
 package com.github.rickmvi.jtoolbox.text;
 
 import com.github.rickmvi.jtoolbox.console.utils.convert.TypeAdapter;
-import com.github.rickmvi.jtoolbox.text.internal.NumberStyle;
 import com.github.rickmvi.jtoolbox.text.internal.NumberInterface;
-import lombok.experimental.UtilityClass;
+import com.github.rickmvi.jtoolbox.text.internal.NumberStyle;
 import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
+import lombok.experimental.UtilityClass;
 
 /**
  * Utility class for formatting numeric values using predefined styles from {@link NumberStyle}.
@@ -58,17 +58,19 @@ public class NumberFormat {
     }
 
     /** Formatter with comma as a decimal separator */
-    public static final NumberInterface DECIMAL_COMMA = of(NumberStyle.DECIMAL_COMMA);
+    public static final NumberInterface DECIMAL_COMMA  = of(NumberStyle.DECIMAL_COMMA);
 
     /** Formatter with dot as a decimal separator */
-    public static final NumberInterface DECIMAL_POINT = of(NumberStyle.DECIMAL_POINT);
+    public static final NumberInterface DECIMAL_POINT  = of(NumberStyle.DECIMAL_POINT);
 
     /** Formatter for integers with a thousand separator */
-    public static final NumberInterface INTEGER       = of(NumberStyle.INTEGER);
+    public static final NumberInterface INTEGER        = of(NumberStyle.INTEGER);
 
     /** Formatter for percentages with two decimal places */
-    public static final NumberInterface PERCENT       = of(NumberStyle.PERCENT);
+    public static final NumberInterface PERCENT        = of(NumberStyle.PERCENT);
 
     /** Formatter in scientific notation */
-    public static final NumberInterface SCIENTIFIC    = of(NumberStyle.SCIENTIFIC);
+    public static final NumberInterface SCIENTIFIC     = of(NumberStyle.SCIENTIFIC);
+
+    public static final NumberInterface EXPONENTIATION = of(NumberStyle.EXPONENTIATION);
 }

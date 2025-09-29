@@ -19,7 +19,6 @@ package com.github.rickmvi.jtoolbox.utils;
 
 import com.github.rickmvi.jtoolbox.control.fors.For;
 import com.github.rickmvi.jtoolbox.control.ifs.If;
-import com.github.rickmvi.jtoolbox.control.fors.Iteration;
 
 import com.github.rickmvi.jtoolbox.control.While;
 import org.jetbrains.annotations.ApiStatus;
@@ -72,14 +71,15 @@ import java.util.List;
  *     <li>Methods like {@code concat} and {@code copyRange} may throw
  *         {@link ArrayIndexOutOfBoundsException} if indices are invalid.</li>
  *     <li>Designed for performance with primitive arrays and minimal overhead.</li>
- *     <li>Relies on {@link Iteration} and {@link Primitives} for safe element comparisons and index operations.</li>
+ *     <li>Relies on {@link For} and {@link Primitives} for safe element comparisons and index operations.</li>
  * </ul>
  *
  * @apiNote This class is abstract and cannot be instantiated. Use the static methods directly.
- * @see Iteration
+ * @see For
  * @see Primitives
- * @since 1.0
+ * @since 1.1
  */
+@SuppressWarnings("unused")
 public abstract class ArrayUtils {
 
     @Contract(pure = true)
@@ -112,6 +112,56 @@ public abstract class ArrayUtils {
         return isEmpty(array) ? 0 : array.length;
     }
 
+    @Contract(pure = true)
+    public static int length(char @NotNull ... array) {
+        return isEmpty(array) ? 0 : array.length;
+    }
+
+    @Contract(pure = true)
+    public static int length(boolean @NotNull ... array) {
+        return isEmpty(array) ? 0 : array.length;
+    }
+
+    @Contract(pure = true)
+    public static int lastIndex(byte @NotNull ... array) {
+        return isEmpty(array) ? -1 : array.length - 1;
+    }
+
+    @Contract(pure = true)
+    public static int lastIndex(short @NotNull ... array) {
+        return isEmpty(array) ? -1 : array.length - 1;
+    }
+
+    @Contract(pure = true)
+    public static int lastIndex(int @NotNull ... array) {
+        return isEmpty(array) ? -1 : array.length - 1;
+    }
+
+    @Contract(pure = true)
+    public static int lastIndex(long @NotNull ... array) {
+        return isEmpty(array) ? -1 : array.length - 1;
+    }
+
+    @Contract(pure = true)
+    public static int lastIndex(float @NotNull ... array) {
+        return isEmpty(array) ? -1 : array.length - 1;
+    }
+
+    @Contract(pure = true)
+    public static int lastIndex(double @NotNull ... array) {
+        return isEmpty(array) ? -1 : array.length - 1;
+    }
+
+    @Contract(pure = true)
+    public static int lastIndex(char @NotNull ... array) {
+        return isEmpty(array) ? -1 : array.length - 1;
+    }
+
+    @Contract(pure = true)
+    public static int lastIndex(boolean @NotNull ... array) {
+        return isEmpty(array) ? -1 : array.length - 1;
+    }
+
     /**
      * Combines two byte arrays into a single array, preserving the order of elements
      * from both arrays. The first array elements appear first in the resulting array,
@@ -124,8 +174,8 @@ public abstract class ArrayUtils {
      * @throws NullPointerException if either the {@code first} or {@code second} array is null
      */
     public static byte @NotNull [] concat(byte[] first, byte @NotNull ... second) {
-        byte[] result = Arrays.copyOf(first, first.length + second.length);
-        System.arraycopy(second, 0, result, first.length, second.length);
+        byte[] result = Arrays.copyOf(first, length(first) + length(second));
+        System.arraycopy(second, 0, result, length(first), length(second));
         return result;
     }
 
@@ -141,8 +191,8 @@ public abstract class ArrayUtils {
      * @throws NullPointerException if either the {@code first} or {@code second} array is null
      */
     public static short @NotNull [] concat(short[] first, short @NotNull ... second) {
-        short[] result = Arrays.copyOf(first, first.length + second.length);
-        System.arraycopy(second, 0, result, first.length, second.length);
+        short[] result = Arrays.copyOf(first, length(first) + length(second));
+        System.arraycopy(second, 0, result, length(first), length(second));
         return result;
     }
 
@@ -158,8 +208,8 @@ public abstract class ArrayUtils {
      * @throws NullPointerException if either the {@code first} or {@code second} array is null
      */
     public static int @NotNull [] concat(int[] first, int @NotNull ... second) {
-        int[] result = Arrays.copyOf(first, first.length + second.length);
-        System.arraycopy(second, 0, result, first.length, second.length);
+        int[] result = Arrays.copyOf(first, length(first) + length(second));
+        System.arraycopy(second, 0, result, length(first), length(second));
         return result;
     }
 
@@ -175,8 +225,8 @@ public abstract class ArrayUtils {
      * @throws NullPointerException if either {@code first} or {@code second} array is {@code null}
      */
     public static long @NotNull [] concat(long[] first, long @NotNull ... second) {
-        long[] result = Arrays.copyOf(first, first.length + second.length);
-        System.arraycopy(second, 0, result, first.length, second.length);
+        long[] result = Arrays.copyOf(first, length(first) + length(second));
+        System.arraycopy(second, 0, result, length(first), length(second));
         return result;
     }
 
@@ -192,8 +242,8 @@ public abstract class ArrayUtils {
      * @throws NullPointerException if either the {@code first} or {@code second} array is {@code null}
      */
     public static float @NotNull [] concat(float[] first, float @NotNull ... second) {
-        float[] result = Arrays.copyOf(first, first.length + second.length);
-        System.arraycopy(second, 0, result, first.length, second.length);
+        float[] result = Arrays.copyOf(first, length(first) + length(second));
+        System.arraycopy(second, 0, result, length(first), length(second));
         return result;
     }
 
@@ -207,8 +257,8 @@ public abstract class ArrayUtils {
      * @throws NullPointerException if either {@code first} or {@code second} is null
      */
     public static double @NotNull [] concat(double[] first, double @NotNull ... second) {
-        double[] result = Arrays.copyOf(first, first.length + second.length);
-        System.arraycopy(second, 0, result, first.length, second.length);
+        double[] result = Arrays.copyOf(first, length(first) + length(second));
+        System.arraycopy(second, 0, result, length(first), length(second));
         return result;
     }
 
@@ -222,8 +272,8 @@ public abstract class ArrayUtils {
      * @throws NullPointerException if the second array is null
      */
     public static char @NotNull [] concat(char[] first, char @NotNull ... second) {
-        char[] result = Arrays.copyOf(first, first.length + second.length);
-        System.arraycopy(second, 0, result, first.length, second.length);
+        char[] result = Arrays.copyOf(first, length(first) + length(second));
+        System.arraycopy(second, 0, result, length(first), length(second));
         return result;
     }
 
@@ -240,8 +290,8 @@ public abstract class ArrayUtils {
      *                              array is null.
      */
     public static boolean @NotNull [] concat(boolean[] first, boolean @NotNull ... second) {
-        boolean[] result = Arrays.copyOf(first, first.length + second.length);
-        System.arraycopy(second, 0, result, first.length, second.length);
+        boolean[] result = Arrays.copyOf(first, length(first) + length(second));
+        System.arraycopy(second, 0, result, length(first), length(second));
         return result;
     }
 
@@ -258,12 +308,12 @@ public abstract class ArrayUtils {
      *                              in {@code rest} is null.
      */
     public static int @NotNull [] concat(int @NotNull [] first, int @NotNull []... rest) {
-        int totalLength = first.length;
+        int totalLength = length(first);
         for (int[] array : rest) {
             totalLength = MathUtils.sumInt(totalLength, array.length);
         }
         int[] result = Arrays.copyOf(first, totalLength);
-        int offset = first.length;
+        int offset = length(first);
         for (int[] array : rest) {
             System.arraycopy(array, 0, result, offset, array.length);
             offset = MathUtils.sumInt(offset, array.length);
@@ -284,7 +334,7 @@ public abstract class ArrayUtils {
      * @throws NullPointerException if the array is null
      */
     public static int indexOf(byte element, byte @NotNull ... array) {
-        return Iteration.findFirstIndexMatching(array.length, i -> Primitives.equals(array[i], element));
+        return For.range(0, length(array)-1).findFirst(i -> Primitives.equals(array[i], element));
     }
 
     /**
@@ -297,7 +347,7 @@ public abstract class ArrayUtils {
      * @throws NullPointerException if the array is null
      */
     public static int indexOf(short element, short @NotNull ... array) {
-        return Iteration.findFirstIndexMatching(array.length, i -> Primitives.equals(array[i], element));
+        return For.range(0, length(array)-1).findFirst(i -> Primitives.equals(array[i], element));
     }
 
     /**
@@ -312,7 +362,7 @@ public abstract class ArrayUtils {
      * @throws NullPointerException if the {@code array} is null
      */
     public static int indexOf(int element, int @NotNull ... array) {
-        return Iteration.findFirstIndexMatching(array.length, i -> Primitives.equals(array[i], element));
+        return For.range(0, length(array)-1).findFirst(i -> Primitives.equals(array[i], element));
     }
 
     /**
@@ -325,7 +375,7 @@ public abstract class ArrayUtils {
      * @throws NullPointerException if the specified array is null.
      */
     public static int indexOf(long element, long @NotNull ... array) {
-        return Iteration.findFirstIndexMatching(array.length, i -> Primitives.equals(array[i], element));
+        return For.range(0, length(array)-1).findFirst(i -> Primitives.equals(array[i], element));
     }
 
     /**
@@ -339,7 +389,7 @@ public abstract class ArrayUtils {
      * @throws NullPointerException if the provided array is null
      */
     public static int indexOf(float element, float @NotNull ... array) {
-        return Iteration.findFirstIndexMatching(array.length, i -> Primitives.equals(array[i], element));
+        return For.range(0, length(array)-1).findFirst(i -> Primitives.equals(array[i], element));
     }
 
     /**
@@ -352,7 +402,7 @@ public abstract class ArrayUtils {
      * @throws NullPointerException if the provided array is null
      */
     public static int indexOf(double element, double @NotNull ... array) {
-        return Iteration.findFirstIndexMatching(array.length, i -> Primitives.equals(array[i], element));
+        return For.range(0, length(array)-1).findFirst(i -> Primitives.equals(array[i], element));
     }
 
     /**
@@ -366,7 +416,7 @@ public abstract class ArrayUtils {
      * @throws NullPointerException if the provided array is null.
      */
     public static int indexOf(char element, char @NotNull ... array) {
-        return Iteration.findFirstIndexMatching(array.length, i -> Primitives.equals(array[i], element));
+        return For.range(0, array.length - 1).findFirst(i -> Primitives.equals(array[i], element));
     }
 
     /**
@@ -380,7 +430,7 @@ public abstract class ArrayUtils {
      * @throws NullPointerException if the provided array is null
      */
     public static int indexOf(boolean element, boolean @NotNull ... array) {
-        return Iteration.findFirstIndexMatching(array.length, i -> array[i] == element);
+        return For.range(0, array.length - 1).findFirst(i -> array[i] == element);
     }
 
     /**
@@ -392,7 +442,7 @@ public abstract class ArrayUtils {
      * @throws NullPointerException if the provided array is null
      */
     public static int lastIndexOf(byte element, byte @NotNull ... array) {
-        return Iteration.findLastIndexMatching(array.length, i -> Primitives.equals(array[i], element));
+        return For.range(0, length(array)-1).findLast(i -> Primitives.equals(array[i], element));
     }
 
     /**
@@ -406,7 +456,7 @@ public abstract class ArrayUtils {
      * @throws NullPointerException if the provided array is null
      */
     public static int lastIndexOf(short element, short @NotNull ... array) {
-        return Iteration.findLastIndexMatching(array.length, i -> Primitives.equals(array[i], element));
+        return For.range(0, length(array)-1).findLast(i -> Primitives.equals(array[i], element));
     }
 
     /**
@@ -418,7 +468,7 @@ public abstract class ArrayUtils {
      * @throws NullPointerException if the provided array is null
      */
     public static int lastIndexOf(int element, int @NotNull ... array) {
-        return Iteration.findLastIndexMatching(array.length, i -> Primitives.equals(array[i], element));
+        return For.range(0, length(array)-1).findLast(i -> Primitives.equals(array[i], element));
     }
 
     /**
@@ -431,7 +481,7 @@ public abstract class ArrayUtils {
      * @throws NullPointerException if the provided array is null
      */
     public static int lastIndexOf(long element, long @NotNull ... array) {
-        return Iteration.findLastIndexMatching(array.length, i -> Primitives.equals(array[i], element));
+        return For.range(0, length(array)-1).findLast(i -> Primitives.equals(array[i], element));
     }
 
     /**
@@ -444,7 +494,7 @@ public abstract class ArrayUtils {
      * @throws NullPointerException if the array is null
      */
     public static int lastIndexOf(float element, float @NotNull ... array) {
-        return Iteration.findLastIndexMatching(array.length, i -> Primitives.equals(array[i], element));
+        return For.range(0, length(array)-1).findLast(i -> Primitives.equals(array[i], element));
     }
 
     /**
@@ -457,7 +507,7 @@ public abstract class ArrayUtils {
      * @throws NullPointerException if the array is null.
      */
     public static int lastIndexOf(double element, double @NotNull ... array) {
-        return Iteration.findLastIndexMatching(array.length, i -> Primitives.equals(array[i], element));
+        return For.range(0, length(array)-1).findLast(i -> Primitives.equals(array[i], element));
     }
 
     /**
@@ -1389,9 +1439,8 @@ public abstract class ArrayUtils {
      */
     public static boolean @NotNull [] filter(boolean @NotNull [] array, boolean @NotNull [] filter) {
         boolean[] result = new boolean[array.length];
-        For.range(0, array.length - 1).forEach(i -> {
-            If.runTrue(contains(filter, array[i]), () -> result[i] = array[i]).run();
-        });
+        For.range(0, array.length - 1).forEach(i ->
+                If.runTrue(contains(filter, array[i]), () -> result[i] = array[i]).run());
         return result;
     }
 

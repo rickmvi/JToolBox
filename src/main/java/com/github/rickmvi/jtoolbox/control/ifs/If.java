@@ -17,6 +17,8 @@
  */
 package com.github.rickmvi.jtoolbox.control.ifs;
 
+import lombok.AccessLevel;
+import lombok.RequiredArgsConstructor;
 import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
 
@@ -88,17 +90,11 @@ public interface If {
         return new FluentRunner(condition, action, false);
     }
 
+    @RequiredArgsConstructor(access = AccessLevel.PRIVATE)
     class FluentRunner {
         private final boolean  condition;
         private final Runnable action;
         private final boolean  runOnTrue;
-
-        @Contract(pure = true)
-        private FluentRunner(boolean condition, Runnable action, boolean runOnTrue) {
-            this.condition = condition;
-            this.action    = action;
-            this.runOnTrue = runOnTrue;
-        }
 
         public void orElse(Runnable elseAction) {
             if ((runOnTrue && condition) || (!runOnTrue && !condition)) {
@@ -139,17 +135,11 @@ public interface If {
         return new FluentSupplier<>(condition, supplier, false);
     }
 
+    @RequiredArgsConstructor(access = AccessLevel.PRIVATE)
     class FluentSupplier<T> {
         private final boolean     condition;
         private final Supplier<T> supplier;
         private final boolean     runOnTrue;
-
-        @Contract(pure = true)
-        private FluentSupplier(boolean condition, Supplier<T> supplier, boolean runOnTrue) {
-            this.condition = condition;
-            this.supplier = supplier;
-            this.runOnTrue = runOnTrue;
-        }
 
         public T orElse(Supplier<T> elseSupplier) {
             if ((runOnTrue && condition) || (!runOnTrue && !condition)) return supplier.get();
