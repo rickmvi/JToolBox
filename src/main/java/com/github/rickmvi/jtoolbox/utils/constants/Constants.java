@@ -4,11 +4,12 @@ public class Constants {
 
     // --- Regex ---
     public static final String GENERIC            = "\\{}";
-    public static final String GENERIC_OPTIONAL   = "\\{(\\d+)(?::(dc|dp|i|p|sc|e|U|lc))?}";
-    public static final String PLACEHOLDERS_REGEX = "$(dc|dp|i|p|sc|S|lc)\\{(\\d+)}";
+    public static final String TOKENS_COMMUM      = "\\{(\\d+)(?::(dc|dp|i|p|sc|e|U|lc))?}";
+    public static final String ADVANCED_TOKEN     = "\\{(\\d+):([^}]+)}";
+    public static final String NEW_LINE           = "\\$N:(\\d+)";
 
     // --- Number Formats ---
-    public static final String DECIMAL_COMMA  = "#,###0.00";
+    public static final String DECIMAL_COMMA  = "#,##0.00";
     public static final String DECIMAL_POINT  = "###0.00";
     public static final String INTEGER        = "#,##0";
     public static final String PERCENT        = "#0.00%";
@@ -60,7 +61,7 @@ public class Constants {
     public static final String EMPTY_ARRAY            = "Array cannot be empty.";
     public static final String STEP_OUT_OF_BOUNDS     = "Step {} is out of bounds.";
 
-    public static final String INVALID_OPERATION         =  "Invalid {} operation (NaN encountered)";
+    public static final String INVALID_OPERATION         = "Invalid {} operation (NaN encountered)";
     public static final String SUM_OVERFLOW              = "Sum overflow";
     public static final String SUBTRACT_OVERFLOW         = "Subtract overflow";
     public static final String PRODUCT_OVERFLOW          = "Product overflow";
