@@ -18,7 +18,7 @@ class OutputTest {
 
     @Test
     void formatted() {
-        Output.formatted("{0:dc}", value());
+        Output.formatted("{0:dc}$n", value());
         Output.formatted("{0:trim}$n", "   abc   ");
         Output.formatted("{0:rev}$n", "abc");
         Output.formatted("{0:cap}$n", "hello world");

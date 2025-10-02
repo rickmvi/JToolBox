@@ -52,7 +52,6 @@ public class NumberFormat {
         return value -> format(value, style);
     }
 
-    @ApiStatus.Internal
     public static String format(Object value, @NotNull NumberStyle style) {
         return style.format(TypeAdapter.toDouble(value));
     }

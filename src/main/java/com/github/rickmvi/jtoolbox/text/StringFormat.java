@@ -27,13 +27,16 @@ import com.github.rickmvi.jtoolbox.debug.Logger;
 import com.github.rickmvi.jtoolbox.utils.constants.Constants;
 import com.github.rickmvi.jtoolbox.utils.Primitives;
 import com.github.rickmvi.jtoolbox.utils.Try;
-import lombok.experimental.UtilityClass;
+import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
+import lombok.experimental.UtilityClass;
 
 import java.util.Map;
+import java.lang.reflect.Field;
 import java.time.LocalDateTime;
 import java.util.regex.Pattern;
 import java.util.regex.Matcher;
+import java.lang.reflect.Modifier;
 import java.time.format.DateTimeFormatter;
 
 import static java.util.Map.entry;
@@ -91,10 +94,10 @@ import static com.github.rickmvi.jtoolbox.utils.Primitives.isGreaterThan;
  * s = StringFormat.format("Upper: {0:U}, Lower: {1:lc}", "hello", "WORLD"); // "Upper: HELLO, Lower: world"
  *
  * // Advanced formatting tokens
- * s = StringFormat.format("Padded: {0:pad}", "text"); // "Padded: text      "
+ * s = StringFormat.format("Padded: {0:pad:5}", "text"); // "Padded: text      "
  * s = StringFormat.format("Length: {0:len}", "Hello"); // "Length: 5"
  * s = StringFormat.format("Reversed: {0:rev}", "abc"); // "Reversed: cba"
- * s = StringFormat.format("Substring: {0:sub}", "Hello:1,4"); // "Substring: ell"
+ * s = StringFormat.format("Substring: {0:sub:1,4}", "Hello"); // "Substring: ell"
  * s = StringFormat.format("Capitalized: {0:cap}", "hello WORLD"); // "Capitalized: Hello world"
  * s = StringFormat.format("Trimmed: {0:trim}", "  text  "); // "Trimmed: text"
  * }</pre>
@@ -148,18 +151,22 @@ public final class StringFormat {
      * @throws NullPointerException if the `templateString` or `args` is null.
      */
     public static @NotNull String format(@NotNull String templateString, Object @NotNull ... args) {
-        templateString = newLine(templateString);
-        templateString = Mapping.applyReplacements(templateString, TOKENS);
-        templateString = replacePlaceholders(templateString, args, TOKEN_PATTERN, StringFormat::formatOriginalToken);
-        templateString = replacePlaceholders(templateString, args, ADVANCED_TOKENS, StringFormat::formatAdvancedToken);
+        templateString = applyTemplateFormatting(templateString, args);
 
-        // Substitui placeholders genéricos {}
         for (Object arg : args) {
             templateString = GENERIC_PATTERN
                     .matcher(templateString)
                     .replaceFirst(Matcher.quoteReplacement(Stringifier.valueOf(arg)));
         }
 
+        return templateString;
+    }
+
+    private static @NotNull String applyTemplateFormatting(@NotNull String templateString, Object @NotNull ... args) {
+        templateString = newLine(templateString);
+        templateString = Mapping.applyReplacements(templateString, TOKENS);
+        templateString = replacePlaceholders(templateString, args, TOKEN_PATTERN, StringFormat::formatOriginalToken);
+        templateString = replacePlaceholders(templateString, args, ADVANCED_TOKENS, StringFormat::formatAdvancedToken);
         return templateString;
     }
 
@@ -182,7 +189,6 @@ public final class StringFormat {
         matcher.appendTail(buffer);
         return buffer.toString();
     }
-
 
     private static @NotNull String replacePlaceholders(
             @NotNull String template,
@@ -226,6 +232,78 @@ public final class StringFormat {
             return true;
         }
         return false;
+    }
+
+    @Contract("null, _ -> null; !null, null -> param1")
+    public static String interpolate(String template, Object... objects) {
+        if (template == null || objects == null) return template;
+
+        Pattern pattern = Pattern.compile("\\{([^}]+)}");
+        Matcher matcher = pattern.matcher(template);
+        StringBuilder sb = new StringBuilder();
+
+        int index = 0;
+        while (matcher.find()) {
+            String placeholder = matcher.group(1);
+            String replacement = matcher.group();
+
+            if (index < objects.length) {
+                Object obj = objects[index];
+
+                if (obj != null) {
+                    Class<?> clazz = obj.getClass();
+
+                    if (!isPrimitiveLike(clazz)) {
+                        String resolved = resolveField(obj, placeholder);
+
+                        if (resolved.equals("{" + placeholder + "}")) {
+                            index++;
+                            continue;
+                        }
+
+                        replacement = resolved;
+                    }
+
+                    if (placeholder.equalsIgnoreCase(clazz.getSimpleName())) {
+                        replacement = obj.toString();
+                        index++;
+                    }
+                }
+            }
+
+            matcher.appendReplacement(sb, Matcher.quoteReplacement(replacement));
+        }
+        matcher.appendTail(sb);
+
+        return sb.toString();
+    }
+
+    @Contract("null, _ -> !null")
+    private static String resolveField(Object obj, String fieldName) {
+        if (obj == null) return formatPlaceholder(fieldName);
+
+        return Try.ofThrowing(() -> {
+            Field field = obj.getClass().getDeclaredField(fieldName);
+            field.setAccessible(true);
+
+            Object value = Modifier.isStatic(field.getModifiers())
+                    ? field.get(null)
+                    : field.get(obj);
+            return Stringifier.toString(value);
+        }).recover(e -> formatPlaceholder(fieldName)).orElseGet(() -> formatPlaceholder(fieldName));
+
+    }
+
+    @Contract(pure = true)
+    private static @NotNull String formatPlaceholder(String fieldName) {
+        return "{" + fieldName + "}";
+    }
+
+    private static boolean isPrimitiveLike(@NotNull Class<?> clazz) {
+        return clazz.isPrimitive() ||
+                Number.class.isAssignableFrom(clazz) ||
+                Boolean.class.isAssignableFrom(clazz) ||
+                CharSequence.class.isAssignableFrom(clazz);
     }
 
     /**

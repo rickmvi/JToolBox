@@ -18,10 +18,11 @@
 package com.github.rickmvi.jtoolbox.utils;
 
 import com.github.rickmvi.jtoolbox.debug.Logger;
+import com.github.rickmvi.jtoolbox.utils.functional.ThrowingRunnable;
+import com.github.rickmvi.jtoolbox.utils.functional.ThrowingSupplier;
+import lombok.*;
 import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
-import lombok.RequiredArgsConstructor;
-import lombok.AccessLevel;
 
 import java.util.Objects;
 import java.util.Optional;
@@ -80,6 +81,7 @@ import java.util.function.Supplier;
  * @since 1.0
  * @author Rick M. Viana
  */
+@Getter(value = AccessLevel.PRIVATE)
 @RequiredArgsConstructor(access = AccessLevel.PRIVATE)
 @SuppressWarnings("unused")
 public class Try<T> {
@@ -99,6 +101,27 @@ public class Try<T> {
 
     @Contract("_ -> new")
     public static @NotNull Try<Void> run(Runnable runnable) {
+        try {
+            runnable.run();
+            return new Try<>(null, null);
+        } catch (Throwable t) {
+            Logger.error("Try.run() failed", t);
+            return new Try<>(null, t);
+        }
+    }
+
+    @Contract("_ -> new")
+    public static <T> @NotNull Try<T> ofThrowing(ThrowingSupplier<T> supplier) {
+        try {
+            return new Try<>(supplier.get(), null);
+        } catch (Throwable t) {
+            Logger.error("Try.of() failed", t);
+            return new Try<>(null, t);
+        }
+    }
+
+    @Contract("_ -> new")
+    public static @NotNull Try<Void> runThrowing(ThrowingRunnable runnable) {
         try {
             runnable.run();
             return new Try<>(null, null);

@@ -160,7 +160,9 @@ public class ScanUtility implements InputScan, AutoCloseable {
     @Override
     @Contract(pure = true)
     public int nextInt() {
-        return NumberParser.toInt(nextSafe());
+        int value = NumberParser.toInt(nextSafe());
+        If.runTrue(scanner.isPresent() && scanner.get().hasNextLine(), () -> scanner.get().nextLine()).run();
+        return value;
     }
 
     /**
@@ -171,7 +173,9 @@ public class ScanUtility implements InputScan, AutoCloseable {
     @Override
     @Contract(pure = true)
     public long nextLong() {
-        return NumberParser.toLong(nextSafe());
+        long value = NumberParser.toLong(nextSafe());
+        If.runTrue(scanner.isPresent() && scanner.get().hasNextLine(), () -> scanner.get().nextLine()).run();
+        return value;
     }
 
     /**
@@ -182,7 +186,9 @@ public class ScanUtility implements InputScan, AutoCloseable {
     @Override
     @Contract(pure = true)
     public float nextFloat() {
-        return NumberParser.toFloat(nextSafe());
+        float value = NumberParser.toFloat(nextSafe());
+        If.runTrue(scanner.isPresent() && scanner.get().hasNextLine(), () -> scanner.get().nextLine()).run();
+        return value;
     }
 
     /**
@@ -193,7 +199,9 @@ public class ScanUtility implements InputScan, AutoCloseable {
     @Override
     @Contract(pure = true)
     public double nextDouble() {
-        return NumberParser.toDouble(nextSafe());
+        double value = NumberParser.toDouble(nextSafe());
+        If.runTrue(scanner.isPresent() && scanner.get().hasNextLine(), () -> scanner.get().nextLine()).run();
+        return value;
     }
 
     /**
@@ -205,7 +213,9 @@ public class ScanUtility implements InputScan, AutoCloseable {
     @Override
     @Contract(pure = true)
     public boolean nextBoolean() {
-        return BooleanParser.toBoolean(nextSafe());
+        boolean value = BooleanParser.toBoolean(nextSafe());
+        If.runTrue(scanner.isPresent() && scanner.get().hasNextLine(), () -> scanner.get().nextLine()).run();
+        return value;
     }
 
     /**

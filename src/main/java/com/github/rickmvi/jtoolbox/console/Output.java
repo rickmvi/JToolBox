@@ -57,7 +57,7 @@ import java.util.function.Consumer;
  * @see StringFormat
  * @see Stringifier
  * @author Rick M. Viana
- * @since 1.4
+ * @since 1.5
  */
 public interface Output {
 
@@ -73,6 +73,11 @@ public interface Output {
 
     static void write(Object o) {
         If.runTrue(o != null, () -> System.out.println(Stringifier.toString(o)))
+                .orElse(Output::newline);
+    }
+
+    static void interpolated(String format, Object @Nullable ... args) {
+        If.runTrue(format != null, () -> write(StringFormat.interpolate(format, args)))
                 .orElse(Output::newline);
     }
 

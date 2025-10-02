@@ -222,41 +222,4 @@ public class NumberParser {
         return SafeExecutor.convert(value, Float::parseFloat);
     }
 
-    /**
-     * Converts a string to a specific {@code Number} type using the provided parser function.
-     * If the string cannot be parsed or is {@code null}, the specified fallback value is returned.
-     *
-     * @param <T>       the type of {@code Number} to be returned
-     * @param value     the string to convert, may be {@code null}
-     * @param parser    a {@link Function} that converts the string to the desired {@code Number} type,
-     *                  must not be {@code null}
-     * @param fallback  the fallback value to be returned if parsing fails, must not be {@code null}
-     * @return the parsed {@code Number} of type {@code T}, or the fallback value if parsing fails
-     * @throws NullPointerException if the provided {@code parser} or {@code fallback} is {@code null}
-     */
-    @Contract("_, _, !null -> !null")
-    public static <T extends Number> T toNumber(
-            @Nullable String value,
-            @NotNull Function<String, T> parser,
-            T fallback
-    ) {
-        return SafeExecutor.convert(value, parser).orElse(fallback);
-    }
-
-    public static int toIntOrElse(String value, int fallback) {
-        return toNumber(value, Integer::parseInt, fallback);
-    }
-
-    public static long toLongOrElse(String value, long fallback) {
-        return toNumber(value, Long::parseLong, fallback);
-    }
-
-    public static double toDoubleOrElse(String value, double fallback) {
-        return toNumber(value, Double::parseDouble, fallback);
-    }
-
-    public static float toFloatOrElse(String value, float fallback) {
-        return toNumber(value, Float::parseFloat, fallback);
-    }
-
 }
