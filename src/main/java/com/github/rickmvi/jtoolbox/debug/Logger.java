@@ -20,7 +20,7 @@ package com.github.rickmvi.jtoolbox.debug;
 import com.github.rickmvi.jtoolbox.utils.constants.Constants;
 import com.github.rickmvi.jtoolbox.text.StringFormat;
 import com.github.rickmvi.jtoolbox.debug.log.LogLevel;
-import com.github.rickmvi.jtoolbox.console.Output;
+import com.github.rickmvi.jtoolbox.console.IO;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.Setter;
@@ -82,7 +82,7 @@ public class Logger {
         String time         = FORMATTER.format(LocalDateTime.now());
         String coloredLevel = colorize(level.name(), AnsiColor.getColor(level));
 
-        Output.formatted("[{}] [{}] {}%n", time, coloredLevel, message);
+        IO.format("[{}] [{}] {}%n", time, coloredLevel, message);
     }
 
     /**
@@ -99,7 +99,7 @@ public class Logger {
         String coloredLevel = colorize(level.name(), AnsiColor.getColor(level));
         String message      = StringFormat.format(template, args);
 
-        Output.formatted("[{}] [{}] {}%n", time, coloredLevel, message);
+        IO.format("[{}] [{}] {}%n", time, coloredLevel, message);
     }
 
     /**

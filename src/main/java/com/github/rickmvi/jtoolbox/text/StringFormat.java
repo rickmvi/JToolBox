@@ -25,7 +25,7 @@ import com.github.rickmvi.jtoolbox.control.While;
 import com.github.rickmvi.jtoolbox.debug.Logger;
 
 import com.github.rickmvi.jtoolbox.utils.constants.Constants;
-import com.github.rickmvi.jtoolbox.utils.Primitives;
+import com.github.rickmvi.jtoolbox.utils.Numbers;
 import com.github.rickmvi.jtoolbox.utils.Try;
 import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
@@ -40,8 +40,8 @@ import java.lang.reflect.Modifier;
 import java.time.format.DateTimeFormatter;
 
 import static java.util.Map.entry;
-import static com.github.rickmvi.jtoolbox.utils.Primitives.isNegative;
-import static com.github.rickmvi.jtoolbox.utils.Primitives.isGreaterThan;
+import static com.github.rickmvi.jtoolbox.utils.Numbers.isNegative;
+import static com.github.rickmvi.jtoolbox.utils.Numbers.isGreaterThan;
 
 /**
  * Utility class for formatting strings using placeholders and custom tokens.
@@ -163,10 +163,10 @@ public final class StringFormat {
     }
 
     private static @NotNull String applyTemplateFormatting(@NotNull String templateString, Object @NotNull ... args) {
-        templateString = newLine(templateString);
         templateString = Mapping.applyReplacements(templateString, TOKENS);
         templateString = replacePlaceholders(templateString, args, TOKEN_PATTERN, StringFormat::formatOriginalToken);
         templateString = replacePlaceholders(templateString, args, ADVANCED_TOKENS, StringFormat::formatAdvancedToken);
+        templateString = newLine(templateString);
         return templateString;
     }
 
@@ -179,7 +179,7 @@ public final class StringFormat {
                     .onFailure(e -> Logger.error("Invalid new line count '{}'", e, matcher.group(1)))
                     .orElse(1);
 
-            if (Primitives.isLessThan(count, 1)) count = 1;
+            if (Numbers.isLessThan(count, 1)) count = 1;
 
             String replacement = System.lineSeparator().repeat(count);
 

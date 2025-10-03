@@ -20,6 +20,7 @@ package com.github.rickmvi.jtoolbox.console;
 import com.github.rickmvi.jtoolbox.console.utils.convert.Stringifier;
 import com.github.rickmvi.jtoolbox.text.StringFormat;
 import com.github.rickmvi.jtoolbox.control.ifs.If;
+import com.github.rickmvi.jtoolbox.utils.Numbers;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -57,37 +58,42 @@ import java.util.function.Consumer;
  * @see StringFormat
  * @see Stringifier
  * @author Rick M. Viana
- * @since 1.5
+ * @since 1.6
  */
-public interface Output {
+public interface IO {
 
     static void print(Object o) {
         If.runTrue(o != null, () -> System.out.print(Stringifier.toString(o)))
-                .orElse(Output::newline);
+                .orElse(IO::newline);
     }
 
     static void printf(Object o, Object... args) {
         If.runTrue(o != null, () -> System.out.printf(Stringifier.toString(o), args))
-                .orElse(Output::newline);
+                .orElse(IO::newline);
     }
 
-    static void write(Object o) {
+    static void println(Object o) {
         If.runTrue(o != null, () -> System.out.println(Stringifier.toString(o)))
-                .orElse(Output::newline);
+                .orElse(IO::newline);
+    }
+
+    static void format(Object format, Object @Nullable ... args) {
+        If.runTrue(format != null, () -> print(StringFormat.format(Stringifier.toString(format), args)))
+                .orElse(IO::newline);
     }
 
     static void interpolated(String format, Object @Nullable ... args) {
-        If.runTrue(format != null, () -> write(StringFormat.interpolate(format, args)))
-                .orElse(Output::newline);
-    }
-
-    static void formatted(Object format, Object @Nullable ... args) {
-        If.runTrue(format != null, () -> print(StringFormat.format(Stringifier.toString(format), args)))
-                .orElse(Output::newline);
+        If.runTrue(format != null, () -> println(StringFormat.interpolate(format, args)))
+                .orElse(IO::newline);
     }
 
     static void newline() {
         System.out.println();
+    }
+
+    static void newline(int count) {
+        int value = Numbers.requiredNonNegative(count, 0);
+        IO.format("$N:{0}", value);
     }
 
     static void to(PrintStream stream, Object text) {

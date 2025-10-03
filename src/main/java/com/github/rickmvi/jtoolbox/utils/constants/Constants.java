@@ -1,5 +1,8 @@
 package com.github.rickmvi.jtoolbox.utils.constants;
 
+import org.jetbrains.annotations.ApiStatus;
+
+@ApiStatus.Internal
 public class Constants {
 
     // --- Regex ---

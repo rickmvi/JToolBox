@@ -71,12 +71,12 @@ import java.util.List;
  *     <li>Methods like {@code concat} and {@code copyRange} may throw
  *         {@link ArrayIndexOutOfBoundsException} if indices are invalid.</li>
  *     <li>Designed for performance with primitive arrays and minimal overhead.</li>
- *     <li>Relies on {@link For} and {@link Primitives} for safe element comparisons and index operations.</li>
+ *     <li>Relies on {@link For} and {@link Numbers} for safe element comparisons and index operations.</li>
  * </ul>
  *
  * @apiNote This class is abstract and cannot be instantiated. Use the static methods directly.
  * @see For
- * @see Primitives
+ * @see Numbers
  * @since 1.1
  */
 @SuppressWarnings("unused")
@@ -334,7 +334,7 @@ public abstract class ArrayUtils {
      * @throws NullPointerException if the array is null
      */
     public static int indexOf(byte element, byte @NotNull ... array) {
-        return For.range(0, length(array)-1).findFirst(i -> Primitives.equals(array[i], element));
+        return For.range(0, length(array)-1).findFirst(i -> Numbers.equals(array[i], element));
     }
 
     /**
@@ -347,7 +347,7 @@ public abstract class ArrayUtils {
      * @throws NullPointerException if the array is null
      */
     public static int indexOf(short element, short @NotNull ... array) {
-        return For.range(0, length(array)-1).findFirst(i -> Primitives.equals(array[i], element));
+        return For.range(0, length(array)-1).findFirst(i -> Numbers.equals(array[i], element));
     }
 
     /**
@@ -362,7 +362,7 @@ public abstract class ArrayUtils {
      * @throws NullPointerException if the {@code array} is null
      */
     public static int indexOf(int element, int @NotNull ... array) {
-        return For.range(0, length(array)-1).findFirst(i -> Primitives.equals(array[i], element));
+        return For.range(0, length(array)-1).findFirst(i -> Numbers.equals(array[i], element));
     }
 
     /**
@@ -375,7 +375,7 @@ public abstract class ArrayUtils {
      * @throws NullPointerException if the specified array is null.
      */
     public static int indexOf(long element, long @NotNull ... array) {
-        return For.range(0, length(array)-1).findFirst(i -> Primitives.equals(array[i], element));
+        return For.range(0, length(array)-1).findFirst(i -> Numbers.equals(array[i], element));
     }
 
     /**
@@ -389,7 +389,7 @@ public abstract class ArrayUtils {
      * @throws NullPointerException if the provided array is null
      */
     public static int indexOf(float element, float @NotNull ... array) {
-        return For.range(0, length(array)-1).findFirst(i -> Primitives.equals(array[i], element));
+        return For.range(0, length(array)-1).findFirst(i -> Numbers.equals(array[i], element));
     }
 
     /**
@@ -402,7 +402,7 @@ public abstract class ArrayUtils {
      * @throws NullPointerException if the provided array is null
      */
     public static int indexOf(double element, double @NotNull ... array) {
-        return For.range(0, length(array)-1).findFirst(i -> Primitives.equals(array[i], element));
+        return For.range(0, length(array)-1).findFirst(i -> Numbers.equals(array[i], element));
     }
 
     /**
@@ -416,7 +416,7 @@ public abstract class ArrayUtils {
      * @throws NullPointerException if the provided array is null.
      */
     public static int indexOf(char element, char @NotNull ... array) {
-        return For.range(0, array.length - 1).findFirst(i -> Primitives.equals(array[i], element));
+        return For.range(0, array.length - 1).findFirst(i -> Numbers.equals(array[i], element));
     }
 
     /**
@@ -442,7 +442,7 @@ public abstract class ArrayUtils {
      * @throws NullPointerException if the provided array is null
      */
     public static int lastIndexOf(byte element, byte @NotNull ... array) {
-        return For.range(0, length(array)-1).findLast(i -> Primitives.equals(array[i], element));
+        return For.range(0, length(array)-1).findLast(i -> Numbers.equals(array[i], element));
     }
 
     /**
@@ -456,7 +456,7 @@ public abstract class ArrayUtils {
      * @throws NullPointerException if the provided array is null
      */
     public static int lastIndexOf(short element, short @NotNull ... array) {
-        return For.range(0, length(array)-1).findLast(i -> Primitives.equals(array[i], element));
+        return For.range(0, length(array)-1).findLast(i -> Numbers.equals(array[i], element));
     }
 
     /**
@@ -468,7 +468,7 @@ public abstract class ArrayUtils {
      * @throws NullPointerException if the provided array is null
      */
     public static int lastIndexOf(int element, int @NotNull ... array) {
-        return For.range(0, length(array)-1).findLast(i -> Primitives.equals(array[i], element));
+        return For.range(0, length(array)-1).findLast(i -> Numbers.equals(array[i], element));
     }
 
     /**
@@ -481,7 +481,7 @@ public abstract class ArrayUtils {
      * @throws NullPointerException if the provided array is null
      */
     public static int lastIndexOf(long element, long @NotNull ... array) {
-        return For.range(0, length(array)-1).findLast(i -> Primitives.equals(array[i], element));
+        return For.range(0, length(array)-1).findLast(i -> Numbers.equals(array[i], element));
     }
 
     /**
@@ -494,7 +494,7 @@ public abstract class ArrayUtils {
      * @throws NullPointerException if the array is null
      */
     public static int lastIndexOf(float element, float @NotNull ... array) {
-        return For.range(0, length(array)-1).findLast(i -> Primitives.equals(array[i], element));
+        return For.range(0, length(array)-1).findLast(i -> Numbers.equals(array[i], element));
     }
 
     /**
@@ -507,7 +507,7 @@ public abstract class ArrayUtils {
      * @throws NullPointerException if the array is null.
      */
     public static int lastIndexOf(double element, double @NotNull ... array) {
-        return For.range(0, length(array)-1).findLast(i -> Primitives.equals(array[i], element));
+        return For.range(0, length(array)-1).findLast(i -> Numbers.equals(array[i], element));
     }
 
     /**
@@ -669,7 +669,7 @@ public abstract class ArrayUtils {
      * @throws NullPointerException if the input array is {@code null}
      */
     public static boolean contains(byte @NotNull [] array, byte element) {
-        return For.range(0, array.length -1).anyMatch(i -> Primitives.equals(array[i], element));
+        return For.range(0, array.length -1).anyMatch(i -> Numbers.equals(array[i], element));
     }
 
     /**
@@ -681,7 +681,7 @@ public abstract class ArrayUtils {
      * @throws NullPointerException if the array is null
      */
     public static boolean contains(short @NotNull [] array, short element) {
-        return For.range(0, array.length -1).anyMatch(i -> Primitives.equals(array[i], element));
+        return For.range(0, array.length -1).anyMatch(i -> Numbers.equals(array[i], element));
     }
 
     /**
@@ -693,7 +693,7 @@ public abstract class ArrayUtils {
      * @throws NullPointerException if the array is null
      */
     public static boolean contains(int @NotNull [] array, int element) {
-        return For.range(0, array.length -1).anyMatch(i -> Primitives.equals(array[i], element));
+        return For.range(0, array.length -1).anyMatch(i -> Numbers.equals(array[i], element));
     }
 
     /**
@@ -705,7 +705,7 @@ public abstract class ArrayUtils {
      * @throws NullPointerException if the array is null
      */
     public static boolean contains(long @NotNull [] array, long element) {
-        return For.range(0, array.length -1).anyMatch(i -> Primitives.equals(array[i], element));
+        return For.range(0, array.length -1).anyMatch(i -> Numbers.equals(array[i], element));
     }
 
     /**
@@ -717,7 +717,7 @@ public abstract class ArrayUtils {
      * @throws NullPointerException if the input array is null
      */
     public static boolean contains(float @NotNull [] array, float element) {
-        return For.range(0, array.length -1).anyMatch(i -> Primitives.equals(array[i], element));
+        return For.range(0, array.length -1).anyMatch(i -> Numbers.equals(array[i], element));
     }
 
     /**
@@ -729,7 +729,7 @@ public abstract class ArrayUtils {
      * @throws NullPointerException if the input array is null
      */
     public static boolean contains(double @NotNull [] array, double element) {
-        return For.range(0, array.length -1).anyMatch(i -> Primitives.equals(array[i], element));
+        return For.range(0, array.length -1).anyMatch(i -> Numbers.equals(array[i], element));
     }
 
     /**
@@ -741,7 +741,7 @@ public abstract class ArrayUtils {
      * @throws NullPointerException if the array is null
      */
     public static boolean contains(char @NotNull [] array, char element) {
-        return For.range(0, array.length -1).anyMatch(i -> Primitives.equals(array[i], element));
+        return For.range(0, array.length -1).anyMatch(i -> Numbers.equals(array[i], element));
     }
 
     /**
@@ -790,7 +790,7 @@ public abstract class ArrayUtils {
      */
     @Contract(pure = true)
     public static boolean isEmpty(byte @NotNull [] array) {
-        return Primitives.isZero(array.length);
+        return Numbers.isZero(array.length);
     }
 
     /**
@@ -802,7 +802,7 @@ public abstract class ArrayUtils {
      */
     @Contract(pure = true)
     public static boolean isEmpty(short @NotNull [] array) {
-        return Primitives.isZero(array.length);
+        return Numbers.isZero(array.length);
     }
 
     /**
@@ -814,7 +814,7 @@ public abstract class ArrayUtils {
      */
     @Contract(pure = true)
     public static boolean isEmpty(int @NotNull [] array) {
-        return Primitives.isZero(array.length);
+        return Numbers.isZero(array.length);
     }
 
     /**
@@ -826,7 +826,7 @@ public abstract class ArrayUtils {
      */
     @Contract(pure = true)
     public static boolean isEmpty(long @NotNull [] array) {
-        return Primitives.isZero(array.length);
+        return Numbers.isZero(array.length);
     }
 
     /**
@@ -838,7 +838,7 @@ public abstract class ArrayUtils {
      */
     @Contract(pure = true)
     public static boolean isEmpty(float @NotNull [] array) {
-        return Primitives.isZero(array.length);
+        return Numbers.isZero(array.length);
     }
 
     /**
@@ -850,7 +850,7 @@ public abstract class ArrayUtils {
      */
     @Contract(pure = true)
     public static boolean isEmpty(double @NotNull [] array) {
-        return Primitives.isZero(array.length);
+        return Numbers.isZero(array.length);
     }
 
     /**
@@ -862,7 +862,7 @@ public abstract class ArrayUtils {
      */
     @Contract(pure = true)
     public static boolean isEmpty(char @NotNull [] array) {
-        return Primitives.isZero(array.length);
+        return Numbers.isZero(array.length);
     }
 
     /**
@@ -874,7 +874,7 @@ public abstract class ArrayUtils {
      */
     @Contract(pure = true)
     public static boolean isEmpty(boolean @NotNull [] array) {
-        return Primitives.isZero(array.length);
+        return Numbers.isZero(array.length);
     }
 
     /**
@@ -892,7 +892,7 @@ public abstract class ArrayUtils {
         byte[] result = new byte[array.length - 1];
         int index = 0;
         for (byte i : array) {
-            if (Primitives.notEquals(i, element)) {
+            if (Numbers.notEquals(i, element)) {
                 result[index++] = i;
             }
         }
@@ -915,7 +915,7 @@ public abstract class ArrayUtils {
         short[] result = new short[array.length - 1];
         int index = 0;
         for (short i : array) {
-            if (Primitives.notEquals(i, element)) {
+            if (Numbers.notEquals(i, element)) {
                 result[index++] = i;
             }
         }
@@ -934,11 +934,11 @@ public abstract class ArrayUtils {
      */
     @Contract(pure = true)
     public static int @NotNull [] remove(int @NotNull [] array, int element) {
-        int count = (int) Arrays.stream(array).filter(i -> Primitives.notEquals(i, element)).count();
+        int count = (int) Arrays.stream(array).filter(i -> Numbers.notEquals(i, element)).count();
         int[] result = new int[count];
         int index = 0;
         for (int i : array) {
-            if (Primitives.notEquals(i, element)) {
+            if (Numbers.notEquals(i, element)) {
                 result[index++] = i;
             }
         }
@@ -957,11 +957,11 @@ public abstract class ArrayUtils {
      */
     @Contract(pure = true)
     public static long @NotNull [] remove(long @NotNull [] array, long element) {
-        int count = (int) Arrays.stream(array).filter(i -> Primitives.notEquals(i, element)).count();
+        int count = (int) Arrays.stream(array).filter(i -> Numbers.notEquals(i, element)).count();
         long[] result = new long[count];
         int index = 0;
         for (long i : array) {
-            if (Primitives.notEquals(i, element)) {
+            if (Numbers.notEquals(i, element)) {
                 result[index++] = i;
             }
         }
@@ -985,7 +985,7 @@ public abstract class ArrayUtils {
         float[] result = new float[array.length - 1];
         int index = 0;
         for (float i : array) {
-            if (Primitives.notEquals(i, element)) {
+            if (Numbers.notEquals(i, element)) {
                 result[index++] = i;
             }
         }
@@ -1003,11 +1003,11 @@ public abstract class ArrayUtils {
      */
     @Contract(pure = true)
     public static double @NotNull [] remove(double @NotNull [] array, double element) {
-        int count = (int) Arrays.stream(array).filter(i -> Primitives.notEquals(i, element)).count();
+        int count = (int) Arrays.stream(array).filter(i -> Numbers.notEquals(i, element)).count();
         double[] result = new double[count];
         int index = 0;
         for (double i : array) {
-            if (Primitives.notEquals(i, element)) {
+            if (Numbers.notEquals(i, element)) {
                 result[index++] = i;
             }
         }

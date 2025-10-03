@@ -17,9 +17,13 @@
  */
 package com.github.rickmvi.jtoolbox.console.utils.internal;
 
+import com.github.rickmvi.jtoolbox.console.IO;
 import com.github.rickmvi.jtoolbox.console.utils.convert.BooleanParser;
 import com.github.rickmvi.jtoolbox.console.utils.convert.NumberParser;
 import com.github.rickmvi.jtoolbox.console.utils.Location;
+import com.github.rickmvi.jtoolbox.console.utils.convert.Stringifier;
+import com.github.rickmvi.jtoolbox.control.Do;
+import com.github.rickmvi.jtoolbox.utils.Try;
 import lombok.AccessLevel;
 
 import lombok.Getter;
@@ -29,11 +33,17 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Contract;
 import com.github.rickmvi.jtoolbox.control.ifs.If;
 import com.github.rickmvi.jtoolbox.console.utils.Scan;
-import com.github.rickmvi.jtoolbox.utils.SafeExecutor;
+import com.github.rickmvi.jtoolbox.utils.SafeRun;
 import com.github.rickmvi.jtoolbox.utils.constants.Constants;
 
 import java.util.Optional;
 import java.util.Scanner;
+import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.concurrent.atomic.AtomicInteger;
+import java.util.concurrent.atomic.AtomicReference;
+import java.util.function.Function;
+import java.util.function.IntPredicate;
+import java.util.function.Predicate;
 
 /**
  * Internal implementation of the {@link InputScan} interface.
@@ -45,7 +55,7 @@ import java.util.Scanner;
  * <p>
  * This class is used internally by the public-facing {@link Scan}.
  */
-public class ScanUtility implements InputScan, AutoCloseable {
+public class Scanf implements InputScan, AutoCloseable {
 
     /**
      * Internal {@link Scanner} instance wrapped in an {@link Optional}.
@@ -121,7 +131,7 @@ public class ScanUtility implements InputScan, AutoCloseable {
      */
     @Override
     @Contract(pure = true)
-    public String next() {
+    public String read() {
         validate();
         return scanner.map(Scanner::next).orElse("");
     }
@@ -134,7 +144,7 @@ public class ScanUtility implements InputScan, AutoCloseable {
      */
     @Override
     @Contract(pure = true)
-    public String next(@NotNull String pattern) {
+    public String read(@NotNull String pattern) {
         validate();
         return scanner.map(sc -> sc.next(pattern)).orElse("");
     }
@@ -146,7 +156,7 @@ public class ScanUtility implements InputScan, AutoCloseable {
      */
     @Override
     @Contract(pure = true)
-    public String nextLine() {
+    public String readLine() {
         validate();
         return scanner.map(Scanner::nextLine).orElse("");
     }
@@ -159,10 +169,24 @@ public class ScanUtility implements InputScan, AutoCloseable {
      */
     @Override
     @Contract(pure = true)
-    public int nextInt() {
-        int value = NumberParser.toInt(nextSafe());
-        If.runTrue(scanner.isPresent() && scanner.get().hasNextLine(), () -> scanner.get().nextLine()).run();
+    public int readInt() {
+        int value = NumberParser.toInt(readSafe());
+        If.runTrue(isNextLine(), () -> scanner.get().nextLine()).run();
         return value;
+    }
+
+    /**
+     * Checks if another line of input is available using the internal scanner.
+     * <p>
+     * This method ensures that the current scanner instance is present
+     * and that there is another line ready to be read.
+     *
+     * @return {@code true} if a scanner is present and another line is available;
+     *         {@code false} otherwise.
+     * @throws IllegalStateException if the scanner is not properly initialized.
+     */
+    private boolean isNextLine() {
+        return scanner.isPresent() && scanner.get().hasNextLine();
     }
 
     /**
@@ -172,9 +196,9 @@ public class ScanUtility implements InputScan, AutoCloseable {
      */
     @Override
     @Contract(pure = true)
-    public long nextLong() {
-        long value = NumberParser.toLong(nextSafe());
-        If.runTrue(scanner.isPresent() && scanner.get().hasNextLine(), () -> scanner.get().nextLine()).run();
+    public long readLong() {
+        long value = NumberParser.toLong(readSafe());
+        If.runTrue(isNextLine(), () -> scanner.get().nextLine()).run();
         return value;
     }
 
@@ -185,9 +209,9 @@ public class ScanUtility implements InputScan, AutoCloseable {
      */
     @Override
     @Contract(pure = true)
-    public float nextFloat() {
-        float value = NumberParser.toFloat(nextSafe());
-        If.runTrue(scanner.isPresent() && scanner.get().hasNextLine(), () -> scanner.get().nextLine()).run();
+    public float readFloat() {
+        float value = NumberParser.toFloat(readSafe());
+        If.runTrue(isNextLine(), () -> scanner.get().nextLine()).run();
         return value;
     }
 
@@ -198,9 +222,9 @@ public class ScanUtility implements InputScan, AutoCloseable {
      */
     @Override
     @Contract(pure = true)
-    public double nextDouble() {
-        double value = NumberParser.toDouble(nextSafe());
-        If.runTrue(scanner.isPresent() && scanner.get().hasNextLine(), () -> scanner.get().nextLine()).run();
+    public double readDouble() {
+        double value = NumberParser.toDouble(readSafe());
+        If.runTrue(isNextLine(), () -> scanner.get().nextLine()).run();
         return value;
     }
 
@@ -212,9 +236,9 @@ public class ScanUtility implements InputScan, AutoCloseable {
      */
     @Override
     @Contract(pure = true)
-    public boolean nextBoolean() {
-        boolean value = BooleanParser.toBoolean(nextSafe());
-        If.runTrue(scanner.isPresent() && scanner.get().hasNextLine(), () -> scanner.get().nextLine()).run();
+    public boolean readBoolean() {
+        boolean value = BooleanParser.toBoolean(readSafe());
+        If.runTrue(isNextLine(), () -> scanner.get().nextLine()).run();
         return value;
     }
 
@@ -224,9 +248,9 @@ public class ScanUtility implements InputScan, AutoCloseable {
      * @return the next token or {@code ""} if an error occurs
      */
     @Override
-    public String nextSafe() {
-        return SafeExecutor.attemptOrElseGet(
-                this::next,
+    public String readSafe() {
+        return SafeRun.attemptOrElseGet(
+                this::read,
                 () -> "",
                 Constants.NEXTSAFE_FAILED
         );
@@ -249,5 +273,91 @@ public class ScanUtility implements InputScan, AutoCloseable {
      */
     private void validate() {
         If.trueThrow(scanner.isEmpty(), () -> new IllegalStateException(Constants.SCANNER_NOT_INITIALIZED));
+    }
+
+    @Override
+    public String readPrompt(String prompt) {
+        if (Stringifier.isNullOrEmpty(prompt)) return "";
+        IO.format("{0} ", prompt);
+        return readLine();
+    }
+
+    @Override
+    public int readIntPrompt(String prompt) {
+        if (Stringifier.isNullOrEmpty(prompt)) prompt = "";
+
+        AtomicInteger result = new AtomicInteger(Integer.MIN_VALUE);
+        AtomicBoolean success = new AtomicBoolean(false);
+
+        String finalPrompt = prompt;
+        Do.runWhile(() -> {
+            IO.format("{0} ", finalPrompt);
+            Try.run(() -> {
+                result.set(readInt());
+                success.set(true);
+            }).onFailure(e -> IO.newline()).orThrow();
+        }, () -> !success.get());
+
+        return result.get();
+    }
+
+    @Override
+    public int readIntUntil(String prompt, IntPredicate validator) {
+        if (Stringifier.isNull(prompt)) throw new IllegalArgumentException("prompt cannot be null");
+        if (validator == null) throw new IllegalArgumentException("validator cannot be null");
+
+        AtomicInteger input = new AtomicInteger();
+        Do.runWhile(
+                () -> {
+                    IO.format("{0} ", prompt);
+
+                    Try.run(() -> input.set(readInt()))
+                    .onFailure(e -> input.set(Integer.MIN_VALUE))
+                    .orThrow();
+
+                    IO.newline();
+        }, () -> !validator.test(input.get()));
+        return input.get();
+    }
+
+    @Override
+    public String readUntil(String prompt, Predicate<String> validator) {
+        if (Stringifier.isNullOrEmpty(prompt)) return "";
+        if (validator == null) throw new IllegalArgumentException("validator cannot be null");
+
+        AtomicReference<String> input = new AtomicReference<>("");
+        Do.runWhile(
+                () -> {
+                    IO.format("{0} ", input);
+                    input.set(readLine());
+                    IO.newline();
+        }, () -> !validator.test(input.get()));
+        return input.get();
+    }
+
+    @Override
+    public <T extends Number> T readNumberUntil(
+            String prompt,
+            Function<String, T> parser,
+            Predicate<T> validator
+    ) {
+        if (Stringifier.isNullOrEmpty(prompt)) throw new IllegalArgumentException("prompt cannot be null");
+        if (parser == null) throw new IllegalArgumentException("parser cannot be null");
+        if (validator == null) throw new IllegalArgumentException("validator cannot be null");
+
+        AtomicReference<T> value = new AtomicReference<>();
+        Do.runWhile(
+                () -> {
+                    IO.format("{0} ", prompt);
+                    Try.run(() -> value.set(parser.apply(read()))).
+                            onFailure(e -> value.set(null)).
+                            orThrow();
+
+                    IO.newline();
+                },
+                () -> value.get() == null || !validator.test(value.get())
+        );
+
+        return value.get();
     }
 }

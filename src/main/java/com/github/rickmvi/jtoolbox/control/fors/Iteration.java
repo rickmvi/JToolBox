@@ -24,7 +24,7 @@ import com.github.rickmvi.jtoolbox.lang.exceptions.ErrorMessage;
 import com.github.rickmvi.jtoolbox.collections.array.Array;
 import com.github.rickmvi.jtoolbox.control.ifs.If;
 
-import com.github.rickmvi.jtoolbox.utils.Primitives;
+import com.github.rickmvi.jtoolbox.utils.Numbers;
 import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.Nullable;
 import org.jetbrains.annotations.NotNull;
@@ -111,9 +111,9 @@ public class Iteration {
      * }</pre>
      */
     public static void forEachRange(int start, int end, int step, IntConsumer action) {
-        int init = Primitives.nonNegative(start);
-        int finish = Primitives.requiredPositive(end);
-        int stepVal = Primitives.requiredPositive(step);
+        int init = Numbers.nonNegative(start);
+        int finish = Numbers.requiredPositive(end);
+        int stepVal = Numbers.requiredPositive(step);
 
         If.trueThrow(start > end, () -> new InvalidEndIndexException(start, end));
 
@@ -132,9 +132,9 @@ public class Iteration {
     public static void forEachRangeDescending(int start, int end, int step, IntConsumer action) {
         IntConsumer act = Objects.requireNonNull(action);
 
-        If.trueThrow(Primitives.isNonPositive(step), InvalidStepOutOfBounds::new);
+        If.trueThrow(Numbers.isNonPositive(step), InvalidStepOutOfBounds::new);
         If.trueThrow(start > end, () -> new InvalidEndIndexException(start, end));
-        If.trueThrow(Primitives.isNegative(start), InvalidStartIndexException::new);
+        If.trueThrow(Numbers.isNegative(start), InvalidStartIndexException::new);
         for (int i = start; i >= end; i -= step) act.accept(i);
     }
 
@@ -150,7 +150,7 @@ public class Iteration {
         IntConsumer act = Objects.requireNonNull(action);
 
         If.trueThrow(start > end, () -> new InvalidEndIndexException(start, end));
-        If.trueThrow(Primitives.isNegative(start), InvalidStartIndexException::new);
+        If.trueThrow(Numbers.isNegative(start), InvalidStartIndexException::new);
         for (int i = start; i < end; i++) act.accept(i);
     }
 
@@ -163,7 +163,7 @@ public class Iteration {
      * }</pre>
      */
     public static void forEachIndex(int repetitions, @NotNull IntConsumer action) {
-        If.trueThrow(Primitives.isNegative(repetitions), InvalidStepOutOfBounds::new);
+        If.trueThrow(Numbers.isNegative(repetitions), InvalidStepOutOfBounds::new);
         for (int i = 0; i < repetitions; i++) action.accept(i);
     }
 
@@ -222,7 +222,7 @@ public class Iteration {
      * }</pre>
      */
     public static boolean anyMatch(int length, @NotNull IntPredicate predicate) {
-        int size = Primitives.nonNegative(length);
+        int size = Numbers.nonNegative(length);
         IntPredicate pred = Objects.requireNonNull(predicate);
         for (int i = 0; i < size; i++) {
             if (pred.test(i)) return true;
@@ -239,7 +239,7 @@ public class Iteration {
      * }</pre>
      */
     public static int findFirstIndexMatching(int length, @NotNull IntPredicate predicate) {
-        int lengthy = Primitives.nonNegative(length);
+        int lengthy = Numbers.nonNegative(length);
         for (int i = 0; i < lengthy; i++) {
             if (predicate.test(i)) return i;
         }
@@ -258,10 +258,10 @@ public class Iteration {
         IntConsumer act = Objects.requireNonNull(action);
 
         If.trueThrow(
-                Primitives.isZero(length),
+                Numbers.isZero(length),
                 () -> new InvalidEndIndexException(0, length));
         If.trueThrow(
-                Primitives.isNegative(length),
+                Numbers.isNegative(length),
                 () -> new InvalidEndIndexException(length, 0, ErrorMessage.INDEX_NEGATIVE));
 
         for (int i = 0; i < length / 2; i++) { act.accept(i); }
@@ -284,7 +284,7 @@ public class Iteration {
      * }</pre>
      */
     public static int findLastIndexMatching(int repetitions, @NotNull IntPredicate predicate) {
-        int repetition = Primitives.nonNegative(repetitions);
+        int repetition = Numbers.nonNegative(repetitions);
         for (int i = repetition - 1; i >= 0; i--) {
             if (predicate.test(i)) return i;
         }
@@ -303,7 +303,7 @@ public class Iteration {
             int repetitions,
             @NotNull IntFunction<@Nullable T> mapper
     ) {
-        int repetition = Primitives.nonNegative(repetitions);
+        int repetition = Numbers.nonNegative(repetitions);
         for (int i = 0; i < repetition; i++) {
             T result = mapper.apply(i);
             if (result != null) return result;
@@ -323,7 +323,7 @@ public class Iteration {
             int repetitions,
             @NotNull IntFunction<@Nullable T> mapper
     ) {
-        int repetition = Primitives.nonNegative(repetitions);
+        int repetition = Numbers.nonNegative(repetitions);
         List<T> results = new ArrayList<>();
         for (int i = 0; i < repetition; i++) {
             T value = mapper.apply(i);

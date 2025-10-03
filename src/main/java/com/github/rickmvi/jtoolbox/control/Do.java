@@ -32,17 +32,17 @@ import java.util.function.BooleanSupplier;
  *
  * <h2>Core Methods:</h2>
  * <ul>
- *     <li>{@link #runAction(BooleanSupplier, Runnable)} – Executes the action at least once and repeats while the boolean condition is true.</li>
- *     <li>{@link #supplyAction(Supplier, Predicate)} – Executes a supplier that returns a value and repeats while the predicate applied to the value returns true.</li>
+ *     <li>{@link #runWhile(Runnable, BooleanSupplier)} – Executes the action at least once and repeats while the boolean condition is true.</li>
+ *     <li>{@link #supplyWhile(Supplier, Predicate)} – Executes a supplier that returns a value and repeats while the predicate applied to the value returns true.</li>
  * </ul>
  *
  * <h2>Usage Examples:</h2>
  * <pre>{@code
  * // Simple void do-while
- * DoWhile.runAction(() -> counter < 5, () -> {
+ * DoWhile.runAction(() -> {
  *     System.out.println(counter);
  *     counter++;
- * });
+ * }, () -> counter < 5);
  *
  * // Value-returning do-while
  * int finalValue = DoWhile.supplyAction(() -> {
@@ -54,13 +54,13 @@ import java.util.function.BooleanSupplier;
  * @author Rick
  * @since 1.1
  */
-public interface DoWhile {
+public interface Do {
 
-    static void runAction(@NotNull BooleanSupplier condition, @NotNull Runnable action) {
+    static void runWhile(@NotNull Runnable action, @NotNull BooleanSupplier condition) {
         do action.run(); while (condition.getAsBoolean());
     }
 
-    static <T> T supplyAction(@NotNull Supplier<T> action, @NotNull Predicate<T> continueCondition) {
+    static <T> T supplyWhile(@NotNull Supplier<T> action, @NotNull Predicate<T> continueCondition) {
         T result;
         do {
             result = action.get();

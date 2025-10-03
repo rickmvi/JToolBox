@@ -28,14 +28,10 @@ import lombok.experimental.UtilityClass;
 
 import java.util.function.Supplier;
 
-/**
- * Utility class for primitive type operations.
- * Provides methods for comparison, validation, and other operations
- * across various primitive types such as byte, short, int, long, and float.
- */
+
 @UtilityClass
 @SuppressWarnings("unused")
-public final class Primitives {
+public final class Numbers {
 
     /* ================================= Byte Methods  ================================= */
 
@@ -85,18 +81,18 @@ public final class Primitives {
     }
 
     @Contract(pure = true)
-    public static boolean isGreaterOrEqualOrNegative(byte x, byte y) {
+    public static boolean isGEOrNegative(byte x, byte y) {
         return isGreaterOrEqual(x, y) || isNegative(x);
     }
 
     @Contract(pure = true)
-    public static boolean isLessOrEqualOrIsNegative(byte x, byte y) {
+    public static boolean isLEOrNegative(byte x, byte y) {
         return isLessOrEqual(x, y) || isNegative(x);
     }
 
     @Contract(value = "_ -> param1", pure = true)
     public static byte requiredNonNegative(byte value) {
-        If.trueThrow(isNegative(value), Primitives::getValueCannotBeNegative);
+        If.trueThrow(isNegative(value), Numbers::getValueCannotBeNegative);
         return nonNegative(value);
     }
 
@@ -125,7 +121,7 @@ public final class Primitives {
 
     @Contract("_ -> param1")
     public static byte requiredPositive(byte value) {
-        If.trueThrow(isNonPositive(value), Primitives::getValueMustBePositive);
+        If.trueThrow(isNonPositive(value), Numbers::getValueMustBePositive);
         return nonNegativeNonZero(value);
     }
 
@@ -224,18 +220,18 @@ public final class Primitives {
     }
 
     @Contract(pure = true)
-    public static boolean isGreaterOrEqualOrNegative(short x, short y) {
+    public static boolean isGEOrNegative(short x, short y) {
         return isGreaterOrEqual(x, y) || isNegative(x);
     }
 
     @Contract(pure = true)
-    public static boolean isLessOrEqualOrIsNegative(short x, short y) {
+    public static boolean isLEOrNegative(short x, short y) {
         return isLessOrEqual(x, y) || isNegative(x);
     }
 
     @Contract(value = "_ -> param1", pure = true)
     public static short requiredNonNegative(short value) {
-        If.trueThrow(isNegative(value), Primitives::getValueCannotBeNegative);
+        If.trueThrow(isNegative(value), Numbers::getValueCannotBeNegative);
         return nonNegative(value);
     }
 
@@ -264,7 +260,7 @@ public final class Primitives {
 
     @Contract("_ -> param1")
     public static short requiredPositive(short value) {
-        If.trueThrow(isNonPositive(value), Primitives::getValueMustBePositive);
+        If.trueThrow(isNonPositive(value), Numbers::getValueMustBePositive);
         return nonNegativeNonZero(value);
     }
 
@@ -361,17 +357,17 @@ public final class Primitives {
         return equals(x, y) || isLessThan(x, y);
     }
 
-    public static boolean isGreaterOrEqualOrNegative(int x, int y) {
+    public static boolean isGEOrNegative(int x, int y) {
         return isGreaterOrEqual(x, y) || isNegative(x);
     }
 
-    public static boolean isLessOrEqualOrIsNegative(int x, int y) {
+    public static boolean isLEOrNegative(int x, int y) {
         return isLessOrEqual(x, y) || isNegative(x);
     }
 
     @Contract(value = "_ -> param1", pure = true)
     public static int requiredNonNegative(int value) {
-        If.trueThrow(isNegative(value), Primitives::getValueCannotBeNegative);
+        If.trueThrow(isNegative(value), Numbers::getValueCannotBeNegative);
         return nonNegative(value);
     }
 
@@ -399,7 +395,7 @@ public final class Primitives {
 
     @Contract("_ -> param1")
     public static int requiredPositive(int value) {
-        If.trueThrow(isNonPositive(value), Primitives::getValueMustBePositive);
+        If.trueThrow(isNonPositive(value), Numbers::getValueMustBePositive);
         return nonNegativeNonZero(value);
     }
 
@@ -503,18 +499,18 @@ public final class Primitives {
     }
 
     @Contract(pure = true)
-    public static boolean isGreaterOrEqualOrNegative(long x, long y) {
+    public static boolean isGEOrNegative(long x, long y) {
         return isGreaterOrEqual(x, y) || isNegative(x);
     }
 
     @Contract(pure = true)
-    public static boolean isLessOrEqualOrIsNegative(long x, long y) {
+    public static boolean isLEOrNegative(long x, long y) {
         return isLessOrEqual(x, y) || isNegative(x);
     }
 
     @Contract(value = "_ -> param1", pure = true)
     public static long requiredNonNegative(long value) {
-        If.trueThrow(isNegative(value), Primitives::getValueCannotBeNegative);
+        If.trueThrow(isNegative(value), Numbers::getValueCannotBeNegative);
         return nonNegative(value);
     }
 
@@ -544,7 +540,7 @@ public final class Primitives {
 
     @Contract("_ -> param1")
     public static long requiredPositive(long value) {
-        If.trueThrow(isNonPositive(value), Primitives::getValueMustBePositive);
+        If.trueThrow(isNonPositive(value), Numbers::getValueMustBePositive);
         return nonNegativeNonZero(value);
     }
 
@@ -643,18 +639,18 @@ public final class Primitives {
     }
 
     @Contract(pure = true)
-    public static boolean isGreaterOrEqualOrNegative(float x, float y) {
+    public static boolean isGEOrNegative(float x, float y) {
         return isGreaterOrEqual(x, y) || isNegative(x);
     }
 
     @Contract(pure = true)
-    public static boolean isLessOrEqualOrIsNegative(float x, float y) {
+    public static boolean isLEOrNegative(float x, float y) {
         return isLessOrEqual(x, y) || isNegative(x);
     }
 
     @Contract(value = "_ -> param1", pure = true)
     public static float requiredNonNegative(float value) {
-        If.trueThrow(isNegative(value), Primitives::getValueCannotBeNegative);
+        If.trueThrow(isNegative(value), Numbers::getValueCannotBeNegative);
         return nonNegative(value);
     }
 
@@ -684,7 +680,7 @@ public final class Primitives {
 
     @Contract("_ -> param1")
     public static float requiredPositive(float value) {
-        If.trueThrow(isNonPositive(value), Primitives::getValueMustBePositive);
+        If.trueThrow(isNonPositive(value), Numbers::getValueMustBePositive);
         return nonNegativeNonZero(value);
     }
 
@@ -788,18 +784,18 @@ public final class Primitives {
     }
 
     @Contract(pure = true)
-    public static boolean isGreaterOrEqualOrNegative(double x, double y) {
+    public static boolean isGEOrNegative(double x, double y) {
         return isGreaterOrEqual(x, y) || isNegative(x);
     }
 
     @Contract(pure = true)
-    public static boolean isLessOrEqualOrIsNegative(double x, double y) {
+    public static boolean isLEOrNegative(double x, double y) {
         return isLessOrEqual(x, y) || isNegative(x);
     }
 
     @Contract("_ -> param1")
     public static double requiredNonNegative(double value) {
-        If.trueThrow(isNegative(value), Primitives::getValueCannotBeNegative);
+        If.trueThrow(isNegative(value), Numbers::getValueCannotBeNegative);
         return nonNegative(value);
     }
 
@@ -828,7 +824,7 @@ public final class Primitives {
 
     @Contract("_ -> param1")
     public static double requiredPositive(double value) {
-        If.trueThrow(isNonPositive(value), Primitives::getValueMustBePositive);
+        If.trueThrow(isNonPositive(value), Numbers::getValueMustBePositive);
         return nonNegativeNonZero(value);
     }
 

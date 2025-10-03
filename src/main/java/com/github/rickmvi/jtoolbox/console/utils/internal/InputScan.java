@@ -21,122 +21,57 @@ import com.github.rickmvi.jtoolbox.console.utils.Location;
 import org.jetbrains.annotations.NotNull;
 
 /**
- * Interface defining the contract for input scanners capable of reading various types
- * of input data from a source, typically the console or another input stream.
+ * Contract for input readers capable of retrieving tokens, lines,
+ * and typed values from console input.
  * <p>
- * This interface abstracts the behavior of input reading mechanisms, allowing
- * initialization with default or custom {@link java.util.Scanner} instances,
- * locale configuration, and retrieval of input tokens of various primitive types
- * and strings.
- * <p>
- * It also provides methods to safely check for the presence of input data and
- * to close the underlying scanner resource when no longer needed.
+ * This interface abstracts reading mechanisms, allowing initialization
+ * with default or custom {@link java.util.Scanner}, locale configuration,
+ * and safe typed reads.
  */
-public interface InputScan {
+public interface InputScan extends InputReader {
 
-    /**
-     * Initializes the scanner using the default input source (usually {@code System.in}).
-     * Must be called before any reading methods to prepare the scanner.
-     */
+    /** Initializes the scanner using {@code System.in}. */
     void init();
 
-    /**
-     * Initializes the scanner using the provided {@link java.util.Scanner} instance.
-     * Allows using a custom input source.
-     *
-     * @param scanner the scanner instance to use for input reading
-     */
+    /** Initializes the scanner with a custom {@link java.util.Scanner} instance. */
     void init(@NotNull java.util.Scanner scanner);
 
-    /**
-     * Sets the locale for the scanner to use during parsing of locale-sensitive values.
-     *
-     * @param location the locale setting to apply, represented by {@link Location}
-     */
+    /** Sets the locale for parsing numbers, dates, etc. */
     void locale(@NotNull Location location);
 
-    /**
-     * Checks if there is another token available in the input.
-     *
-     * @return {@code true} if another token is available, {@code false} otherwise
-     */
+    /** Checks if another token is available. */
     boolean hasNext();
 
-    /**
-     * Checks if there is another line of input available.
-     *
-     * @return {@code true} if another line is available, {@code false} otherwise
-     */
+    /** Checks if another line is available. */
     boolean hasNextLine();
 
-    /**
-     * Retrieves the next token from the input.
-     *
-     * @return the next token as a {@link String}
-     */
-    String next();
+    /** Reads the next token (single word). */
+    String read();
 
-    /**
-     * Retrieves the next token from the input that matches the specified pattern.
-     *
-     * @param pattern a regular expression pattern the next token must match
-     * @return the next matching token as a {@link String}
-     */
-    String next(@NotNull String pattern);
+    /** Reads the next token matching a regex. */
+    String read(@NotNull String pattern);
 
-    /**
-     * Retrieves the next entire line of input.
-     *
-     * @return the next line as a {@link String}
-     */
-    String nextLine();
+    /** Reads the next full line. */
+    String readLine();
 
-    /**
-     * Parses and returns the next token as an {@code int}.
-     *
-     * @return the next integer value read from input
-     */
-    int nextInt();
+    /** Reads the next token as {@code int}. */
+    int readInt();
 
-    /**
-     * Parses and returns the next token as a {@code long}.
-     *
-     * @return the next long value read from input
-     */
-    long nextLong();
+    /** Reads the next token as {@code long}. */
+    long readLong();
 
-    /**
-     * Parses and returns the next token as a {@code float}.
-     *
-     * @return the next float value read from input
-     */
-    float nextFloat();
+    /** Reads the next token as {@code float}. */
+    float readFloat();
 
-    /**
-     * Parses and returns the next token as a {@code double}.
-     *
-     * @return the next double value read from input
-     */
-    double nextDouble();
+    /** Reads the next token as {@code double}. */
+    double readDouble();
 
-    /**
-     * Parses and returns the next token as a {@code boolean}.
-     *
-     * @return the next boolean value read from input
-     */
-    boolean nextBoolean();
+    /** Reads the next token as {@code boolean}. */
+    boolean readBoolean();
 
-    /**
-     * Retrieves the next token as a string safely, returning an empty string in case
-     * of errors or if no token is available.
-     *
-     * @return the next token as a {@link String}, or an empty string if not available or error occurs
-     */
-    String nextSafe();
+    /** Safely reads the next token, returning {@code ""} if unavailable or invalid. */
+    String readSafe();
 
-    /**
-     * Closes the underlying scanner and releases any associated resources.
-     * Should be called when input reading is complete.
-     */
+    /** Closes the underlying scanner. */
     void close();
 }

@@ -87,7 +87,7 @@ import java.util.function.*;
  * @author Rick M. Viana
  */
 @SuppressWarnings("unused")
-public interface SafeExecutor<T> {
+public interface SafeRun<T> {
 
     /**
      * Executes the given {@link Runnable}, handling any exceptions that occur during its execution.
@@ -120,14 +120,12 @@ public interface SafeExecutor<T> {
      */
     @Contract(pure = true)
     static <T> @NotNull Runnable runRunnable(Runnable runnable) {
-        return () -> {
-            Try.run(runnable)
-                    .onFailure(t -> Logger.error(
-                            "Failed to run runnable: {}",
-                            t, 
-                            runnable.getClass().getSimpleName()))
-                    .orThrow();
-        };
+        return () -> Try.run(runnable)
+                .onFailure(t -> Logger.error(
+                        "Failed to run runnable: {}",
+                        t,
+                        runnable.getClass().getSimpleName()))
+                .orThrow();
     }
 
     /**

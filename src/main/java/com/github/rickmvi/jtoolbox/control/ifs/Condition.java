@@ -24,6 +24,7 @@ import org.jetbrains.annotations.NotNull;
 import java.util.Optional;
 import java.util.function.Supplier;
 
+@Deprecated
 @UtilityClass
 public class Condition {
 

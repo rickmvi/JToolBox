@@ -1,6 +1,6 @@
 package com.github.rickmvi.jtoolbox.text;
 
-import com.github.rickmvi.jtoolbox.console.Output;
+import com.github.rickmvi.jtoolbox.console.IO;
 import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -46,7 +46,7 @@ class StringFormatTest {
         Object[] values = {2};
 
         String result = StringFormat.interpolate(template, values);
-        Output.interpolated(template, values);
+        IO.interpolated(template, values);
 
         assertEquals("The value is 2.", result);
     }

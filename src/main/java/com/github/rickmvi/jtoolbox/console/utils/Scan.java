@@ -17,101 +17,127 @@
  */
 package com.github.rickmvi.jtoolbox.console.utils;
 
-import com.github.rickmvi.jtoolbox.console.utils.internal.ScanUtility;
+import com.github.rickmvi.jtoolbox.console.utils.internal.Scanf;
 
 import lombok.Getter;
 import lombok.AccessLevel;
-import lombok.experimental.UtilityClass;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Contract;
 
 import java.util.Scanner;
+import java.util.function.Function;
+import java.util.function.IntPredicate;
+import java.util.function.Predicate;
 
 /**
- * Utility class for enhanced and safe input operations via {@link Scanner}.
+ * Utility interface for enhanced and safe input operations via {@link Scanner}.
  * <p>
- * This class provides static methods for initializing, reading, validating, and closing
+ * This interface provides static methods for initializing, reading, validating, and closing
  * input streams.
- * It wraps a core {@link ScanUtility} instance to centralize
+ * It wraps a core {@link Scanf} instance to centralize
  * input logic, enabling features like locale management, pattern matching, and safe reads.
  * <p>
  * The methods are null-safe, optionally locale-aware, and ready for user input in
  * interactive console applications.
  *
  * @author Rick M. Viana
- * @since 1.0
+ * @since 1.1
  */
-@UtilityClass
-public class Scan {
+public interface Scan {
 
     @Getter(value = AccessLevel.PRIVATE)
-    private final static ScanUtility core = new ScanUtility();
+    Scanf SCAN_UTILITY_INSTANCE = new Scanf();
 
-    public static void init() {
-        core.init();
+    static void init() {
+        SCAN_UTILITY_INSTANCE.init();
     }
 
-    public static void init(@NotNull Scanner scanner) {
-        core.init(scanner);
+    static void init(@NotNull Scanner scanner) {
+        SCAN_UTILITY_INSTANCE.init(scanner);
     }
 
-    public static void locale(@NotNull Location location) {
-        core.locale(location);
+    static void locale(@NotNull Location location) {
+        SCAN_UTILITY_INSTANCE.locale(location);
     }
 
-    public static boolean hasNext() {
-        return core.hasNext();
+    static boolean hasNext() {
+        return SCAN_UTILITY_INSTANCE.hasNext();
     }
 
-    public static boolean hasNextLine() {
-        return core.hasNextLine();
-    }
-
-    @Contract(pure = true)
-    public static String next() {
-        return core.next();
+    static boolean hasNextLine() {
+        return SCAN_UTILITY_INSTANCE.hasNextLine();
     }
 
     @Contract(pure = true)
-    public static String next(@NotNull String pattern) {
-        return core.next(pattern);
+    static String read() {
+        return SCAN_UTILITY_INSTANCE.read();
     }
 
     @Contract(pure = true)
-    public static String nextLine() {
-        return core.nextLine();
+    static String read(@NotNull String pattern) {
+        return SCAN_UTILITY_INSTANCE.read(pattern);
     }
 
     @Contract(pure = true)
-    public static int nextInt() {
-        return core.nextInt();
+    static String readLine() {
+        return SCAN_UTILITY_INSTANCE.readLine();
     }
 
     @Contract(pure = true)
-    public static long nextLong() {
-        return core.nextLong();
+    static int readInt() {
+        return SCAN_UTILITY_INSTANCE.readInt();
     }
 
     @Contract(pure = true)
-    public static double nextDouble() {
-        return core.nextDouble();
+    static long readLong() {
+        return SCAN_UTILITY_INSTANCE.readLong();
     }
 
     @Contract(pure = true)
-    public static float nextFloat() {
-        return core.nextFloat();
+    static double readDouble() {
+        return SCAN_UTILITY_INSTANCE.readDouble();
     }
 
     @Contract(pure = true)
-    public static boolean nextBoolean() {
-        return core.nextBoolean();
+    static float readFloat() {
+        return SCAN_UTILITY_INSTANCE.readFloat();
     }
 
-    public static String nextSafe() {
-        return core.nextSafe();
+    @Contract(pure = true)
+    static boolean readBoolean() {
+        return SCAN_UTILITY_INSTANCE.readBoolean();
     }
 
-    public static void close() {
-        core.close();
+    static String readSafe() {
+        return SCAN_UTILITY_INSTANCE.readSafe();
     }
+
+    static void close() {
+        SCAN_UTILITY_INSTANCE.close();
+    }
+
+    static String readPrompt(String prompt) {
+        return SCAN_UTILITY_INSTANCE.readPrompt(prompt);
+    }
+
+    static String readUntil(String prompt, @NotNull Predicate<String> validator) {
+        return SCAN_UTILITY_INSTANCE.readUntil(prompt, validator);
+    }
+
+    static int readIntPrompt(String prompt) {
+        return SCAN_UTILITY_INSTANCE.readIntPrompt(prompt);
+    }
+
+    static int readIntUntil(String prompt, IntPredicate validator) {
+        return SCAN_UTILITY_INSTANCE.readIntUntil(prompt, validator);
+    }
+
+    static <T extends Number> T readNumberUntil(
+            String prompt,
+            Function<String, T> parser,
+            Predicate<T> validator)
+    {
+        return SCAN_UTILITY_INSTANCE.readNumberUntil(prompt, parser, validator);
+    }
+
 }

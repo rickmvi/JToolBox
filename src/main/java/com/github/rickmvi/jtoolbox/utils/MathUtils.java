@@ -483,7 +483,7 @@ public class MathUtils {
      * @throws ArithmeticException if the divisor is zero
      */
     public static byte divideByte(byte dividend, byte divisor) {
-        If.trueThrow(Primitives.isZero(divisor), () -> new ArithmeticException(Constants.DIVISION_BY_ZERO));
+        If.trueThrow(Numbers.isZero(divisor), () -> new ArithmeticException(Constants.DIVISION_BY_ZERO));
         return (byte) Math.divideExact(dividend, divisor);
     }
 
@@ -496,7 +496,7 @@ public class MathUtils {
      * @throws ArithmeticException if the divisor is zero
      */
     public static short divideShort(short dividend, short divisor) {
-        If.trueThrow(Primitives.isZero(divisor), () -> new ArithmeticException(Constants.DIVISION_BY_ZERO));
+        If.trueThrow(Numbers.isZero(divisor), () -> new ArithmeticException(Constants.DIVISION_BY_ZERO));
         return (short) Math.divideExact(dividend, divisor);
     }
 
@@ -510,7 +510,7 @@ public class MathUtils {
      * @throws ArithmeticException If the divisor is zero.
      */
     public static int divideInt(int dividend, int divisor) {
-        If.trueThrow(Primitives.isZero(divisor), () -> new ArithmeticException(Constants.DIVISION_BY_ZERO));
+        If.trueThrow(Numbers.isZero(divisor), () -> new ArithmeticException(Constants.DIVISION_BY_ZERO));
         return Math.divideExact(dividend, divisor);
     }
 
@@ -523,7 +523,7 @@ public class MathUtils {
      * @throws ArithmeticException if the divisor is zero
      */
     public static long divideLong(long dividend, long divisor) {
-        If.trueThrow(Primitives.isZero(divisor), () -> new ArithmeticException(Constants.DIVISION_BY_ZERO));
+        If.trueThrow(Numbers.isZero(divisor), () -> new ArithmeticException(Constants.DIVISION_BY_ZERO));
         return Math.divideExact(dividend, divisor);
     }
 
@@ -532,7 +532,7 @@ public class MathUtils {
     }
 
     public static double divideDouble(double dividend, double divisor) {
-        If.trueThrow(Primitives.isZero(divisor), () -> new ArithmeticException(Constants.DIVISION_BY_ZERO));
+        If.trueThrow(Numbers.isZero(divisor), () -> new ArithmeticException(Constants.DIVISION_BY_ZERO));
 
         return dividend / divisor;
     }
@@ -549,7 +549,7 @@ public class MathUtils {
      *                             nearest divisible number.
      */
     public static int divideNearestMultipleInt(int dividend, int divisor) {
-        If.trueThrow(Primitives.isZero(divisor), () -> new ArithmeticException(Constants.DIVISION_BY_ZERO));
+        If.trueThrow(Numbers.isZero(divisor), () -> new ArithmeticException(Constants.DIVISION_BY_ZERO));
 
         final int[] result = { dividend };
         While.runTrue(
@@ -635,7 +635,7 @@ public class MathUtils {
      */
     @Contract(pure = true)
     public static byte evenByte(byte number) {
-        byte valid = Primitives.requiredNonNegative(number);
+        byte valid = Numbers.requiredNonNegative(number);
         byte result = 0;
         for (int i = 0; i <= valid; i += 2) {
             result = (byte) Math.addExact(result, i);
@@ -653,7 +653,7 @@ public class MathUtils {
      */
     @Contract(pure = true)
     public static byte oddByte(byte number) {
-        byte valid = Primitives.requiredPositive(number);
+        byte valid = Numbers.requiredPositive(number);
         byte result = 0;
         for (int i = 1; i <= valid; i += 2) {
             result = (byte) Math.addExact(result, i);
@@ -672,7 +672,7 @@ public class MathUtils {
      */
     @Contract(pure = true)
     public static short evenShort(short number) {
-        short valid = Primitives.requiredNonNegative(number);
+        short valid = Numbers.requiredNonNegative(number);
         short result = 0;
         for (int i = 0; i <= valid; i += 2) {
             result = (short) Math.addExact(result, i);
@@ -689,7 +689,7 @@ public class MathUtils {
      */
     @Contract(pure = true)
     public static short oddShort(short number) {
-        short valid = Primitives.requiredPositive(number);
+        short valid = Numbers.requiredPositive(number);
         short result = 0;
         for (int i = 1; i <= valid; i += 2) {
             result = (short) Math.addExact(result, i);
@@ -706,8 +706,8 @@ public class MathUtils {
      */
     @Contract(pure = true)
     public static int evenInt(int number) {
-        int valid = Primitives.requiredNonNegative(number);
-        return IntStream.rangeClosed(0, valid).filter(Primitives::isEven).sum();
+        int valid = Numbers.requiredNonNegative(number);
+        return IntStream.rangeClosed(0, valid).filter(Numbers::isEven).sum();
     }
 
     /**
@@ -720,8 +720,8 @@ public class MathUtils {
      */
     @Contract(pure = true)
     public static int oddInt(int number) {
-        int valid = Primitives.requiredPositive(number);
-        return IntStream.rangeClosed(1, valid).filter(Primitives::isOdd).sum();
+        int valid = Numbers.requiredPositive(number);
+        return IntStream.rangeClosed(1, valid).filter(Numbers::isOdd).sum();
     }
 
     /**
@@ -733,7 +733,7 @@ public class MathUtils {
      */
     @Contract(pure = true)
     public static long evenLong(long number) {
-        long valid = Primitives.requiredNonNegative(number);
+        long valid = Numbers.requiredNonNegative(number);
         long result = 0L;
         for (long i = 0; i <= valid; i += 2) {
             result = Math.addExact(result, i);
@@ -750,7 +750,7 @@ public class MathUtils {
      */
     @Contract(pure = true)
     public static long oddLong(long number) {
-        long valid = Primitives.requiredPositive(number);
+        long valid = Numbers.requiredPositive(number);
         long result = 0L;
         for (long i = 1; i <= valid; i += 2) {
             result = Math.addExact(result, i);
@@ -768,7 +768,7 @@ public class MathUtils {
      */
     @Contract(pure = true)
     public static float evenFloat(int number) {
-        int valid = Primitives.nonNegativeNonZero(number);
+        int valid = Numbers.nonNegativeNonZero(number);
         float result = 0f;
         for (int i = 0; i <= valid; i += 2) {
             result += i;
@@ -793,7 +793,7 @@ public class MathUtils {
      */
     @Contract(pure = true)
     public static float oddFloat(int number) {
-        int valid = Primitives.requiredPositive(number);
+        int valid = Numbers.requiredPositive(number);
         float result = 0f;
         for (int i = 1; i <= valid; i += 2) {
             result += i;
@@ -817,7 +817,7 @@ public class MathUtils {
      */
     @Contract(pure = true)
     public static double evenDouble(long number) {
-        long valid = Primitives.requiredNonNegative(number);
+        long valid = Numbers.requiredNonNegative(number);
         double result = 0;
         for (long i = 0; i <= valid; i += 2) {
             result += i;
@@ -843,7 +843,7 @@ public class MathUtils {
      */
     @Contract(pure = true)
     public static double oddDouble(long number) {
-        long valid = Primitives.requiredPositive(number);
+        long valid = Numbers.requiredPositive(number);
         double result = 0;
         for (long i = 1; i <= valid; i += 2) {
             result += i;
@@ -884,7 +884,7 @@ public class MathUtils {
      */
     @Contract(pure = true)
     public static long moduloLong(long dividend, long divisor) {
-        If.trueThrow(Primitives.isZero(divisor), () -> new ArithmeticException(Constants.DIVISION_BY_ZERO));
+        If.trueThrow(Numbers.isZero(divisor), () -> new ArithmeticException(Constants.DIVISION_BY_ZERO));
         return dividend % divisor;
     }
 
@@ -901,8 +901,8 @@ public class MathUtils {
      *                             while searching for the nearest divisible number
      */
     public static int moduloNearestMultiple(int dividend, int divisor) {
-        If.trueThrow(Primitives.isNegative(dividend), () -> new ArithmeticException(Constants.DIVIDEND_NEGATIVE));
-        If.trueThrow(Primitives.isNonPositive(divisor), () -> new ArithmeticException(Constants.DIVISOR_BE_POSITIVE));
+        If.trueThrow(Numbers.isNegative(dividend), () -> new ArithmeticException(Constants.DIVIDEND_NEGATIVE));
+        If.trueThrow(Numbers.isNonPositive(divisor), () -> new ArithmeticException(Constants.DIVISOR_BE_POSITIVE));
 
         final int[] result = { dividend };
         While.runTrue(
@@ -957,11 +957,11 @@ public class MathUtils {
      */
     @Contract(pure = true)
     public static int gcd(int a, int b) {
-        if (Primitives.isZero(a)) return b;
-        if (Primitives.isZero(b)) return a;
+        if (Numbers.isZero(a)) return b;
+        if (Numbers.isZero(b)) return a;
 
         int r = a % b;
-        if (Primitives.isZero(r)) return b;
+        if (Numbers.isZero(r)) return b;
 
         return gcd(b, r);
     }
@@ -976,7 +976,7 @@ public class MathUtils {
      */
     @Contract(pure = true)
     public static int lcm(int a, int b) {
-        if (Primitives.isZero(a) || Primitives.isZero(b)) return 0;
+        if (Numbers.isZero(a) || Numbers.isZero(b)) return 0;
         return Math.abs(a / gcd(a, b) * b);
     }
 
@@ -990,7 +990,7 @@ public class MathUtils {
      */
     @Contract(pure = true)
     public static int pow(int base, int exponent) {
-        If.trueThrow(Primitives.isNegative(exponent), () -> new ArithmeticException(Constants.NEGATIVE_EXPONENT));
+        If.trueThrow(Numbers.isNegative(exponent), () -> new ArithmeticException(Constants.NEGATIVE_EXPONENT));
         return powerBySquaring(base, exponent);
     }
 
@@ -1004,7 +1004,7 @@ public class MathUtils {
      */
     @Contract(pure = true)
     public static int pow(int base, long exponent) {
-        If.trueThrow(Primitives.isNegative(exponent), () -> new ArithmeticException(Constants.NEGATIVE_EXPONENT));
+        If.trueThrow(Numbers.isNegative(exponent), () -> new ArithmeticException(Constants.NEGATIVE_EXPONENT));
         return powerBySquaring(base, exponent);
     }
 
@@ -1018,12 +1018,12 @@ public class MathUtils {
 
     @ApiStatus.Internal
     private static int computePower(long exponent, int result, int b) {
-        while (Primitives.isPositive(exponent)) {
-            if (Primitives.isOdd(exponent)) {
+        while (Numbers.isPositive(exponent)) {
+            if (Numbers.isOdd(exponent)) {
                 result = Math.multiplyExact(result, b);
             }
             exponent >>= 1;
-            if (Primitives.isPositive(exponent)) {
+            if (Numbers.isPositive(exponent)) {
                 b = Math.multiplyExact(b, b);
             }
         }
@@ -1043,7 +1043,7 @@ public class MathUtils {
      * @throws ArithmeticException if the result of the exponentiation is infinite or invalid
      */
     public static double pow(double base, double exponent) {
-        If.trueThrow(Primitives.isNegative(exponent), () -> new ArithmeticException(Constants.NEGATIVE_EXPONENT));
+        If.trueThrow(Numbers.isNegative(exponent), () -> new ArithmeticException(Constants.NEGATIVE_EXPONENT));
 
         double result = Math.pow(base, exponent);
 
@@ -1062,7 +1062,7 @@ public class MathUtils {
      */
     @Contract(pure = true)
     public static int sqrtInt(int value) {
-        If.trueThrow(Primitives.isNegative(value), () -> new ArithmeticException(Constants.NEGATIVE_VALUE));
+        If.trueThrow(Numbers.isNegative(value), () -> new ArithmeticException(Constants.NEGATIVE_VALUE));
         return (int) Math.round(Math.sqrt(value));
     }
 
@@ -1076,7 +1076,7 @@ public class MathUtils {
      */
     @Contract(pure = true)
     public static double sqrt(double value) {
-        If.trueThrow(Primitives.isNegative(value), () -> new ArithmeticException(Constants.NEGATIVE_VALUE));
+        If.trueThrow(Numbers.isNegative(value), () -> new ArithmeticException(Constants.NEGATIVE_VALUE));
         return Math.sqrt(value);
     }
 }

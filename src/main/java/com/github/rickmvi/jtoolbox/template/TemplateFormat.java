@@ -40,7 +40,7 @@ import java.util.regex.Pattern;
  */
 @lombok.experimental.UtilityClass
 @SuppressWarnings("unused")
-public class TemplateFormatter {
+public class TemplateFormat {
 
     /**
      * Processes the provided template string by finding all matches of the given regex pattern
