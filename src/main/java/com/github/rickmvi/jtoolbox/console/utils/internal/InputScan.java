@@ -20,6 +20,10 @@ package com.github.rickmvi.jtoolbox.console.utils.internal;
 import com.github.rickmvi.jtoolbox.console.utils.Location;
 import org.jetbrains.annotations.NotNull;
 
+import java.math.BigDecimal;
+import java.math.BigInteger;
+import java.util.function.Predicate;
+
 /**
  * Contract for input readers capable of retrieving tokens, lines,
  * and typed values from console input.
@@ -29,9 +33,6 @@ import org.jetbrains.annotations.NotNull;
  * and safe typed reads.
  */
 public interface InputScan extends InputReader {
-
-    /** Initializes the scanner using {@code System.in}. */
-    void init();
 
     /** Initializes the scanner with a custom {@link java.util.Scanner} instance. */
     void init(@NotNull java.util.Scanner scanner);
@@ -54,6 +55,10 @@ public interface InputScan extends InputReader {
     /** Reads the next full line. */
     String readLine();
 
+    byte readByte();
+
+    short readShort();
+
     /** Reads the next token as {@code int}. */
     int readInt();
 
@@ -68,6 +73,16 @@ public interface InputScan extends InputReader {
 
     /** Reads the next token as {@code boolean}. */
     boolean readBoolean();
+
+    char readChar();
+
+    BigDecimal readBigDecimal();
+
+    BigDecimal readBigDecimal(@NotNull Predicate<BigDecimal> predicate);
+
+    BigInteger readBigInteger();
+
+    BigInteger readBigInteger(@NotNull Predicate<BigInteger> predicate);
 
     /** Safely reads the next token, returning {@code ""} if unavailable or invalid. */
     String readSafe();

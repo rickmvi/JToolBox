@@ -19,11 +19,13 @@ package com.github.rickmvi.jtoolbox.console.utils.internal;
 
 import com.github.rickmvi.jtoolbox.console.IO;
 import com.github.rickmvi.jtoolbox.console.utils.convert.BooleanParser;
+import com.github.rickmvi.jtoolbox.console.utils.convert.CharacterParser;
 import com.github.rickmvi.jtoolbox.console.utils.convert.NumberParser;
 import com.github.rickmvi.jtoolbox.console.utils.Location;
-import com.github.rickmvi.jtoolbox.console.utils.convert.Stringifier;
 import com.github.rickmvi.jtoolbox.control.Do;
+import com.github.rickmvi.jtoolbox.control.Switch;
 import com.github.rickmvi.jtoolbox.utils.Try;
+import com.github.rickmvi.jtoolbox.utils.condition.ObjectC;
 import lombok.AccessLevel;
 
 import lombok.Getter;
@@ -31,11 +33,14 @@ import lombok.Setter;
 
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Contract;
-import com.github.rickmvi.jtoolbox.control.ifs.If;
+import com.github.rickmvi.jtoolbox.control.If;
 import com.github.rickmvi.jtoolbox.console.utils.Scan;
 import com.github.rickmvi.jtoolbox.utils.SafeRun;
 import com.github.rickmvi.jtoolbox.utils.constants.Constants;
 
+import java.math.BigDecimal;
+import java.math.BigInteger;
+import java.util.Locale;
 import java.util.Optional;
 import java.util.Scanner;
 import java.util.concurrent.atomic.AtomicBoolean;
@@ -55,198 +60,168 @@ import java.util.function.Predicate;
  * <p>
  * This class is used internally by the public-facing {@link Scan}.
  */
-public class Scanf implements InputScan, AutoCloseable {
+public class  Scanf implements InputScan, AutoCloseable {
 
-    /**
-     * Internal {@link Scanner} instance wrapped in an {@link Optional}.
-     * Ensures that initialization is checked before each operation.
-     */
     @Getter
     @Setter(value = AccessLevel.PRIVATE)
     private Optional<Scanner> scanner = Optional.empty();
 
-    /**
-     * Initializes the internal scanner using {@code System.in}.
-     * This must be called before any input operation.
-     */
-    @Override
-    public void init() {
+    private void instance() {
         scanner = Optional.of(new Scanner(System.in));
     }
 
-    /**
-     * Initializes the internal scanner using a custom {@link Scanner} instance.
-     *
-     * @param scanner a non-null scanner to be used for input
-     */
     @Override
     public void init(@NotNull Scanner scanner) {
         this.scanner = Optional.of(scanner);
     }
 
-    /**
-     * Configures the locale of the scanner, affecting number and date parsing behavior.
-     *
-     * @param location the desired locale setting
-     */
     @Override
     public void locale(@NotNull Location location) {
-        validate();
-        scanner.ifPresent(sc -> {
-            switch (location) {
-                case US ->      sc.useLocale(java.util.Locale.US);
-                case PTBR ->    sc.useLocale(java.util.Locale.of("pt", "BR"));
-                case ROOT ->    sc.useLocale(java.util.Locale.ROOT);
-                case DEFAULT -> sc.useLocale(java.util.Locale.getDefault());
-            }
-        });
+        ensureScannerInitialized();
+        scanner.ifPresent(sc -> Switch.on(location)
+                .caseValue(Location.US, () -> sc.useLocale(Locale.US))
+                .caseValue(Location.PTBR, () -> sc.useLocale(Locale.of("pt", "BR")))
+                .caseValue(Location.ROOT, () -> sc.useLocale(Locale.ROOT))
+                .caseDefault(l -> sc.useLocale(Locale.getDefault()))
+                .get());
     }
 
-    /**
-     * Checks if another token is available.
-     *
-     * @return {@code true} if another token is available; {@code false} otherwise
-     */
     @Override
     public boolean hasNext() {
-        validate();
+        ensureScannerInitialized();
         return scanner.map(Scanner::hasNext).orElse(false);
     }
 
-    /**
-     * Checks if another line of input is available.
-     *
-     * @return {@code true} if another line is available; {@code false} otherwise
-     */
     @Override
     public boolean hasNextLine() {
-        validate();
+        ensureScannerInitialized();
         return scanner.map(Scanner::hasNextLine).orElse(false);
     }
 
-    /**
-     * Reads the next token from the input.
-     *
-     * @return the next input token as a string, or an empty string if scanner is missing
-     */
     @Override
     @Contract(pure = true)
     public String read() {
-        validate();
+        ensureScannerInitialized();
         return scanner.map(Scanner::next).orElse("");
     }
 
-    /**
-     * Reads the next token that matches a regular expression pattern.
-     *
-     * @param pattern regex pattern to match
-     * @return matched string or empty if the scanner is missing
-     */
     @Override
     @Contract(pure = true)
     public String read(@NotNull String pattern) {
-        validate();
+        ensureScannerInitialized();
         return scanner.map(sc -> sc.next(pattern)).orElse("");
     }
 
-    /**
-     * Reads the next full line from the input.
-     *
-     * @return the next line, or an empty string if scanner is missing
-     */
     @Override
     @Contract(pure = true)
     public String readLine() {
-        validate();
+        ensureScannerInitialized();
         return scanner.map(Scanner::nextLine).orElse("");
     }
 
-    /**
-     * Reads the next token and parses it into an {@code int}.
-     * Falls back to safe parsing via {@link NumberParser#toInt(String)}.
-     *
-     * @return the parsed integer value, or {@code 0} if invalid
-     */
     @Override
-    @Contract(pure = true)
-    public int readInt() {
-        int value = NumberParser.toInt(readSafe());
-        If.runTrue(isNextLine(), () -> scanner.get().nextLine()).run();
+    public byte readByte() {
+        ensureScannerInitialized();
+        byte value = NumberParser.toByte(readSafe());
+        clearBuffer();
         return value;
     }
 
-    /**
-     * Checks if another line of input is available using the internal scanner.
-     * <p>
-     * This method ensures that the current scanner instance is present
-     * and that there is another line ready to be read.
-     *
-     * @return {@code true} if a scanner is present and another line is available;
-     *         {@code false} otherwise.
-     * @throws IllegalStateException if the scanner is not properly initialized.
-     */
+    @Override
+    public short readShort() {
+        ensureScannerInitialized();
+        short value = NumberParser.toShort(readSafe());
+        clearBuffer();
+        return value;
+    }
+
+    @Override
+    @Contract(pure = true)
+    public int readInt() {
+        ensureScannerInitialized();
+        int value = NumberParser.toInt(readSafe());
+        clearBuffer();
+        return value;
+    }
+
     private boolean isNextLine() {
         return scanner.isPresent() && scanner.get().hasNextLine();
     }
 
-    /**
-     * Reads the next token and parses it into a {@code long}.
-     *
-     * @return the parsed long value, or {@code 0L} if invalid
-     */
     @Override
     @Contract(pure = true)
     public long readLong() {
+        ensureScannerInitialized();
         long value = NumberParser.toLong(readSafe());
-        If.runTrue(isNextLine(), () -> scanner.get().nextLine()).run();
+        clearBuffer();
         return value;
     }
 
-    /**
-     * Reads the next token and parses it into a {@code float}.
-     *
-     * @return the parsed float value, or {@code 0.0f} if invalid
-     */
     @Override
     @Contract(pure = true)
     public float readFloat() {
+        ensureScannerInitialized();
         float value = NumberParser.toFloat(readSafe());
-        If.runTrue(isNextLine(), () -> scanner.get().nextLine()).run();
+        clearBuffer();
         return value;
     }
 
-    /**
-     * Reads the next token and parses it into a {@code double}.
-     *
-     * @return the parsed double value, or {@code 0.0} if invalid
-     */
     @Override
     @Contract(pure = true)
     public double readDouble() {
+        ensureScannerInitialized();
         double value = NumberParser.toDouble(readSafe());
-        If.runTrue(isNextLine(), () -> scanner.get().nextLine()).run();
+        clearBuffer();
         return value;
     }
 
-    /**
-     * Reads the next token and parses it into a {@code boolean}.
-     * Accepts "true", "false", "yes", "no", "1", "0", case-insensitively.
-     *
-     * @return the parsed boolean value
-     */
     @Override
     @Contract(pure = true)
     public boolean readBoolean() {
+        ensureScannerInitialized();
         boolean value = BooleanParser.toBoolean(readSafe());
-        If.runTrue(isNextLine(), () -> scanner.get().nextLine()).run();
+        clearBuffer();
         return value;
     }
 
-    /**
-     * Reads the next token safely, returning an empty string in case of any exception.
-     *
-     * @return the next token or {@code ""} if an error occurs
-     */
+    @Override
+    public char readChar() {
+        ensureScannerInitialized();
+        return CharacterParser.toChar(readSafe());
+    }
+
+    @Override
+    public BigDecimal readBigDecimal() {
+        ensureScannerInitialized();
+        BigDecimal value = scanner.map(Scanner::nextBigDecimal).orElse(BigDecimal.ZERO);
+        clearBuffer();
+        return value;
+    }
+
+    @Override
+    public BigDecimal readBigDecimal(@NotNull Predicate<BigDecimal> predicate) {
+        ensureScannerInitialized();
+        BigDecimal value = scanner.map(Scanner::nextBigDecimal).filter(predicate).orElse(BigDecimal.ZERO);
+        clearBuffer();
+        return value;
+    }
+
+    @Override
+    public BigInteger readBigInteger() {
+        ensureScannerInitialized();
+        BigInteger value = scanner.map(Scanner::nextBigInteger).orElse(BigInteger.ZERO);
+        clearBuffer();
+        return value;
+    }
+
+    @Override
+    public BigInteger readBigInteger(@NotNull Predicate<BigInteger> predicate) {
+        ensureScannerInitialized();
+        BigInteger value = scanner.map(Scanner::nextBigInteger).filter(predicate).orElse(BigInteger.ZERO);
+        clearBuffer();
+        return value;
+    }
+
     @Override
     public String readSafe() {
         return SafeRun.attemptOrElseGet(
@@ -256,46 +231,109 @@ public class Scanf implements InputScan, AutoCloseable {
         );
     }
 
-    /**
-     * Closes the scanner and releases underlying resources.
-     * Once closed, the scanner should be re-initialized before further use.
-     */
     @Override
     public void close() {
-        validate();
+        ensureScannerInitialized();
         scanner.ifPresent(Scanner::close);
     }
 
-    /**
-     * Validates that the scanner has been initialized before use.
-     *
-     * @throws IllegalStateException if the scanner is not present
-     */
-    private void validate() {
-        If.trueThrow(scanner.isEmpty(), () -> new IllegalStateException(Constants.SCANNER_NOT_INITIALIZED));
+    private void ensureScannerInitialized() {
+        If.isTrue(scanner.isEmpty(), this::instance).run();
+    }
+
+    private void clearBuffer() {
+        scanner.ifPresent(scan -> {
+            if (scan.hasNextLine()) scan.nextLine();
+        });
     }
 
     @Override
     public String readPrompt(String prompt) {
-        if (Stringifier.isNullOrEmpty(prompt)) return "";
-        IO.format("{0} ", prompt);
+        ensureScannerInitialized();
+        if (ObjectC.isNullOrEmpty(prompt)) return "";
+        displayPrompt(prompt);
         return readLine();
+    }
+
+    private static void displayPrompt(String prompt) {
+        If.isTrue(!ObjectC.isNullOrEmpty(prompt), () -> IO.format("{0} ", prompt)).run();
+    }
+
+    @Override
+    public byte readBytePrompt(String prompt) {
+        ensureScannerInitialized();
+        if (ObjectC.isNullOrEmpty(prompt)) prompt = "";
+        displayPrompt(prompt);
+        return readByte();
+    }
+
+    @Override
+    public byte readByteUntil(String prompt, Predicate<Byte> predicate) {
+        ensureScannerInitialized();
+        if (ObjectC.isNullOrEmpty(prompt)) prompt = "";
+        if (predicate == null) throw new IllegalArgumentException("predicate cannot be null");
+
+        AtomicReference<Byte> value = new AtomicReference<>();
+        String finalPrompt = prompt;
+        Do.runWhile(() -> {
+            displayPrompt(finalPrompt);
+
+            Try.run(() -> value.set(readByte())).
+                    onFailure(e -> value.set(null)).
+                    orThrow();
+
+            IO.newline();
+        }, () -> value.get() == null || !predicate.test(value.get()));
+
+        return value.get();
+    }
+
+    @Override
+    public short readShortPrompt(String prompt) {
+        ensureScannerInitialized();
+        if (ObjectC.isNullOrEmpty(prompt)) prompt = "";
+        displayPrompt(prompt);
+        return readShort();
+    }
+
+    @Override
+    public short readShortUntil(String prompt, Predicate<Short> predicate) {
+        ensureScannerInitialized();
+        if (ObjectC.isNullOrEmpty(prompt)) prompt = "";
+        if (predicate == null) throw new IllegalArgumentException("predicate cannot be null");
+
+        AtomicReference<Short> value = new AtomicReference<>();
+        String finalPrompt = prompt;
+        Do.runWhile(() -> {
+            displayPrompt(finalPrompt);
+
+            Try.run(() -> value.set(readShort())).
+                    onFailure(e -> value.set(null)).
+                    orThrow();
+
+            IO.newline();
+        }, () -> value.get() == null || !predicate.test(value.get()));
+
+        return value.get();
     }
 
     @Override
     public int readIntPrompt(String prompt) {
-        if (Stringifier.isNullOrEmpty(prompt)) prompt = "";
+        ensureScannerInitialized();
+        if (ObjectC.isNullOrEmpty(prompt)) prompt = "";
 
-        AtomicInteger result = new AtomicInteger(Integer.MIN_VALUE);
+        AtomicInteger result  = new AtomicInteger(Integer.MIN_VALUE);
         AtomicBoolean success = new AtomicBoolean(false);
 
         String finalPrompt = prompt;
         Do.runWhile(() -> {
-            IO.format("{0} ", finalPrompt);
+            displayPrompt(finalPrompt);
+
             Try.run(() -> {
                 result.set(readInt());
                 success.set(true);
             }).onFailure(e -> IO.newline()).orThrow();
+
         }, () -> !success.get());
 
         return result.get();
@@ -303,34 +341,247 @@ public class Scanf implements InputScan, AutoCloseable {
 
     @Override
     public int readIntUntil(String prompt, IntPredicate validator) {
-        if (Stringifier.isNull(prompt)) throw new IllegalArgumentException("prompt cannot be null");
-        if (validator == null) throw new IllegalArgumentException("validator cannot be null");
+        ensureScannerInitialized();
+        if (ObjectC.isNull(prompt)) throw new IllegalArgumentException("prompt cannot be null");
+        if (validator == null)      throw new IllegalArgumentException("validator cannot be null");
 
         AtomicInteger input = new AtomicInteger();
-        Do.runWhile(
-                () -> {
-                    IO.format("{0} ", prompt);
+        Do.runWhile(() -> {
+            displayPrompt(prompt);
 
-                    Try.run(() -> input.set(readInt()))
-                    .onFailure(e -> input.set(Integer.MIN_VALUE))
-                    .orThrow();
+            Try.run(() -> input.set(readInt())).
+                    onFailure(e -> input.set(Integer.MIN_VALUE)).
+                    orThrow();
 
-                    IO.newline();
+            IO.newline();
         }, () -> !validator.test(input.get()));
         return input.get();
     }
 
     @Override
+    public long readLongPrompt(String prompt) {
+        ensureScannerInitialized();
+        if (ObjectC.isNullOrEmpty(prompt)) prompt = "";
+        displayPrompt(prompt);
+        return readLong();
+    }
+
+    @Override
+    public long readLongUntil(String prompt, Predicate<Long> predicate) {
+        ensureScannerInitialized();
+        if (ObjectC.isNullOrEmpty(prompt)) prompt = "";
+        if (predicate == null) throw new IllegalArgumentException("predicate cannot be null");
+
+        AtomicReference<Long> value = new AtomicReference<>();
+        String finalPrompt = prompt;
+        Do.runWhile(() -> {
+            displayPrompt(finalPrompt);
+
+            Try.run(() -> value.set(readLong())).
+                    onFailure(e -> value.set(null)).
+                    orThrow();
+
+            IO.newline();
+        }, () -> value.get() == null || !predicate.test(value.get()));
+
+        return value.get();
+    }
+
+    @Override
+    public float readFloatPrompt(String prompt) {
+        ensureScannerInitialized();
+        if (ObjectC.isNullOrEmpty(prompt)) prompt = "";
+        displayPrompt(prompt);
+        return readFloat();
+    }
+
+    public float readFloatUntil(String prompt, Predicate<Float> predicate) {
+        ensureScannerInitialized();
+        if (ObjectC.isNullOrEmpty(prompt)) prompt = "";
+        if (predicate == null) throw new IllegalArgumentException("predicate cannot be null");
+
+        AtomicReference<Float> value = new AtomicReference<>();
+        String finalPrompt = prompt;
+        Do.runWhile(() -> {
+            displayPrompt(finalPrompt);
+
+            Try.run(() -> value.set(readFloat())).
+                    onFailure(e -> value.set(null)).
+                    orThrow();
+
+            IO.newline();
+        }, () -> value.get() == null || !predicate.test(value.get()));
+
+        return value.get();
+    }
+
+    @Override
+    public double readDoublePrompt(String prompt) {
+        ensureScannerInitialized();
+        if (ObjectC.isNullOrEmpty(prompt)) prompt = "";
+        displayPrompt(prompt);
+        return readDouble();
+    }
+
+    @Override
+    public double readDoubleUntil(String prompt, Predicate<Double> predicate) {
+        ensureScannerInitialized();
+        if (ObjectC.isNullOrEmpty(prompt)) prompt = "";
+        if (predicate == null) throw new IllegalArgumentException("predicate cannot be null");
+
+        AtomicReference<Double> value = new AtomicReference<>();
+        String finalPrompt = prompt;
+        Do.runWhile(() -> {
+            displayPrompt(finalPrompt);
+
+            Try.run(() -> value.set(readDouble())).
+                    onFailure(e -> value.set(null)).
+                    orThrow();
+
+            IO.newline();
+        }, () -> value.get() == null || !predicate.test(value.get()));
+
+        return value.get();
+    }
+
+    @Override
+    public boolean readBooleanPrompt(String prompt) {
+        ensureScannerInitialized();
+        if (ObjectC.isNullOrEmpty(prompt)) prompt = "";
+        displayPrompt(prompt);
+        return readBoolean();
+    }
+
+    @Override
+    public boolean readBooleanUntil(String prompt, Predicate<Boolean> predicate) {
+        ensureScannerInitialized();
+        if (ObjectC.isNullOrEmpty(prompt)) prompt = "";
+        if (predicate == null) throw new IllegalArgumentException("predicate cannot be null");
+
+        AtomicReference<Boolean> value = new AtomicReference<>();
+        String finalPrompt = prompt;
+        Do.runWhile(() -> {
+            displayPrompt(finalPrompt);
+
+            Try.run(() -> value.set(readBoolean())).
+                    onFailure(e -> value.set(null)).
+                    orThrow();
+
+            IO.newline();
+        }, () -> value.get() == null || !predicate.test(value.get()));
+
+        return value.get();
+    }
+
+    @Override
+    public char readCharPrompt(String prompt) {
+        ensureScannerInitialized();
+        if (ObjectC.isNullOrEmpty(prompt)) prompt = "";
+        displayPrompt(prompt);
+        return readChar();
+    }
+
+    @Override
+    public char readCharUntil(String prompt, Predicate<Character> predicate) {
+        ensureScannerInitialized();
+        if (ObjectC.isNullOrEmpty(prompt)) prompt = "";
+        if (predicate == null) throw new IllegalArgumentException("predicate cannot be null");
+
+        AtomicReference<Character> value = new AtomicReference<>();
+        String finalPrompt = prompt;
+        Do.runWhile(() -> {
+            displayPrompt(finalPrompt);
+
+            Try.run(() -> value.set(readChar())).
+                    onFailure(e -> value.set(null)).
+                    orThrow();
+
+            IO.newline();
+        }, () -> value.get() == null || !predicate.test(value.get()));
+
+        return value.get();
+    }
+
+    @Override
+    public BigDecimal readBigDecimalPrompt(String prompt) {
+        ensureScannerInitialized();
+        if (ObjectC.isNullOrEmpty(prompt)) prompt = "";
+        displayPrompt(prompt);
+        return readBigDecimal();
+    }
+
+    @Override
+    public BigDecimal readBigDecimalUntil(String prompt, Predicate<BigDecimal> predicate) {
+        ensureScannerInitialized();
+        if (ObjectC.isNullOrEmpty(prompt)) prompt = "";
+        if (predicate == null) throw new IllegalArgumentException("predicate cannot be null");
+
+        AtomicReference<BigDecimal> value = new AtomicReference<>();
+
+        String finalPrompt = prompt;
+        Do.runWhile(() -> {
+            displayPrompt(finalPrompt);
+
+            Try.run(() -> value.set(readBigDecimal())).
+                    onFailure(e -> value.set(null)).
+                    orThrow();
+
+            IO.newline();
+        }, () -> value.get() == null || !predicate.test(value.get()));
+
+        return value.get();
+    }
+
+    @Override
+    public BigInteger readBigIntegerPrompt(String prompt) {
+        ensureScannerInitialized();
+        if (ObjectC.isNullOrEmpty(prompt)) prompt = "";
+        displayPrompt(prompt);
+        return readBigInteger();
+    }
+
+    @Override
+    public BigInteger readBigIntegerUntil(String prompt, Predicate<BigInteger> predicate) {
+        ensureScannerInitialized();
+        if (ObjectC.isNullOrEmpty(prompt)) prompt = "";
+        if (predicate == null) throw new IllegalArgumentException("predicate cannot be null");
+
+        AtomicReference<BigInteger> value = new AtomicReference<>();
+
+        String finalPrompt = prompt;
+        Do.runWhile(() -> {
+            displayPrompt(finalPrompt);
+
+            Try.run(() -> value.set(readBigInteger())).
+                    onFailure(e -> value.set(null)).
+                    orThrow();
+
+            IO.newline();
+        }, () -> value.get() == null || !predicate.test(value.get()));
+
+        return value.get();
+    }
+
+    @Override
+    public <T extends Number> T readNumberPrompt(String prompt, Function<String, T> parser) {
+        ensureScannerInitialized();
+        if (ObjectC.isNullOrEmpty(prompt)) prompt = "";
+        if (parser == null) throw new IllegalArgumentException("parser cannot be null");
+        displayPrompt(prompt);
+        return parser.apply(read());
+    }
+
+    @Override
     public String readUntil(String prompt, Predicate<String> validator) {
-        if (Stringifier.isNullOrEmpty(prompt)) return "";
+        ensureScannerInitialized();
+        if (ObjectC.isNullOrEmpty(prompt)) return "";
         if (validator == null) throw new IllegalArgumentException("validator cannot be null");
 
         AtomicReference<String> input = new AtomicReference<>("");
-        Do.runWhile(
-                () -> {
-                    IO.format("{0} ", input);
-                    input.set(readLine());
-                    IO.newline();
+        Do.runWhile(() -> {
+            displayPrompt(prompt);
+            input.set(readLine());
+            IO.newline();
         }, () -> !validator.test(input.get()));
         return input.get();
     }
@@ -341,22 +592,21 @@ public class Scanf implements InputScan, AutoCloseable {
             Function<String, T> parser,
             Predicate<T> validator
     ) {
-        if (Stringifier.isNullOrEmpty(prompt)) throw new IllegalArgumentException("prompt cannot be null");
-        if (parser == null) throw new IllegalArgumentException("parser cannot be null");
-        if (validator == null) throw new IllegalArgumentException("validator cannot be null");
+        ensureScannerInitialized();
+        if (ObjectC.isNullOrEmpty(prompt)) throw new IllegalArgumentException("prompt cannot be null");
+        if (parser == null)                throw new IllegalArgumentException("parser cannot be null");
+        if (validator == null)             throw new IllegalArgumentException("validator cannot be null");
 
         AtomicReference<T> value = new AtomicReference<>();
-        Do.runWhile(
-                () -> {
-                    IO.format("{0} ", prompt);
-                    Try.run(() -> value.set(parser.apply(read()))).
-                            onFailure(e -> value.set(null)).
-                            orThrow();
+        Do.runWhile(() -> {
+            displayPrompt(prompt);
 
-                    IO.newline();
-                },
-                () -> value.get() == null || !validator.test(value.get())
-        );
+            Try.run(() -> value.set(parser.apply(read()))).
+                    onFailure(e -> value.set(null)).
+                    orThrow();
+
+            IO.newline();
+            }, () -> value.get() == null || !validator.test(value.get()));
 
         return value.get();
     }

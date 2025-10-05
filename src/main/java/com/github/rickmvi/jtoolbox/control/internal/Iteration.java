@@ -15,7 +15,7 @@
  * You should have received a copy of the GNU Lesser General Public License
  * along with this library. If not, see <https://www.gnu.org/licenses/>.
  */
-package com.github.rickmvi.jtoolbox.control.fors;
+package com.github.rickmvi.jtoolbox.control.internal;
 
 import com.github.rickmvi.jtoolbox.lang.exceptions.InvalidStartIndexException;
 import com.github.rickmvi.jtoolbox.lang.exceptions.InvalidEndIndexException;

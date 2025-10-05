@@ -15,8 +15,9 @@
  * You should have received a copy of the GNU Lesser General Public License
  * along with this library. If not, see <https://www.gnu.org/licenses/>.
  */
-package com.github.rickmvi.jtoolbox.control.fors;
+package com.github.rickmvi.jtoolbox.control.internal;
 
+import com.github.rickmvi.jtoolbox.control.For;
 import com.github.rickmvi.jtoolbox.control.If;
 import org.jetbrains.annotations.ApiStatus;
 import lombok.RequiredArgsConstructor;
@@ -24,13 +25,11 @@ import lombok.AccessLevel;
 
 import java.util.List;
 import java.util.ArrayList;
-import java.util.function.Consumer;
-import java.util.function.Function;
-import java.util.function.Predicate;
+import java.util.function.*;
 import java.util.concurrent.CompletableFuture;
 
 @ApiStatus.Internal
-@RequiredArgsConstructor(access = AccessLevel.PACKAGE)
+@RequiredArgsConstructor(access = AccessLevel.PUBLIC)
 public class ForIterable<T> implements For<T> {
 
     private final Iterable<T> iterable;
@@ -48,7 +47,7 @@ public class ForIterable<T> implements For<T> {
     }
 
     @Override
-    public boolean anyMatch(Predicate<T> predicate) {
+    public boolean filter(Predicate<T> predicate) {
         for (T item: iterable) {
             if (predicate.test(item)) return true;
         }

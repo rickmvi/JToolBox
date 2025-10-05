@@ -1,5 +1,9 @@
-package com.github.rickmvi.jtoolbox.control.fors;
+package com.github.rickmvi.jtoolbox.control;
 
+import com.github.rickmvi.jtoolbox.control.internal.ForDouble;
+import com.github.rickmvi.jtoolbox.control.internal.ForInt;
+import com.github.rickmvi.jtoolbox.control.internal.ForIterable;
+import com.github.rickmvi.jtoolbox.control.internal.ForLong;
 import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
 
@@ -20,7 +24,7 @@ import java.util.concurrent.CompletableFuture;
  * <ul>
  *     <li>{@link #forEach(Consumer)} – Iterate through each element sequentially.</li>
  *     <li>{@link #forEachAsync(Consumer)} – Iterate asynchronously using a {@link CompletableFuture}.</li>
- *     <li>{@link #anyMatch(Predicate)} – Test whether any element satisfies a condition.</li>
+ *     <li>{@link #filter(Predicate)} – Test whether any element satisfies a condition.</li>
  *     <li>{@link #findFirst(Predicate)} / {@link #findLast(Predicate)} – Search for the first or last element matching a condition.</li>
  *     <li>{@link #findFirstValue(Function)} – Apply a mapper to elements and return the first non-null result.</li>
  *     <li>{@link #collect(Function)} – Transform elements with a mapper and collect non-null results into a {@link List}.</li>
@@ -69,7 +73,7 @@ public interface For<T> {
 
     CompletableFuture<Void> forEachAsync(Consumer<T> action);
 
-    boolean anyMatch(Predicate<T> predicate);
+    boolean filter(Predicate<T> predicate);
 
     T findFirst(Predicate<T> predicate);
 

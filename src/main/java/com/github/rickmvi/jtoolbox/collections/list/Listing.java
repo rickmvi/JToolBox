@@ -18,7 +18,7 @@
 package com.github.rickmvi.jtoolbox.collections.list;
 
 import com.github.rickmvi.jtoolbox.collections.array.Array;
-import com.github.rickmvi.jtoolbox.control.fors.For;
+import com.github.rickmvi.jtoolbox.control.For;
 import lombok.experimental.UtilityClass;
 import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;

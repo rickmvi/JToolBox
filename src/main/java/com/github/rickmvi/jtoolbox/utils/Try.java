@@ -18,8 +18,8 @@
 package com.github.rickmvi.jtoolbox.utils;
 
 import com.github.rickmvi.jtoolbox.debug.Logger;
-import com.github.rickmvi.jtoolbox.utils.functional.ThrowingRunnable;
-import com.github.rickmvi.jtoolbox.utils.functional.ThrowingSupplier;
+import com.github.rickmvi.jtoolbox.utils.function.ThrowingRunnable;
+import com.github.rickmvi.jtoolbox.utils.function.ThrowingSupplier;
 import lombok.*;
 import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;

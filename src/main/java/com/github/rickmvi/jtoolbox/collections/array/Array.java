@@ -18,9 +18,9 @@
 package com.github.rickmvi.jtoolbox.collections.array;
 
 import com.github.rickmvi.jtoolbox.lang.exceptions.InvalidStartIndexException;
-import com.github.rickmvi.jtoolbox.control.fors.For;
+import com.github.rickmvi.jtoolbox.control.For;
 import com.github.rickmvi.jtoolbox.utils.ArrayUtils;
-import com.github.rickmvi.jtoolbox.control.ifs.If;
+import com.github.rickmvi.jtoolbox.control.If;
 
 import com.github.rickmvi.jtoolbox.utils.MathUtils;
 import org.jetbrains.annotations.Contract;
@@ -38,7 +38,7 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Set;
 
-import static com.github.rickmvi.jtoolbox.text.StringFormat.format;
+import static com.github.rickmvi.jtoolbox.text.StringFormatter.format;
 
 /**
  * Utility class for working with arrays in a functional and safe way.
@@ -118,7 +118,7 @@ public class Array extends ArrayUtils {
     }
 
     public static <T> T @NotNull [] add(T @NotNull [] array, int index, T element) {
-        If.trueThrow(index < 0 || index > array.length, () ->
+        If.Throws(index < 0 || index > array.length, () ->
                 new InvalidStartIndexException(format("Index: {}, Length: {}", index, length(array))));
         T[] result = Arrays.copyOf(array, array.length + 1);
 
@@ -246,7 +246,7 @@ public class Array extends ArrayUtils {
      *         when {@code from < 0}, {@code to > array.length}, or {@code from > to}
      */
     public static <T> T @NotNull [] copyRange(T @NotNull [] array, int from, int to) {
-        If.trueThrow(from < 0 || to > array.length || from > to,
+        If.Throws(from < 0 || to > array.length || from > to,
                 () -> new IndexOutOfBoundsException(format("Invalid range: {} to {}",from, to)));
         return java.util.Arrays.copyOfRange(array, from, to);
     }
@@ -265,7 +265,7 @@ public class Array extends ArrayUtils {
      * @throws IndexOutOfBoundsException if the index is negative or greater than or equal to the array's length
      */
     public static <T> T @NotNull [] remove(T @NotNull [] array, int index) {
-        If.trueThrow(index < 0 || index >= length(array), () ->
+        If.Throws(index < 0 || index >= length(array), () ->
                 new InvalidStartIndexException(format("Index: {}, Length: {}", index, length(array))));
         T[] result = java.util.Arrays.copyOf(array, array.length - 1);
         System.arraycopy(array, index + 1, result, index, array.length - index - 1);
@@ -578,7 +578,7 @@ public class Array extends ArrayUtils {
      */
     @Contract("_, _, _ -> new")
     public static <T> T[] repeat(T value, int times, @NotNull IntFunction<T[]> generator) {
-        If.trueThrow(times < 0, () -> new IllegalArgumentException("times: " + times));
+        If.Throws(times < 0, () -> new IllegalArgumentException("times: " + times));
         T[] array = generator.apply(times);
         Arrays.fill(array, value);
         return array;

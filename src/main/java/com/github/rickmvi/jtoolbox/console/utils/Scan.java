@@ -19,117 +19,213 @@ package com.github.rickmvi.jtoolbox.console.utils;
 
 import com.github.rickmvi.jtoolbox.console.utils.internal.Scanf;
 
-import lombok.Getter;
-import lombok.AccessLevel;
-import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Contract;
+import org.jetbrains.annotations.NotNull;
+import lombok.AccessLevel;
+import lombok.Getter;
 
 import java.util.Scanner;
+import java.math.BigDecimal;
+import java.math.BigInteger;
 import java.util.function.Function;
-import java.util.function.IntPredicate;
 import java.util.function.Predicate;
+import java.util.function.IntPredicate;
 
 /**
- * Utility interface for enhanced and safe input operations via {@link Scanner}.
+ * Public-facing utility interface for enhanced and safe input operations via {@link Scanner}.
  * <p>
- * This interface provides static methods for initializing, reading, validating, and closing
- * input streams.
- * It wraps a core {@link Scanf} instance to centralize
- * input logic, enabling features like locale management, pattern matching, and safe reads.
+ * Unlike a plain {@link Scanner}, this utility auto-initializes with {@code System.in}
+ * on first usage. That means you can directly call {@link #readLine()} or {@link #readInt()}
+ * without worrying about manual setup.
  * <p>
- * The methods are null-safe, optionally locale-aware, and ready for user input in
- * interactive console applications.
+ * For advanced scenarios (e.g., testing or reading from files), you may override the input
+ * source by calling {@link #init(Scanner)} with a custom scanner.
+ * <p>
+ * Example:
+ * <pre>{@code
+ * String name = Scan.readLine();
+ * int age = Scan.readInt();
+ *
+ * // Using a custom source
+ * Scan.init(new Scanner("42\n"));
+ * int value = Scan.readInt(); // -> 42
+ * }</pre>
  *
  * @author Rick M. Viana
- * @since 1.1
+ * @since 1.2
  */
+@SuppressWarnings("unused")
 public interface Scan {
 
     @Getter(value = AccessLevel.PRIVATE)
-    Scanf SCAN_UTILITY_INSTANCE = new Scanf();
-
-    static void init() {
-        SCAN_UTILITY_INSTANCE.init();
-    }
+    Scanf scannerInstance = new Scanf();
 
     static void init(@NotNull Scanner scanner) {
-        SCAN_UTILITY_INSTANCE.init(scanner);
+        scannerInstance.init(scanner);
     }
 
     static void locale(@NotNull Location location) {
-        SCAN_UTILITY_INSTANCE.locale(location);
+        scannerInstance.locale(location);
     }
 
     static boolean hasNext() {
-        return SCAN_UTILITY_INSTANCE.hasNext();
+        return scannerInstance.hasNext();
     }
 
     static boolean hasNextLine() {
-        return SCAN_UTILITY_INSTANCE.hasNextLine();
+        return scannerInstance.hasNextLine();
+    }
+
+    static void close() {
+        scannerInstance.close();
     }
 
     @Contract(pure = true)
     static String read() {
-        return SCAN_UTILITY_INSTANCE.read();
+        return scannerInstance.read();
     }
 
     @Contract(pure = true)
     static String read(@NotNull String pattern) {
-        return SCAN_UTILITY_INSTANCE.read(pattern);
+        return scannerInstance.read(pattern);
     }
 
     @Contract(pure = true)
     static String readLine() {
-        return SCAN_UTILITY_INSTANCE.readLine();
+        return scannerInstance.readLine();
+    }
+
+    static String readSafe() {
+        return scannerInstance.readSafe();
+    }
+
+    static byte readByte() {
+        return scannerInstance.readByte();
+    }
+
+    static byte readBytePrompt(String prompt) {
+        return scannerInstance.readBytePrompt(prompt);
+    }
+
+    static byte readByteUntil(String prompt, Predicate<Byte> validator) {
+        return scannerInstance.readByteUntil(prompt, validator);
+    }
+
+    static short readShort() {
+        return scannerInstance.readShort();
+    }
+
+    static short readShortPrompt(String prompt) {
+        return scannerInstance.readShortPrompt(prompt);
+    }
+
+    static short readShortUntil(String prompt, Predicate<Short> validator) {
+        return scannerInstance.readShortUntil(prompt, validator);
     }
 
     @Contract(pure = true)
     static int readInt() {
-        return SCAN_UTILITY_INSTANCE.readInt();
+        return scannerInstance.readInt();
+    }
+
+    static int readIntPrompt(String prompt) {
+        return scannerInstance.readIntPrompt(prompt);
+    }
+
+    static int readIntUntil(String prompt, IntPredicate validator) {
+        return scannerInstance.readIntUntil(prompt, validator);
     }
 
     @Contract(pure = true)
     static long readLong() {
-        return SCAN_UTILITY_INSTANCE.readLong();
+        return scannerInstance.readLong();
     }
 
-    @Contract(pure = true)
-    static double readDouble() {
-        return SCAN_UTILITY_INSTANCE.readDouble();
+    static long readLongPrompt(String prompt) {
+        return scannerInstance.readLongPrompt(prompt);
+    }
+
+    static long readLongUntil(String prompt, Predicate<Long> validator) {
+        return scannerInstance.readLongUntil(prompt, validator);
     }
 
     @Contract(pure = true)
     static float readFloat() {
-        return SCAN_UTILITY_INSTANCE.readFloat();
+        return scannerInstance.readFloat();
+    }
+
+    static float readFloatPrompt(String prompt) {
+        return scannerInstance.readFloatPrompt(prompt);
+    }
+
+    static float readFloatUntil(String prompt, Predicate<Float> validator) {
+        return scannerInstance.readFloatUntil(prompt, validator);
+    }
+
+    @Contract(pure = true)
+    static double readDouble() {
+        return scannerInstance.readDouble();
+    }
+
+    static double readDoublePrompt(String prompt) {
+        return scannerInstance.readDoublePrompt(prompt);
+    }
+
+    static double readDoubleUntil(String prompt, Predicate<Double> validator) {
+        return scannerInstance.readDoubleUntil(prompt, validator);
     }
 
     @Contract(pure = true)
     static boolean readBoolean() {
-        return SCAN_UTILITY_INSTANCE.readBoolean();
+        return scannerInstance.readBoolean();
     }
 
-    static String readSafe() {
-        return SCAN_UTILITY_INSTANCE.readSafe();
+    static boolean readBooleanPrompt(String prompt) {
+        return scannerInstance.readBooleanPrompt(prompt);
     }
 
-    static void close() {
-        SCAN_UTILITY_INSTANCE.close();
+    static boolean readBooleanUntil(String prompt, Predicate<Boolean> validator) {
+        return scannerInstance.readBooleanUntil(prompt, validator);
     }
 
-    static String readPrompt(String prompt) {
-        return SCAN_UTILITY_INSTANCE.readPrompt(prompt);
+    static char readChar() {
+        return scannerInstance.readChar();
     }
 
-    static String readUntil(String prompt, @NotNull Predicate<String> validator) {
-        return SCAN_UTILITY_INSTANCE.readUntil(prompt, validator);
+    static char readCharPrompt(String prompt) {
+        return scannerInstance.readCharPrompt(prompt);
     }
 
-    static int readIntPrompt(String prompt) {
-        return SCAN_UTILITY_INSTANCE.readIntPrompt(prompt);
+    static char readCharUntil(String prompt, Predicate<Character> validator) {
+        return scannerInstance.readCharUntil(prompt, validator);
     }
 
-    static int readIntUntil(String prompt, IntPredicate validator) {
-        return SCAN_UTILITY_INSTANCE.readIntUntil(prompt, validator);
+    static BigDecimal readBigDecimal() {
+        return scannerInstance.readBigDecimal();
+    }
+
+    static BigDecimal readBigDecimalPrompt(String prompt) {
+        return scannerInstance.readBigDecimalPrompt(prompt);
+    }
+
+    static BigDecimal readBigDecimalUntil(String prompt, Predicate<BigDecimal> validator) {
+        return scannerInstance.readBigDecimalUntil(prompt, validator);
+    }
+
+    static BigInteger readBigInteger() {
+        return scannerInstance.readBigInteger();
+    }
+
+    static BigInteger readBigIntegerPrompt(String prompt) {
+        return scannerInstance.readBigIntegerPrompt(prompt);
+    }
+
+    static BigInteger readBigIntegerUntil(String prompt, Predicate<BigInteger> validator) {
+        return scannerInstance.readBigIntegerUntil(prompt, validator);
+    }
+
+    static <T extends Number> T readNumberPrompt(String prompt, Function<String, T> parser) {
+        return scannerInstance.readNumberPrompt(prompt, parser);
     }
 
     static <T extends Number> T readNumberUntil(
@@ -137,7 +233,15 @@ public interface Scan {
             Function<String, T> parser,
             Predicate<T> validator)
     {
-        return SCAN_UTILITY_INSTANCE.readNumberUntil(prompt, parser, validator);
+        return scannerInstance.readNumberUntil(prompt, parser, validator);
+    }
+
+    static String readPrompt(String prompt) {
+        return scannerInstance.readPrompt(prompt);
+    }
+
+    static String readUntil(String prompt, @NotNull Predicate<String> validator) {
+        return scannerInstance.readUntil(prompt, validator);
     }
 
 }

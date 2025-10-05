@@ -17,9 +17,8 @@
  */
 package com.github.rickmvi.jtoolbox.utils;
 
-import com.github.rickmvi.jtoolbox.control.ifs.If;
+import com.github.rickmvi.jtoolbox.control.If;
 import com.github.rickmvi.jtoolbox.utils.constants.Constants;
-import com.github.rickmvi.jtoolbox.debug.Logger;
 import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.Nullable;
@@ -27,7 +26,6 @@ import org.jetbrains.annotations.NotNull;
 import lombok.experimental.UtilityClass;
 
 import java.util.function.Supplier;
-
 
 @UtilityClass
 @SuppressWarnings("unused")
@@ -92,7 +90,7 @@ public final class Numbers {
 
     @Contract(value = "_ -> param1", pure = true)
     public static byte requiredNonNegative(byte value) {
-        If.trueThrow(isNegative(value), Numbers::getValueCannotBeNegative);
+        If.Throws(isNegative(value), Numbers::getValueCannotBeNegative);
         return nonNegative(value);
     }
 
@@ -107,9 +105,9 @@ public final class Numbers {
 
     @Contract(value = "_, _ -> param1", pure = true)
     public static byte requiredNonNegative(byte value, @Nullable Supplier<String> supplierMessage) {
-        If.trueThrow(isNegative(value), () -> {
+        If.Throws(isNegative(value), () -> {
             throw new IllegalArgumentException(
-                    If.messageOrDefault(supplierMessage, Constants.NON_NEGATIVE));
+                    If.MessageOrDefault(supplierMessage, Constants.NON_NEGATIVE));
         });
         return nonNegative(value);
     }
@@ -121,7 +119,7 @@ public final class Numbers {
 
     @Contract("_ -> param1")
     public static byte requiredPositive(byte value) {
-        If.trueThrow(isNonPositive(value), Numbers::getValueMustBePositive);
+        If.Throws(isNonPositive(value), Numbers::getValueMustBePositive);
         return nonNegativeNonZero(value);
     }
 
@@ -135,9 +133,9 @@ public final class Numbers {
 
     @Contract("_, _ -> param1")
     public static byte requiredPositive(byte value, Supplier<String> supplierMessage) {
-        If.trueThrow(isNonPositive(value), () -> {
+        If.Throws(isNonPositive(value), () -> {
             throw new IllegalArgumentException(
-                    If.messageOrDefault(supplierMessage, Constants.POSITIVE_VALUE));
+                    If.MessageOrDefault(supplierMessage, Constants.POSITIVE_VALUE));
         });
         return nonNegativeNonZero(value);
     }
@@ -231,7 +229,7 @@ public final class Numbers {
 
     @Contract(value = "_ -> param1", pure = true)
     public static short requiredNonNegative(short value) {
-        If.trueThrow(isNegative(value), Numbers::getValueCannotBeNegative);
+        If.Throws(isNegative(value), Numbers::getValueCannotBeNegative);
         return nonNegative(value);
     }
 
@@ -246,9 +244,9 @@ public final class Numbers {
 
     @Contract("_, _ -> param1")
     public static short requiredNonNegative(short value, Supplier<String> supplierMessage) {
-        If.trueThrow(isNegative(value), () -> {
+        If.Throws(isNegative(value), () -> {
             throw new IllegalArgumentException(
-                    If.messageOrDefault(supplierMessage, Constants.NON_NEGATIVE));
+                    If.MessageOrDefault(supplierMessage, Constants.NON_NEGATIVE));
         });
         return nonNegative(value);
     }
@@ -260,7 +258,7 @@ public final class Numbers {
 
     @Contract("_ -> param1")
     public static short requiredPositive(short value) {
-        If.trueThrow(isNonPositive(value), Numbers::getValueMustBePositive);
+        If.Throws(isNonPositive(value), Numbers::getValueMustBePositive);
         return nonNegativeNonZero(value);
     }
 
@@ -274,9 +272,9 @@ public final class Numbers {
 
     @Contract("_, _ -> param1")
     public static short requiredPositive(short value, Supplier<String> supplierMessage) {
-        If.trueThrow(isNegative(value), () -> {
+        If.Throws(isNegative(value), () -> {
             throw new IllegalArgumentException(
-                    If.messageOrDefault(supplierMessage, Constants.POSITIVE_VALUE));
+                    If.MessageOrDefault(supplierMessage, Constants.POSITIVE_VALUE));
         });
         return nonNegativeNonZero(value);
     }
@@ -367,7 +365,7 @@ public final class Numbers {
 
     @Contract(value = "_ -> param1", pure = true)
     public static int requiredNonNegative(int value) {
-        If.trueThrow(isNegative(value), Numbers::getValueCannotBeNegative);
+        If.Throws(isNegative(value), Numbers::getValueCannotBeNegative);
         return nonNegative(value);
     }
 
@@ -381,9 +379,9 @@ public final class Numbers {
 
     @Contract("_, _ -> param1")
     public static int requiredNonNegative(int value, Supplier<String> supplierMessage) {
-        If.trueThrow(isNegative(value), () -> {
+        If.Throws(isNegative(value), () -> {
             throw new IllegalArgumentException(
-                    If.messageOrDefault(supplierMessage, Constants.NON_NEGATIVE));
+                    If.MessageOrDefault(supplierMessage, Constants.NON_NEGATIVE));
         });
         return nonNegative(value);
     }
@@ -395,7 +393,7 @@ public final class Numbers {
 
     @Contract("_ -> param1")
     public static int requiredPositive(int value) {
-        If.trueThrow(isNonPositive(value), Numbers::getValueMustBePositive);
+        If.Throws(isNonPositive(value), Numbers::getValueMustBePositive);
         return nonNegativeNonZero(value);
     }
 
@@ -409,9 +407,9 @@ public final class Numbers {
 
     @Contract("_, _ -> param1")
     public static int requiredPositive(int value, Supplier<String> supplierMessage) {
-        If.trueThrow(isNegative(value), () -> {
+        If.Throws(isNegative(value), () -> {
             throw new IllegalArgumentException(
-                    If.messageOrDefault(supplierMessage, Constants.POSITIVE_VALUE));
+                    If.MessageOrDefault(supplierMessage, Constants.POSITIVE_VALUE));
         });
         return nonNegativeNonZero(value);
     }
@@ -510,14 +508,13 @@ public final class Numbers {
 
     @Contract(value = "_ -> param1", pure = true)
     public static long requiredNonNegative(long value) {
-        If.trueThrow(isNegative(value), Numbers::getValueCannotBeNegative);
+        If.Throws(isNegative(value), Numbers::getValueCannotBeNegative);
         return nonNegative(value);
     }
 
     @Contract(pure = true)
     public static long requiredNonNegative(long value, long fallback) {
         if (isNegative(value)) {
-            Logger.warn(Constants.NON_NEGATIVE);
             if (isNegative(fallback)) return 0L;
             return nonNegative(fallback);
         }
@@ -526,9 +523,9 @@ public final class Numbers {
 
     @Contract("_, _ -> param1")
     public static long requiredNonNegative(long value, Supplier<String> supplierMessage) {
-        If.trueThrow(isNegative(value), () -> {
+        If.Throws(isNegative(value), () -> {
             throw new IllegalArgumentException(
-                    If.messageOrDefault(supplierMessage, Constants.NON_NEGATIVE));
+                    If.MessageOrDefault(supplierMessage, Constants.NON_NEGATIVE));
         });
         return nonNegative(value);
     }
@@ -540,7 +537,7 @@ public final class Numbers {
 
     @Contract("_ -> param1")
     public static long requiredPositive(long value) {
-        If.trueThrow(isNonPositive(value), Numbers::getValueMustBePositive);
+        If.Throws(isNonPositive(value), Numbers::getValueMustBePositive);
         return nonNegativeNonZero(value);
     }
 
@@ -554,9 +551,9 @@ public final class Numbers {
 
     @Contract("_, _ -> param1")
     public static long requiredPositive(long value, Supplier<String> supplierMessage) {
-        If.trueThrow(isNonPositive(value), () -> {
+        If.Throws(isNonPositive(value), () -> {
             throw new IllegalArgumentException(
-                    If.messageOrDefault(supplierMessage, Constants.POSITIVE_VALUE));
+                    If.MessageOrDefault(supplierMessage, Constants.POSITIVE_VALUE));
         });
         return nonNegativeNonZero(value);
     }
@@ -650,7 +647,7 @@ public final class Numbers {
 
     @Contract(value = "_ -> param1", pure = true)
     public static float requiredNonNegative(float value) {
-        If.trueThrow(isNegative(value), Numbers::getValueCannotBeNegative);
+        If.Throws(isNegative(value), Numbers::getValueCannotBeNegative);
         return nonNegative(value);
     }
 
@@ -665,10 +662,10 @@ public final class Numbers {
 
     @Contract("_, _ -> param1")
     public static float requiredNonNegative(float value, Supplier<String> supplierMessage) {
-        If.trueThrow(isNegative(value), () -> {
+        If.Throws(isNegative(value), () -> {
             throw new
                     IllegalArgumentException(
-                    If.messageOrDefault(supplierMessage, Constants.NON_NEGATIVE));
+                    If.MessageOrDefault(supplierMessage, Constants.NON_NEGATIVE));
         });
         return nonNegative(value);
     }
@@ -680,7 +677,7 @@ public final class Numbers {
 
     @Contract("_ -> param1")
     public static float requiredPositive(float value) {
-        If.trueThrow(isNonPositive(value), Numbers::getValueMustBePositive);
+        If.Throws(isNonPositive(value), Numbers::getValueMustBePositive);
         return nonNegativeNonZero(value);
     }
 
@@ -694,9 +691,9 @@ public final class Numbers {
 
     @Contract("_, _ -> param1")
     public static float requiredPositive(float value, Supplier<String> supplierMessage) {
-        If.trueThrow(isNonPositive(value), () -> {
+        If.Throws(isNonPositive(value), () -> {
             throw new IllegalArgumentException(
-                    If.messageOrDefault(supplierMessage, Constants.POSITIVE_VALUE));
+                    If.MessageOrDefault(supplierMessage, Constants.POSITIVE_VALUE));
         });
         return nonNegativeNonZero(value);
     }
@@ -795,7 +792,7 @@ public final class Numbers {
 
     @Contract("_ -> param1")
     public static double requiredNonNegative(double value) {
-        If.trueThrow(isNegative(value), Numbers::getValueCannotBeNegative);
+        If.Throws(isNegative(value), Numbers::getValueCannotBeNegative);
         return nonNegative(value);
     }
 
@@ -810,9 +807,9 @@ public final class Numbers {
 
     @Contract("_, _ -> param1")
     public static double requiredNonNegative(double value, Supplier<String> supplierMessage) {
-        If.trueThrow(isNegative(value), () -> {
+        If.Throws(isNegative(value), () -> {
             throw new IllegalArgumentException(
-                    If.messageOrDefault(supplierMessage, Constants.NON_NEGATIVE));
+                    If.MessageOrDefault(supplierMessage, Constants.NON_NEGATIVE));
         });
         return nonNegative(value);
     }
@@ -824,7 +821,7 @@ public final class Numbers {
 
     @Contract("_ -> param1")
     public static double requiredPositive(double value) {
-        If.trueThrow(isNonPositive(value), Numbers::getValueMustBePositive);
+        If.Throws(isNonPositive(value), Numbers::getValueMustBePositive);
         return nonNegativeNonZero(value);
     }
 
@@ -838,9 +835,9 @@ public final class Numbers {
 
     @Contract("_, _ -> param1")
     public static double requiredPositive(double value, Supplier<String> supplierMessage) {
-        If.trueThrow(isNonPositive(value), () -> {
+        If.Throws(isNonPositive(value), () -> {
             throw new IllegalArgumentException(
-                    If.messageOrDefault(supplierMessage, Constants.POSITIVE_VALUE));
+                    If.MessageOrDefault(supplierMessage, Constants.POSITIVE_VALUE));
         });
         return nonNegativeNonZero(value);
     }

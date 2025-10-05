@@ -5,7 +5,7 @@ import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
-class StringFormatTest {
+class StringFormatterTest {
 
     /**
      * The `StringFormat.formatTest` method formats a given template string by replacing
@@ -18,7 +18,7 @@ class StringFormatTest {
         String template = "The value is {Integer} and {Boolean}.";
         Object[] values = {42, true};
 
-        String result = StringFormat.interpolate(template, values);
+        String result = StringFormatter.interpolate(template, values);
         System.out.println(result);
 
         assertEquals("The value is 42 and true.", result);
@@ -34,7 +34,7 @@ class StringFormatTest {
         String template = "Object fields: {test} and {field2}.";
         Object[] values = {new TestObject()};
 
-        String result = StringFormat.interpolate(template, values);
+        String result = StringFormatter.interpolate(template, values);
         System.out.println(result);
 
         assertEquals("Object fields: A and B.", result);
@@ -45,7 +45,7 @@ class StringFormatTest {
         String template = "The value is {Integer}.";
         Object[] values = {2};
 
-        String result = StringFormat.interpolate(template, values);
+        String result = StringFormatter.interpolate(template, values);
         IO.interpolated(template, values);
 
         assertEquals("The value is 2.", result);
@@ -60,7 +60,7 @@ class StringFormatTest {
         String template = "The object field is {invalidField}.";
         Object[] values = {new TestObject()};
 
-        String result = StringFormat.interpolate(template, values);
+        String result = StringFormatter.interpolate(template, values);
         System.out.println(result);
 
         assertEquals("The object field is {invalidField}.", result);
@@ -71,7 +71,7 @@ class StringFormatTest {
         String template = "";
         Object[] values = {42};
 
-        String result = StringFormat.interpolate(template, values);
+        String result = StringFormatter.interpolate(template, values);
         System.out.println(result);
 
         assertEquals("", result);
@@ -82,7 +82,7 @@ class StringFormatTest {
         String template = "No placeholders here.";
         Object[] values = {42};
 
-        String result = StringFormat.interpolate(template, values);
+        String result = StringFormatter.interpolate(template, values);
         System.out.println(result);
 
         assertEquals("No placeholders here.", result);
@@ -93,7 +93,7 @@ class StringFormatTest {
         String template = "The value is {Integer}.";
         Object[] values = {42, "extra"};
 
-        String result = StringFormat.interpolate(template, values);
+        String result = StringFormatter.interpolate(template, values);
         System.out.println(result);
 
         assertEquals("The value is 42.", result);
@@ -104,7 +104,7 @@ class StringFormatTest {
         String template = "The values are {field1} and {field2}.";
         Object[] values = {new Object()};
 
-        String result = StringFormat.interpolate(template, values);
+        String result = StringFormatter.interpolate(template, values);
         System.out.println(result);
 
         assertEquals("The values are {field1} and {field2}.", result);

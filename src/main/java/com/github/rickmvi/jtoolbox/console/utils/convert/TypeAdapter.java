@@ -17,11 +17,13 @@
  */
 package com.github.rickmvi.jtoolbox.console.utils.convert;
 
+import com.github.rickmvi.jtoolbox.control.Switch;
+
 import java.util.Objects;
 
 /**
  * Utility class for converting generic {@link Object} instances to primitive numeric types
- * ({@code int}, {@code long}, {@code float}, {@code double}) and {@code boolean}.
+ * ({@code byte}, {@code short}, {@code int}, {@code long}, {@code float}, {@code double}), {@code boolean} and {@code char}.
  * <p>
  * This class attempts to convert an object to the requested primitive type by:
  * <ul>
@@ -36,92 +38,79 @@ import java.util.Objects;
  * <p>
  * Note that if the object’s string representation is not a valid format for the target type,
  * these methods will throw runtime exceptions like {@link NumberFormatException}.
+ *
+ * @see NumberParser
+ * @see Stringifier
+ * @see Switch
+ * @see Objects
+ * @since 1.1
  */
 @lombok.experimental.UtilityClass
 public class TypeAdapter {
 
-    /**
-     * Converts the given object to an {@code int} value.
-     * <p>
-     * If the object is an instance of {@link Number}, returns its integer value.
-     * Otherwise, attempts to parse the object's string representation as an integer.
-     *
-     * @param o the object to convert, must not be {@code null}
-     * @return the integer value represented by the object
-     * @throws NumberFormatException if the string representation cannot be parsed as an integer
-     */
-    @SuppressWarnings("ConstantConditions")
+    public static byte toByte(Object o) {
+        return Switch.<Object, Byte>on(o)
+                .caseNull(() -> (byte) 0)
+                .caseType(Number.class, Number::byteValue)
+                .caseDefault(v -> NumberParser.toByte(Stringifier.valueOf(v)))
+                .get();
+    }
+
+    public static short toShort(Object o) {
+        return Switch.<Object, Short>on(o)
+                .caseNull(() -> (short) 0)
+                .caseType(Number.class, Number::shortValue)
+                .caseDefault(v -> NumberParser.toShort(Stringifier.valueOf(v)))
+                .get();
+    }
+
     public static int toInt(Object o) {
-        if (Objects.isNull(o)) return 0;
-        if (o instanceof Number) return ((Number) o).intValue();
-        return Integer.parseInt(Stringifier.valueOf(o));
+        return Switch.<Object, Integer>on(o)
+                .caseNull(() -> 0)
+                .caseType(Number.class, Number::intValue)
+                .caseDefault(v -> NumberParser.toInt(Stringifier.valueOf(v)))
+                .get();
     }
 
-    /**
-     * Converts the given object to a {@code long} value.
-     * <p>
-     * If the object is an instance of {@link Number}, returns its long value.
-     * Otherwise, attempts to parse the object's string representation as a long.
-     *
-     * @param o the object to convert, must not be {@code null}
-     * @return the long value represented by the object
-     * @throws NumberFormatException if the string representation cannot be parsed as a long
-     */
-    @SuppressWarnings("ConstantConditions")
     public static long toLong(Object o) {
-        if (Objects.isNull(o)) return 0L;
-        if (o instanceof Number) return ((Number) o).longValue();
-        return Long.parseLong(Stringifier.valueOf(o));
+        return Switch.<Object, Long>on(o)
+                .caseNull(() -> 0L)
+                .caseType(Number.class, Number::longValue)
+                .caseDefault(v -> NumberParser.toLong(Stringifier.valueOf(v)))
+                .get();
     }
 
-    /**
-     * Converts the given object to a {@code float} value.
-     * <p>
-     * If the object is an instance of {@link Number}, returns its float value.
-     * Otherwise, attempts to parse the object's string representation as a float.
-     *
-     * @param o the object to convert, must not be {@code null}
-     * @return the float value represented by the object
-     * @throws NumberFormatException if the string representation cannot be parsed as a float
-     */
-    @SuppressWarnings("ConstantConditions")
     public static float toFloat(Object o) {
-        if (Objects.isNull(o)) return 0.0f;
-        if (o instanceof Number) return ((Number) o).floatValue();
-        return Float.parseFloat(Stringifier.valueOf(o));
+        return Switch.<Object, Float>on(o)
+                .caseNull(() -> 0.0F)
+                .caseType(Number.class, Number::floatValue)
+                .caseDefault(v -> NumberParser.toFloat(Stringifier.valueOf(v)))
+                .get();
     }
 
-    /**
-     * Converts the given object to a {@code double} value.
-     * <p>
-     * If the object is an instance of {@link Number}, returns its double value.
-     * Otherwise, attempts to parse the object's string representation as a double.
-     *
-     * @param o the object to convert, must not be {@code null}
-     * @return the double value represented by the object
-     * @throws NumberFormatException if the string representation cannot be parsed as a double
-     */
-    @SuppressWarnings("ConstantConditions")
     public static double toDouble(Object o) {
-        if (Objects.isNull(o)) return 0.0d;
-        if (o instanceof Number) return ((Number) o).doubleValue();
-        return Double.parseDouble(Stringifier.valueOf(o));
+        return Switch.<Object, Double>on(o)
+                .caseNull(() -> 0.0D)
+                .caseType(Number.class, Number::doubleValue)
+                .caseDefault(v -> NumberParser.toDouble(Stringifier.valueOf(v)))
+                .get();
     }
 
-    /**
-     * Converts the given object to a {@code boolean} value.
-     * <p>
-     * If the object is an instance of {@link Boolean}, returns its boolean value.
-     * Otherwise, parses the object's string representation as a boolean.
-     *
-     * @param o the object to convert, must not be {@code null}
-     * @return the boolean value represented by the object
-     */
-    @SuppressWarnings("ConstantConditions")
     public static boolean toBoolean(Object o) {
-        if (Objects.isNull(o)) return false;
-        if (o instanceof Boolean) return (Boolean) o;
-        return Boolean.parseBoolean(Stringifier.valueOf(o));
+        return Switch.<Object, Boolean>on(o)
+                .caseNull(() -> false)
+                .caseType(Boolean.class, Boolean::booleanValue)
+                .caseDefault(v -> BooleanParser.toBoolean(Stringifier.valueOf(v)))
+                .get();
+    }
+
+    public static char toChar(Object o) {
+        return Switch.<Object, Character>on(o)
+                .caseNull(() -> (char) 0)
+                .caseType(Character.class, Character::charValue)
+                .caseType(Number.class, number -> (char) number.intValue())
+                .caseDefault(Stringifier::charAtZero)
+                .get();
     }
 }
 

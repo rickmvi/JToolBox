@@ -17,7 +17,7 @@
  */
 package com.github.rickmvi.jtoolbox.debug;
 
-import com.github.rickmvi.jtoolbox.control.ifs.If;
+import com.github.rickmvi.jtoolbox.control.If;
 import com.github.rickmvi.jtoolbox.debug.log.LogLevel;
 
 import com.github.rickmvi.jtoolbox.utils.constants.Constants;
@@ -59,7 +59,7 @@ public enum AnsiColor {
      */
     @Contract(pure = true)
     public static @NotNull AnsiColor valueOf(int ordinal) {
-        If.trueThrow(
+        If.Throws(
                 ordinal < 0 || ordinal >= VALUES.length,
                 () -> new IndexOutOfBoundsException("Invalid ordinal: " + ordinal)
         );

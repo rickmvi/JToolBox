@@ -19,8 +19,8 @@ package com.github.rickmvi.jtoolbox.utils;
 
 
 import com.github.rickmvi.jtoolbox.utils.constants.Constants;
-import com.github.rickmvi.jtoolbox.text.StringFormat;
-import com.github.rickmvi.jtoolbox.control.ifs.If;
+import com.github.rickmvi.jtoolbox.text.StringFormatter;
+import com.github.rickmvi.jtoolbox.control.If;
 import com.github.rickmvi.jtoolbox.control.While;
 import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.Contract;
@@ -152,12 +152,12 @@ public class MathUtils {
         for (float number : numbers) {
             result += number;
 
-            If.trueThrow(Float.isInfinite(result), () ->
+            If.Throws(Float.isInfinite(result), () ->
                     new ArithmeticException(Constants.SUM_OVERFLOW)
             );
-            If.trueThrow(Float.isNaN(result), () ->
+            If.Throws(Float.isNaN(result), () ->
                     new ArithmeticException(
-                            StringFormat.format(Constants.INVALID_OPERATION, "float"))
+                            StringFormatter.format(Constants.INVALID_OPERATION, "float"))
             );
         }
         return result;
@@ -180,12 +180,12 @@ public class MathUtils {
         for (double number : numbers) {
             result += number;
 
-            If.trueThrow(Double.isInfinite(result), () ->
+            If.Throws(Double.isInfinite(result), () ->
                     new ArithmeticException(Constants.SUM_OVERFLOW)
             );
-            If.trueThrow(Double.isNaN(result), () ->
+            If.Throws(Double.isNaN(result), () ->
                     new ArithmeticException(
-                            StringFormat.format(Constants.INVALID_OPERATION, "double"))
+                            StringFormatter.format(Constants.INVALID_OPERATION, "double"))
             );
         }
         return result;
@@ -292,11 +292,11 @@ public class MathUtils {
         for (int i = 1; i < length; i++) {
             result -= numbers[i];
 
-            If.trueThrow(Float.isInfinite(result), () ->
+            If.Throws(Float.isInfinite(result), () ->
                     new ArithmeticException(Constants.SUBTRACT_OVERFLOW));
-            If.trueThrow(Float.isNaN(result), () ->
+            If.Throws(Float.isNaN(result), () ->
                     new ArithmeticException(
-                            StringFormat.format(Constants.INVALID_OPERATION, "float"))
+                            StringFormatter.format(Constants.INVALID_OPERATION, "float"))
             );
         }
         return result;
@@ -320,11 +320,11 @@ public class MathUtils {
         for (int i = 1; i < length; i++) {
             result -= numbers[i];
 
-            If.trueThrow(Double.isInfinite(result), () ->
+            If.Throws(Double.isInfinite(result), () ->
                     new ArithmeticException(Constants.SUBTRACT_OVERFLOW));
-            If.trueThrow(Double.isNaN(result), () ->
+            If.Throws(Double.isNaN(result), () ->
                     new ArithmeticException(
-                            StringFormat.format(Constants.INVALID_OPERATION, "double"))
+                            StringFormatter.format(Constants.INVALID_OPERATION, "double"))
             );
         }
         return result;
@@ -424,14 +424,14 @@ public class MathUtils {
         for (float number : numbers) {
             result *= number;
 
-            If.trueThrow(
+            If.Throws(
                     Float.isInfinite(result),
                     () -> new ArithmeticException(Constants.PRODUCT_OVERFLOW)
             );
-            If.trueThrow(
+            If.Throws(
                     Float.isNaN(result),
                     () -> new ArithmeticException(
-                            StringFormat.format(Constants.INVALID_OPERATION, "float"))
+                            StringFormatter.format(Constants.INVALID_OPERATION, "float"))
             );
         }
         return result;
@@ -457,14 +457,14 @@ public class MathUtils {
         for (double number : numbers) {
             result *= number;
 
-            If.trueThrow(
+            If.Throws(
                     Double.isInfinite(result),
                     () -> new ArithmeticException(Constants.PRODUCT_OVERFLOW)
             );
-            If.trueThrow(
+            If.Throws(
                     Double.isNaN(result),
                     () -> new ArithmeticException(
-                            StringFormat.format(Constants.INVALID_OPERATION, "double"))
+                            StringFormatter.format(Constants.INVALID_OPERATION, "double"))
             );
         }
         return result;
@@ -483,7 +483,7 @@ public class MathUtils {
      * @throws ArithmeticException if the divisor is zero
      */
     public static byte divideByte(byte dividend, byte divisor) {
-        If.trueThrow(Numbers.isZero(divisor), () -> new ArithmeticException(Constants.DIVISION_BY_ZERO));
+        If.Throws(Numbers.isZero(divisor), () -> new ArithmeticException(Constants.DIVISION_BY_ZERO));
         return (byte) Math.divideExact(dividend, divisor);
     }
 
@@ -496,7 +496,7 @@ public class MathUtils {
      * @throws ArithmeticException if the divisor is zero
      */
     public static short divideShort(short dividend, short divisor) {
-        If.trueThrow(Numbers.isZero(divisor), () -> new ArithmeticException(Constants.DIVISION_BY_ZERO));
+        If.Throws(Numbers.isZero(divisor), () -> new ArithmeticException(Constants.DIVISION_BY_ZERO));
         return (short) Math.divideExact(dividend, divisor);
     }
 
@@ -510,7 +510,7 @@ public class MathUtils {
      * @throws ArithmeticException If the divisor is zero.
      */
     public static int divideInt(int dividend, int divisor) {
-        If.trueThrow(Numbers.isZero(divisor), () -> new ArithmeticException(Constants.DIVISION_BY_ZERO));
+        If.Throws(Numbers.isZero(divisor), () -> new ArithmeticException(Constants.DIVISION_BY_ZERO));
         return Math.divideExact(dividend, divisor);
     }
 
@@ -523,7 +523,7 @@ public class MathUtils {
      * @throws ArithmeticException if the divisor is zero
      */
     public static long divideLong(long dividend, long divisor) {
-        If.trueThrow(Numbers.isZero(divisor), () -> new ArithmeticException(Constants.DIVISION_BY_ZERO));
+        If.Throws(Numbers.isZero(divisor), () -> new ArithmeticException(Constants.DIVISION_BY_ZERO));
         return Math.divideExact(dividend, divisor);
     }
 
@@ -532,7 +532,7 @@ public class MathUtils {
     }
 
     public static double divideDouble(double dividend, double divisor) {
-        If.trueThrow(Numbers.isZero(divisor), () -> new ArithmeticException(Constants.DIVISION_BY_ZERO));
+        If.Throws(Numbers.isZero(divisor), () -> new ArithmeticException(Constants.DIVISION_BY_ZERO));
 
         return dividend / divisor;
     }
@@ -549,13 +549,13 @@ public class MathUtils {
      *                             nearest divisible number.
      */
     public static int divideNearestMultipleInt(int dividend, int divisor) {
-        If.trueThrow(Numbers.isZero(divisor), () -> new ArithmeticException(Constants.DIVISION_BY_ZERO));
+        If.Throws(Numbers.isZero(divisor), () -> new ArithmeticException(Constants.DIVISION_BY_ZERO));
 
         final int[] result = { dividend };
         While.runTrue(
                 () -> result[0] % divisor != 0,
                 () -> {
-                    If.trueThrow(
+                    If.Throws(
                             result[0] == Integer.MIN_VALUE,
                             () -> new ArithmeticException(Constants.OVERFLOW_DIVISIBLE_NUMBER)
                     );
@@ -573,7 +573,7 @@ public class MathUtils {
      * @throws ArithmeticException if the input array is empty
      */
     public static double averageDouble(long @NotNull ... numbers) {
-        If.trueThrow(
+        If.Throws(
                 ArrayUtils.isEmpty(numbers),
                 () -> new ArithmeticException(Constants.AVERAGE_EMPTY_ARRAY)
         );
@@ -588,7 +588,7 @@ public class MathUtils {
      * @throws ArithmeticException If the provided array is empty.
      */
     public static float averageFloat(float @NotNull ... numbers) {
-        If.trueThrow(
+        If.Throws(
                 ArrayUtils.isEmpty(numbers),
                 () -> new ArithmeticException(Constants.AVERAGE_EMPTY_ARRAY)
         );
@@ -603,7 +603,7 @@ public class MathUtils {
      * @throws ArithmeticException if the input array is empty.
      */
     public static double averageInt(int @NotNull ... numbers) {
-        If.trueThrow(
+        If.Throws(
                 ArrayUtils.isEmpty(numbers),
                 () -> new ArithmeticException(Constants.AVERAGE_EMPTY_ARRAY)
         );
@@ -619,7 +619,7 @@ public class MathUtils {
      * @throws NullPointerException if the array is null.
      */
     public static double averageDouble(double @NotNull ... numbers) {
-        If.trueThrow(
+        If.Throws(
                 ArrayUtils.isEmpty(numbers),
                 () -> new ArithmeticException(Constants.AVERAGE_EMPTY_ARRAY)
         );
@@ -772,12 +772,12 @@ public class MathUtils {
         float result = 0f;
         for (int i = 0; i <= valid; i += 2) {
             result += i;
-            If.trueThrow(Float.isInfinite(result), () ->
+            If.Throws(Float.isInfinite(result), () ->
                     new ArithmeticException(Constants.SUM_OVERFLOW)
             );
-            If.trueThrow(Float.isNaN(result), () ->
+            If.Throws(Float.isNaN(result), () ->
                     new ArithmeticException(
-                            StringFormat.format(Constants.INVALID_OPERATION, "float"))
+                            StringFormatter.format(Constants.INVALID_OPERATION, "float"))
             );
         }
         return result;
@@ -797,12 +797,12 @@ public class MathUtils {
         float result = 0f;
         for (int i = 1; i <= valid; i += 2) {
             result += i;
-            If.trueThrow(Float.isInfinite(result), () ->
+            If.Throws(Float.isInfinite(result), () ->
                     new ArithmeticException(Constants.SUM_OVERFLOW)
             );
-            If.trueThrow(Float.isNaN(result), () ->
+            If.Throws(Float.isNaN(result), () ->
                     new ArithmeticException(
-                            StringFormat.format(Constants.INVALID_OPERATION, "float"))
+                            StringFormatter.format(Constants.INVALID_OPERATION, "float"))
             );
         }
         return result;
@@ -821,12 +821,12 @@ public class MathUtils {
         double result = 0;
         for (long i = 0; i <= valid; i += 2) {
             result += i;
-            If.trueThrow(Double.isInfinite(result), () ->
+            If.Throws(Double.isInfinite(result), () ->
                     new ArithmeticException(Constants.SUM_OVERFLOW)
             );
-            If.trueThrow(Double.isNaN(result), () ->
+            If.Throws(Double.isNaN(result), () ->
                     new ArithmeticException(
-                            StringFormat.format(Constants.INVALID_OPERATION, "double"))
+                            StringFormatter.format(Constants.INVALID_OPERATION, "double"))
             );
         }
         return result;
@@ -847,12 +847,12 @@ public class MathUtils {
         double result = 0;
         for (long i = 1; i <= valid; i += 2) {
             result += i;
-            If.trueThrow(Double.isInfinite(result), () ->
+            If.Throws(Double.isInfinite(result), () ->
                     new ArithmeticException(Constants.SUM_OVERFLOW)
             );
-            If.trueThrow(Double.isNaN(result), () ->
+            If.Throws(Double.isNaN(result), () ->
                     new ArithmeticException(
-                            StringFormat.format(Constants.INVALID_OPERATION, "double"))
+                            StringFormatter.format(Constants.INVALID_OPERATION, "double"))
             );
         }
         return result;
@@ -884,7 +884,7 @@ public class MathUtils {
      */
     @Contract(pure = true)
     public static long moduloLong(long dividend, long divisor) {
-        If.trueThrow(Numbers.isZero(divisor), () -> new ArithmeticException(Constants.DIVISION_BY_ZERO));
+        If.Throws(Numbers.isZero(divisor), () -> new ArithmeticException(Constants.DIVISION_BY_ZERO));
         return dividend % divisor;
     }
 
@@ -901,14 +901,14 @@ public class MathUtils {
      *                             while searching for the nearest divisible number
      */
     public static int moduloNearestMultiple(int dividend, int divisor) {
-        If.trueThrow(Numbers.isNegative(dividend), () -> new ArithmeticException(Constants.DIVIDEND_NEGATIVE));
-        If.trueThrow(Numbers.isNonPositive(divisor), () -> new ArithmeticException(Constants.DIVISOR_BE_POSITIVE));
+        If.Throws(Numbers.isNegative(dividend), () -> new ArithmeticException(Constants.DIVIDEND_NEGATIVE));
+        If.Throws(Numbers.isNonPositive(divisor), () -> new ArithmeticException(Constants.DIVISOR_BE_POSITIVE));
 
         final int[] result = { dividend };
         While.runTrue(
                 () -> result[0] % divisor != 0,
                 () -> {
-                    If.trueThrow(
+                    If.Throws(
                             result[0] == Integer.MAX_VALUE,
                             () -> new ArithmeticException(Constants.OVERFLOW_DIVISIBLE_NUMBER)
                     );
@@ -932,13 +932,13 @@ public class MathUtils {
      *         search results in underflow.
      */
     public static long moduloNearestMultiple(long dividend, long divisor) {
-        If.trueThrow(dividend < 0L, () -> new ArithmeticException(Constants.DIVIDEND_NEGATIVE));
+        If.Throws(dividend < 0L, () -> new ArithmeticException(Constants.DIVIDEND_NEGATIVE));
 
         final long[] result = { dividend };
         While.runTrue(
                 () -> result[0] % divisor != 0L,
                 () -> {
-                    If.trueThrow(
+                    If.Throws(
                             result[0] == Long.MAX_VALUE,
                             () -> new ArithmeticException(Constants.OVERFLOW_DIVISIBLE_NUMBER)
                     );
@@ -990,7 +990,7 @@ public class MathUtils {
      */
     @Contract(pure = true)
     public static int pow(int base, int exponent) {
-        If.trueThrow(Numbers.isNegative(exponent), () -> new ArithmeticException(Constants.NEGATIVE_EXPONENT));
+        If.Throws(Numbers.isNegative(exponent), () -> new ArithmeticException(Constants.NEGATIVE_EXPONENT));
         return powerBySquaring(base, exponent);
     }
 
@@ -1004,7 +1004,7 @@ public class MathUtils {
      */
     @Contract(pure = true)
     public static int pow(int base, long exponent) {
-        If.trueThrow(Numbers.isNegative(exponent), () -> new ArithmeticException(Constants.NEGATIVE_EXPONENT));
+        If.Throws(Numbers.isNegative(exponent), () -> new ArithmeticException(Constants.NEGATIVE_EXPONENT));
         return powerBySquaring(base, exponent);
     }
 
@@ -1043,12 +1043,12 @@ public class MathUtils {
      * @throws ArithmeticException if the result of the exponentiation is infinite or invalid
      */
     public static double pow(double base, double exponent) {
-        If.trueThrow(Numbers.isNegative(exponent), () -> new ArithmeticException(Constants.NEGATIVE_EXPONENT));
+        If.Throws(Numbers.isNegative(exponent), () -> new ArithmeticException(Constants.NEGATIVE_EXPONENT));
 
         double result = Math.pow(base, exponent);
 
-        If.trueThrow(Double.isInfinite(result), () -> new ArithmeticException(Constants.NEGATIVE_EXPONENT));
-        If.trueThrow(Double.isNaN(result), () -> new ArithmeticException(Constants.INVALID_EXPONENTIATION));
+        If.Throws(Double.isInfinite(result), () -> new ArithmeticException(Constants.NEGATIVE_EXPONENT));
+        If.Throws(Double.isNaN(result), () -> new ArithmeticException(Constants.INVALID_EXPONENTIATION));
         return result;
     }
 
@@ -1062,7 +1062,7 @@ public class MathUtils {
      */
     @Contract(pure = true)
     public static int sqrtInt(int value) {
-        If.trueThrow(Numbers.isNegative(value), () -> new ArithmeticException(Constants.NEGATIVE_VALUE));
+        If.Throws(Numbers.isNegative(value), () -> new ArithmeticException(Constants.NEGATIVE_VALUE));
         return (int) Math.round(Math.sqrt(value));
     }
 
@@ -1076,7 +1076,7 @@ public class MathUtils {
      */
     @Contract(pure = true)
     public static double sqrt(double value) {
-        If.trueThrow(Numbers.isNegative(value), () -> new ArithmeticException(Constants.NEGATIVE_VALUE));
+        If.Throws(Numbers.isNegative(value), () -> new ArithmeticException(Constants.NEGATIVE_VALUE));
         return Math.sqrt(value);
     }
 }

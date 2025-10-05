@@ -18,7 +18,7 @@
 package com.github.rickmvi.jtoolbox.debug;
 
 import com.github.rickmvi.jtoolbox.utils.constants.Constants;
-import com.github.rickmvi.jtoolbox.text.StringFormat;
+import com.github.rickmvi.jtoolbox.text.StringFormatter;
 import com.github.rickmvi.jtoolbox.debug.log.LogLevel;
 import com.github.rickmvi.jtoolbox.console.IO;
 import lombok.AccessLevel;
@@ -55,7 +55,7 @@ public class Logger {
      */
     @Getter(value = AccessLevel.PUBLIC)
     @Setter(value = AccessLevel.PUBLIC)
-    private static boolean useAnsiColor = false;
+    private static boolean useAnsiColor = true;
 
     /**
      * Applies ANSI color to the given message if color output is enabled.
@@ -97,7 +97,7 @@ public class Logger {
 
         String time         = FORMATTER.format(LocalDateTime.now());
         String coloredLevel = colorize(level.name(), AnsiColor.getColor(level));
-        String message      = StringFormat.format(template, args);
+        String message      = StringFormatter.format(template, args);
 
         IO.format("[{}] [{}] {}%n", time, coloredLevel, message);
     }
@@ -112,7 +112,7 @@ public class Logger {
     public static void log(LogLevel level, String message, Throwable t) {
         log(level, message);
         if (ENABLED_LEVELS.contains(level) && level != LogLevel.OFF && t != null)
-            t.printStackTrace(System.out);
+            t.printStackTrace(System.err);
     }
 
     /**
@@ -124,9 +124,9 @@ public class Logger {
      * @param args the arguments to substitute into the template
      */
     public static void log(LogLevel level, String template, Throwable t, Object... args) {
-        log(level, StringFormat.format(template, args));
+        log(level, StringFormatter.format(template, args));
         if (ENABLED_LEVELS.contains(level) && level != LogLevel.OFF && t != null)
-            t.printStackTrace(System.out);
+            t.printStackTrace(System.err);
     }
 
     /**

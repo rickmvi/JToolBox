@@ -13,7 +13,7 @@ class IOTest {
 
     @Test
     void newlineWithoutArguments() {
-        IO.println("Before newline");
+        IO.format("{1:pad:10} {0}$n", "Before newline", 123);
         IO.newline();
         IO.println("After newline");
     }

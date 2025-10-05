@@ -21,6 +21,7 @@ import com.github.rickmvi.jtoolbox.console.utils.convert.NumberParser;
 import com.github.rickmvi.jtoolbox.console.utils.convert.Stringifier;
 import com.github.rickmvi.jtoolbox.collections.array.Array;
 import com.github.rickmvi.jtoolbox.collections.map.Mapping;
+import com.github.rickmvi.jtoolbox.control.If;
 import com.github.rickmvi.jtoolbox.control.While;
 import com.github.rickmvi.jtoolbox.debug.Logger;
 
@@ -39,6 +40,8 @@ import java.util.regex.Matcher;
 import java.lang.reflect.Modifier;
 import java.time.format.DateTimeFormatter;
 
+import static com.github.rickmvi.jtoolbox.collections.array.Array.lastIndex;
+import static com.github.rickmvi.jtoolbox.collections.array.Array.length;
 import static java.util.Map.entry;
 import static com.github.rickmvi.jtoolbox.utils.Numbers.isNegative;
 import static com.github.rickmvi.jtoolbox.utils.Numbers.isGreaterThan;
@@ -71,7 +74,7 @@ import static com.github.rickmvi.jtoolbox.utils.Numbers.isGreaterThan;
  *             <li><code>sub</code> - substring with start/end indexes (e.g., <code>{0:sub}</code>)</li>
  *             <li><code>rev</code> - reverse string</li>
  *             <li><code>trim</code> - trim whitespace</li>
- *             <li><code>cap</code> - capitalize first letter, lowercase rest</li>
+ *             <li><code>cap</code> - capitalize the first letter, lowercase rest</li>
  *         </ul>
  *     </li>
  *     <li>Custom tokens (e.g., <code>$n</code> for newline, <code>$t</code> for tab, <code>$tmp</code> for current date-time, <code>$rand</code> for random number).</li>
@@ -121,35 +124,31 @@ import static com.github.rickmvi.jtoolbox.utils.Numbers.isGreaterThan;
  * @since 1.2
  */
 @UtilityClass
-public final class StringFormat {
+public final class StringFormatter {
 
-    private static final Pattern GENERIC_PATTERN     = Pattern.compile(Constants.GENERIC);
-    private static final Pattern TOKEN_PATTERN       = Pattern.compile(Constants.TOKENS_COMMUM);
-    private static final Pattern ADVANCED_TOKENS     = Pattern.compile(Constants.ADVANCED_TOKEN);
-    private static final Pattern NEW_LINE_PATTERN    = Pattern.compile(Constants.NEW_LINE);
-    private static final DateTimeFormatter DATE_TIME = DateTimeFormatter.ofPattern(Constants.DATE_TIME_FORMAT);
-    private static final Map<String, Object> TOKENS  = Map.of(
-            "$n", System.lineSeparator(),
-            "$r", "\r",
-            "$t", "\t",
-            "$sp", " ",
-            "$tmp", DATE_TIME.format(LocalDateTime.now()),
-            "$rand", Math.random() * 1000000000000000000L
-    );
+    private static final Pattern     GENERIC_PATTERN;
+    private static final Pattern       TOKEN_PATTERN;
+    private static final Pattern     ADVANCED_TOKENS;
+    private static final Pattern    NEW_LINE_PATTERN;
+    private static final DateTimeFormatter DATE_TIME;
+    private static final Map<String, Object>  TOKENS;
 
-    /**
-     * Formats a given template string by replacing placeholders with provided arguments.
-     * The method processes and replaces token patterns within the `templateString`
-     * to generate a formatted output string.
-     *
-     * @param templateString the template string containing placeholders to be replaced.
-     *                       Must not be null.
-     * @param args an array of arguments to replace placeholders in the template string.
-     *             Must not be null.
-     * @return the formatted string with placeholders replaced by the respective arguments.
-     * @throws IllegalArgumentException if the input template string or arguments array is invalid.
-     * @throws NullPointerException if the `templateString` or `args` is null.
-     */
+    static {
+        GENERIC_PATTERN  = Pattern.compile(Constants.GENERIC);
+        TOKEN_PATTERN    = Pattern.compile(Constants.TOKENS_COMMUM);
+        ADVANCED_TOKENS  = Pattern.compile(Constants.ADVANCED_TOKEN);
+        NEW_LINE_PATTERN = Pattern.compile(Constants.NEW_LINE);
+        DATE_TIME        = DateTimeFormatter.ofPattern(Constants.DATE_TIME_FORMAT);
+        TOKENS           = Map.of(
+                "$n", System.lineSeparator(),
+                "$r", "\r",
+                "$t", "\t",
+                "$sp", " ",
+                "$tmp", DATE_TIME.format(LocalDateTime.now()),
+                "$rand", Math.random() * 1000000000L
+        );
+    }
+
     public static @NotNull String format(@NotNull String templateString, Object @NotNull ... args) {
         templateString = applyTemplateFormatting(templateString, args);
 
@@ -164,8 +163,8 @@ public final class StringFormat {
 
     private static @NotNull String applyTemplateFormatting(@NotNull String templateString, Object @NotNull ... args) {
         templateString = Mapping.applyReplacements(templateString, TOKENS);
-        templateString = replacePlaceholders(templateString, args, TOKEN_PATTERN, StringFormat::formatOriginalToken);
-        templateString = replacePlaceholders(templateString, args, ADVANCED_TOKENS, StringFormat::formatAdvancedToken);
+        templateString = replacePlaceholders(templateString, args, TOKEN_PATTERN, StringFormatter::formatOriginalToken);
+        templateString = replacePlaceholders(templateString, args, ADVANCED_TOKENS, StringFormatter::formatAdvancedToken);
         templateString = newLine(templateString);
         return templateString;
     }
@@ -220,17 +219,17 @@ public final class StringFormat {
             Matcher matcher,
             StringBuffer buffer
     ) {
-        if (isNegative(index) || isGreaterThan(index, Array.length(args))) {
+        If.supplyTrue(isNegative(index) || isGreaterThan(index, length(args)), () -> {
             Logger.error(
                     "Invalid index '{}' for placeholder '{}' (args length: {}). Valid range is [0..{}].",
                     matcher.group(1),
                     matcher.group(2),
-                    Array.length(args),
-                    Array.lastIndex(args)
+                    length(args),
+                    lastIndex(args)
             );
             matcher.appendReplacement(buffer, "");
             return true;
-        }
+        }).orElseGet(() -> false);
         return false;
     }
 
@@ -247,34 +246,40 @@ public final class StringFormat {
             String placeholder = matcher.group(1);
             String replacement = matcher.group();
 
-            if (index < objects.length) {
-                Object obj = objects[index];
+            int finalIndex = index;
+            If.Throws(index >= length(objects),
+                    () -> new ArrayIndexOutOfBoundsException("The index '"
+                            + finalIndex
+                            + "' overlapping the maximum index '"
+                            + (lastIndex(objects))
+                            + "'"));
 
-                if (obj != null) {
-                    Class<?> clazz = obj.getClass();
+            Object obj = objects[index];
 
-                    if (!isPrimitiveLike(clazz)) {
-                        String resolved = resolveField(obj, placeholder);
+            If.Throws(obj == null, () -> new IllegalArgumentException("Invalid null value for placeholder '" + placeholder + "'"));
 
-                        if (resolved.equals("{" + placeholder + "}")) {
-                            index++;
-                            continue;
-                        }
+            Class<?> clazz = obj.getClass();
 
-                        replacement = resolved;
-                    }
+            if (!isPrimitiveLike(clazz)) {
+                String resolved = resolveField(obj, placeholder);
 
-                    if (placeholder.equalsIgnoreCase(clazz.getSimpleName())) {
-                        replacement = obj.toString();
-                        index++;
-                    }
+                if (resolved.equals("{" + placeholder + "}")) {
+                    index++;
+                    continue;
                 }
+
+                replacement = resolved;
+            }
+
+            if (placeholder.equalsIgnoreCase(clazz.getSimpleName())) {
+                replacement = obj.toString();
+                index++;
             }
 
             matcher.appendReplacement(sb, Matcher.quoteReplacement(replacement));
         }
-        matcher.appendTail(sb);
 
+        matcher.appendTail(sb);
         return sb.toString();
     }
 
@@ -300,10 +305,10 @@ public final class StringFormat {
     }
 
     private static boolean isPrimitiveLike(@NotNull Class<?> clazz) {
-        return clazz.isPrimitive() ||
-                Number.class.isAssignableFrom(clazz) ||
-                Boolean.class.isAssignableFrom(clazz) ||
-                CharSequence.class.isAssignableFrom(clazz);
+        return clazz.isPrimitive()
+                || Number.class.isAssignableFrom(clazz)
+                || Boolean.class.isAssignableFrom(clazz)
+                || CharSequence.class.isAssignableFrom(clazz);
     }
 
     /**
@@ -323,7 +328,8 @@ public final class StringFormat {
     }
 
     private static @NotNull String formatOriginalToken(String token, Object value) {
-        return Mapping.returning(token,
+        return Mapping.returning(
+                token, 
                 Map.of(
                         "dc", () -> NumberFormat.DECIMAL_COMMA.format(value),
                         "dp", () -> NumberFormat.DECIMAL_POINT.format(value),

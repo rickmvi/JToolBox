@@ -49,174 +49,102 @@ import java.util.Optional;
 @lombok.experimental.UtilityClass
 public class NumberParser {
 
-    /**
-     * Converts a string to an {@code int}, returning 0 if the string is null or invalid.
-     *
-     * @param value the string to convert, may be {@code null}
-     * @return the parsed integer or 0 on failure
-     */
+    public static byte toByte(@Nullable String value) {
+        return toByte(value, (byte) 0);
+    }
+
+    public static byte toByte(@Nullable String value, byte fallback) {
+        return SafeRun.convert(value, Byte::parseByte).orElse(fallback);
+    }
+
+    public static byte toByte(@Nullable String value, @NotNull Supplier<Byte> fallback) {
+        return SafeRun.convert(value, Byte::parseByte).orElseGet(fallback);
+    }
+
+    public static Optional<Byte> toByteOptional(@Nullable String value) {
+        return SafeRun.convert(value, Byte::parseByte);
+    }
+
+    public static short toShort(@Nullable String value) {
+        return toShort(value, (short) 0);
+    }
+
+    public static short toShort(@Nullable String value, short fallback) {
+        return SafeRun.convert(value, Short::parseShort).orElse(fallback);
+    }
+
+    public static short toShort(@Nullable String value, Supplier<Short> fallback) {
+        return SafeRun.convert(value, Short::parseShort).orElseGet(fallback);
+    }
+
+    public static Optional<Short> toShortOptional(@Nullable String value) {
+        return SafeRun.convert(value, Short::parseShort);
+    }
+
     public static int toInt(@Nullable String value) {
         return toInt(value, 0);
     }
 
-    /**
-     * Converts a string to an {@code int}, returning the specified fallback if conversion fails.
-     *
-     * @param value    the string to convert, may be {@code null}
-     * @param fallback the fallback integer value if conversion fails
-     * @return the parsed integer or the fallback value on failure
-     */
     public static int toInt(@Nullable String value, int fallback) {
         return SafeRun.convert(value, Integer::parseInt).orElse(fallback);
     }
 
-    /**
-     * Converts a string to an {@code int}, using a lazy fallback supplier if conversion fails.
-     *
-     * @param value    the string to convert, may be {@code null}
-     * @param fallback the fallback supplier to provide an integer if conversion fails
-     * @return the parsed integer or the fallback value supplied
-     */
     public static int toInt(@Nullable String value, @NotNull Supplier<Integer> fallback) {
         return SafeRun.convert(value, Integer::parseInt).orElseGet(fallback);
         
     }
 
-    /**
-     * Converts a string to an {@link Optional} integer.
-     *
-     * @param value the string to convert, may be {@code null}
-     * @return an {@link Optional} containing the parsed integer or empty if invalid
-     */
     @Contract("null -> !null")
     public static Optional<Integer> toIntOptional(@Nullable String value) {
         return SafeRun.convert(value, Integer::parseInt);
     }
 
-    /**
-     * Converts a string to a {@code long}, returning 0L if the string is null or invalid.
-     *
-     * @param value the string to convert, may be {@code null}
-     * @return the parsed long or 0L on failure
-     */
     public static long toLong(@Nullable String value) {
         return toLong(value, 0L);
     }
 
-    /**
-     * Converts a string to a {@code long}, returning the specified fallback if conversion fails.
-     *
-     * @param value    the string to convert, may be {@code null}
-     * @param fallback the fallback-long value if conversion fails
-     * @return the parsed long or the fallback value on failure
-     */
     public static long toLong(@Nullable String value, long fallback) {
         return SafeRun.convert(value, Long::parseLong).orElse(fallback);
     }
 
-    /**
-     * Converts a string to a {@code long}, using a lazy fallback supplier if conversion fails.
-     *
-     * @param value    the string to convert, may be {@code null}
-     * @param fallback the fallback supplier to provide a long if conversion fails
-     * @return the parsed long or the fallback value supplied
-     */
     public static long toLong(@Nullable String value, @NotNull Supplier<Long> fallback) {
         return SafeRun.convert(value, Long::parseLong).orElseGet(fallback);
     }
 
-    /**
-     * Converts a string to an {@link Optional} long.
-     *
-     * @param value the string to convert, may be {@code null}
-     * @return an {@link Optional} containing the parsed long or empty if invalid
-     */
     @Contract("null -> !null")
     public static Optional<Long> toLongOptional(@Nullable String value) {
         return SafeRun.convert(value, Long::parseLong);
     }
 
-    /**
-     * Converts a string to a {@code double}, returning 0.0 if the string is null or invalid.
-     *
-     * @param value the string to convert, may be {@code null}
-     * @return the parsed double or 0.0 on failure
-     */
     public static double toDouble(@Nullable String value) {
         return toDouble(value, 0.0);
     }
 
-    /**
-     * Converts a string to a {@code double}, returning the specified fallback if conversion fails.
-     *
-     * @param value    the string to convert, may be {@code null}
-     * @param fallback the fallback double value if conversion fails
-     * @return the parsed double or the fallback value on failure
-     */
     public static double toDouble(@Nullable String value, double fallback) {
         return SafeRun.convert(value, Double::parseDouble).orElse(fallback);
     }
 
-    /**
-     * Converts a string to a {@code double}, using a lazy fallback supplier if conversion fails.
-     *
-     * @param value    the string to convert, may be {@code null}
-     * @param fallback the fallback supplier to provide a double if conversion fails
-     * @return the parsed double or the fallback value supplied
-     */
     public static double toDouble(@Nullable String value, @NotNull Supplier<Double> fallback) {
         return SafeRun.convert(value, Double::parseDouble).orElseGet(fallback);
     }
 
-    /**
-     * Converts a string to an {@link Optional} double.
-     *
-     * @param value the string to convert, may be {@code null}
-     * @return an {@link Optional} containing the parsed double or empty if invalid
-     */
     @Contract("null -> !null")
     public static Optional<Double> toDoubleOptional(@Nullable String value) {
         return SafeRun.convert(value, Double::parseDouble);
     }
 
-    /**
-     * Converts a string to a {@code float}, returning 0.0f if the string is null or invalid.
-     *
-     * @param value the string to convert, may be {@code null}
-     * @return the parsed float or 0.0f on failure
-     */
     public static float toFloat(@Nullable String value) {
         return toFloat(value, 0.0f);
     }
 
-    /**
-     * Converts a string to a {@code float}, returning the specified fallback if conversion fails.
-     *
-     * @param value    the string to convert, may be {@code null}
-     * @param fallback the fallback float value if conversion fails
-     * @return the parsed float or the fallback value on failure
-     */
     public float toFloat(@Nullable String value, float fallback) {
         return SafeRun.convert(value, Float::parseFloat).orElse(fallback);
     }
 
-    /**
-     * Converts a string to a {@code float}, using a lazy fallback supplier if conversion fails.
-     *
-     * @param value    the string to convert, may be {@code null}
-     * @param fallback the fallback supplier to provide a float if conversion fails
-     * @return the parsed float or the fallback value supplied
-     */
     public float toFloat(@Nullable String value, @NotNull Supplier<Float> fallback) {
         return SafeRun.convert(value, Float::parseFloat).orElseGet(fallback);
     }
 
-    /**
-     * Converts a string to an {@link Optional} float.
-     *
-     * @param value the string to convert, may be {@code null}
-     * @return an {@link Optional} containing the parsed float or empty if invalid
-     */
     public Optional<Float> toFloatOptional(@Nullable String value) {
         return SafeRun.convert(value, Float::parseFloat);
     }

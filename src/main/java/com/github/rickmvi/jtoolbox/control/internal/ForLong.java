@@ -15,8 +15,9 @@
  * You should have received a copy of the GNU Lesser General Public License
  * along with this library. If not, see <https://www.gnu.org/licenses/>.
  */
-package com.github.rickmvi.jtoolbox.control.fors;
+package com.github.rickmvi.jtoolbox.control.internal;
 
+import com.github.rickmvi.jtoolbox.control.For;
 import com.github.rickmvi.jtoolbox.control.If;
 import org.jetbrains.annotations.ApiStatus;
 import lombok.RequiredArgsConstructor;
@@ -29,7 +30,7 @@ import java.util.function.Predicate;
 import java.util.concurrent.CompletableFuture;
 
 @ApiStatus.Internal
-@RequiredArgsConstructor(access = lombok.AccessLevel.PACKAGE)
+@RequiredArgsConstructor(access = lombok.AccessLevel.PUBLIC)
 public class ForLong implements For<Long> {
 
     private final long    START;
@@ -56,7 +57,7 @@ public class ForLong implements For<Long> {
     }
 
     @Override
-    public boolean anyMatch(Predicate<Long> predicate) {
+    public boolean filter(Predicate<Long> predicate) {
         final boolean[] found = {false};
         forEach(i -> {
             if (predicate.test(i)) found[0] = true;

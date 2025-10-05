@@ -15,10 +15,11 @@
  * You should have received a copy of the GNU Lesser General Public License
  * along with this library. If not, see <https://www.gnu.org/licenses/>.
  */
-package com.github.rickmvi.jtoolbox.control.ifs;
+package com.github.rickmvi.jtoolbox.control;
 
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
+import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
 
@@ -26,6 +27,7 @@ import java.util.Objects;
 import java.util.Optional;
 import java.util.function.Function;
 import java.util.function.Supplier;
+import java.util.stream.Stream;
 
 /**
  * Utility interface for conditional execution and functional-style flow control.
@@ -76,7 +78,7 @@ import java.util.function.Supplier;
  * </p>
  *
  * @author Rick M. Viana
- * @since 1.0
+ * @since 1.1
  */
 public interface If {
 
@@ -90,6 +92,7 @@ public interface If {
         return new Runner(condition, action, false);
     }
 
+    @ApiStatus.Internal
     @RequiredArgsConstructor(access = AccessLevel.PRIVATE)
     class Runner {
         private final boolean  condition;
@@ -145,6 +148,7 @@ public interface If {
         return new Suppliers<>(condition, supplier, false);
     }
 
+    @ApiStatus.Internal
     @RequiredArgsConstructor(access = AccessLevel.PRIVATE)
     class Suppliers<T> {
         private final boolean     condition;

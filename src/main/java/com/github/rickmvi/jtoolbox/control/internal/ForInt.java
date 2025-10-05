@@ -15,8 +15,9 @@
  * You should have received a copy of the GNU Lesser General Public License
  * along with this library. If not, see <https://www.gnu.org/licenses/>.
  */
-package com.github.rickmvi.jtoolbox.control.fors;
+package com.github.rickmvi.jtoolbox.control.internal;
 
+import com.github.rickmvi.jtoolbox.control.For;
 import com.github.rickmvi.jtoolbox.control.If;
 import org.jetbrains.annotations.ApiStatus;
 import lombok.RequiredArgsConstructor;
@@ -30,8 +31,8 @@ import java.util.function.Predicate;
 import java.util.concurrent.CompletableFuture;
 
 @ApiStatus.Internal
-@RequiredArgsConstructor(access = AccessLevel.PACKAGE)
-public class ForInt implements For<Integer>{
+@RequiredArgsConstructor(access = AccessLevel.PUBLIC)
+public class ForInt implements For<Integer> {
 
     private final int     START;
     private final int     END;
@@ -57,7 +58,7 @@ public class ForInt implements For<Integer>{
     }
 
     @Override
-    public boolean anyMatch(Predicate<Integer> predicate) {
+    public boolean filter(Predicate<Integer> predicate) {
         final boolean[] found = {false};
         forEach(i -> {
             if (predicate.test(i)) found[0] = true;

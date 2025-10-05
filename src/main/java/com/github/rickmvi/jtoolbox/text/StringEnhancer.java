@@ -20,7 +20,7 @@ public class StringEnhancer {
     }
 
     public static @NotNull String length(@NotNull Object value) {
-        return Stringifier.valueOf(Stringifier.valueOf(value).length());
+        return Stringifier.valueOf(Stringifier.length(value));
     }
 
     public static @NotNull String substring(@NotNull Object value) {
@@ -48,11 +48,11 @@ public class StringEnhancer {
     }
 
     public static @NotNull String trim(@NotNull Object value) {
-        return Stringifier.valueOf(value).trim();
+        return Stringifier.trim(value);
     }
 
     public static @NotNull String capitalize(@NotNull Object value) {
-        String s = Stringifier.valueOf(value).trim();
+        String s = Stringifier.trim(value);
         return s.isEmpty() ? s : s.substring(0, 1).toUpperCase() + s.substring(1).toLowerCase();
     }
 }

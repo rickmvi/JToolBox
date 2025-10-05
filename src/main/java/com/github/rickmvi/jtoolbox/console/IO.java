@@ -18,8 +18,8 @@
 package com.github.rickmvi.jtoolbox.console;
 
 import com.github.rickmvi.jtoolbox.console.utils.convert.Stringifier;
-import com.github.rickmvi.jtoolbox.text.StringFormat;
-import com.github.rickmvi.jtoolbox.control.ifs.If;
+import com.github.rickmvi.jtoolbox.text.StringFormatter;
+import com.github.rickmvi.jtoolbox.control.If;
 import com.github.rickmvi.jtoolbox.utils.Numbers;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -36,7 +36,7 @@ import java.util.function.Consumer;
  * <p>
  * This interface is designed to simplify console I/O in a fluent and safe manner,
  * integrating with {@link If} for conditional execution and {@link Stringifier} /
- * {@link StringFormat} for conversion and formatting.
+ * {@link StringFormatter} for conversion and formatting.
  *
  * <h2>Usage Examples:</h2>
  * <pre>{@code
@@ -55,35 +55,36 @@ import java.util.function.Consumer;
  * All methods are static and can be called without instantiating the interface.
  * </p>
  *
- * @see StringFormat
+ * @see StringFormatter
  * @see Stringifier
+ * @see If
  * @author Rick M. Viana
  * @since 1.6
  */
 public interface IO {
 
     static void print(Object o) {
-        If.runTrue(o != null, () -> System.out.print(Stringifier.toString(o)))
+        If.isTrue(o != null, () -> System.out.print(Stringifier.toString(o)))
                 .orElse(IO::newline);
     }
 
     static void printf(Object o, Object... args) {
-        If.runTrue(o != null, () -> System.out.printf(Stringifier.toString(o), args))
+        If.isTrue(o != null, () -> System.out.printf(Stringifier.toString(o), args))
                 .orElse(IO::newline);
     }
 
     static void println(Object o) {
-        If.runTrue(o != null, () -> System.out.println(Stringifier.toString(o)))
+        If.isTrue(o != null, () -> System.out.println(Stringifier.toString(o)))
                 .orElse(IO::newline);
     }
 
     static void format(Object format, Object @Nullable ... args) {
-        If.runTrue(format != null, () -> print(StringFormat.format(Stringifier.toString(format), args)))
+        If.isTrue(format != null, () -> print(StringFormatter.format(Stringifier.toString(format), args)))
                 .orElse(IO::newline);
     }
 
     static void interpolated(String format, Object @Nullable ... args) {
-        If.runTrue(format != null, () -> println(StringFormat.interpolate(format, args)))
+        If.isTrue(format != null, () -> println(StringFormatter.interpolate(format, args)))
                 .orElse(IO::newline);
     }
 
@@ -97,7 +98,7 @@ public interface IO {
     }
 
     static void to(PrintStream stream, Object text) {
-        If.runTrue(text != null, () -> stream.print(Stringifier.toString(text)))
+        If.isTrue(text != null, () -> stream.print(Stringifier.toString(text)))
                 .orElseThrow(() -> new IllegalArgumentException("Text cannot be null"));
     }
 

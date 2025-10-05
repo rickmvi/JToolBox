@@ -1,4 +1,4 @@
-package com.github.rickmvi.jtoolbox.utils.functional;
+package com.github.rickmvi.jtoolbox.utils.function;
 
 @FunctionalInterface
 public interface ThrowingRunnable {
