@@ -22,7 +22,7 @@ import com.github.rickmvi.jtoolbox.lang.exceptions.InvalidEndIndexException;
 import com.github.rickmvi.jtoolbox.lang.exceptions.InvalidStepOutOfBounds;
 import com.github.rickmvi.jtoolbox.lang.exceptions.ErrorMessage;
 import com.github.rickmvi.jtoolbox.collections.array.Array;
-import com.github.rickmvi.jtoolbox.control.ifs.If;
+import com.github.rickmvi.jtoolbox.control.If;
 
 import com.github.rickmvi.jtoolbox.utils.Numbers;
 import org.jetbrains.annotations.Contract;
@@ -115,7 +115,7 @@ public class Iteration {
         int finish = Numbers.requiredPositive(end);
         int stepVal = Numbers.requiredPositive(step);
 
-        If.trueThrow(start > end, () -> new InvalidEndIndexException(start, end));
+        If.Throws(start > end, () -> new InvalidEndIndexException(start, end));
 
         IntConsumer act = Objects.requireNonNull(action);
         for (int i = init; i < finish; i += stepVal) act.accept(i);
@@ -132,9 +132,9 @@ public class Iteration {
     public static void forEachRangeDescending(int start, int end, int step, IntConsumer action) {
         IntConsumer act = Objects.requireNonNull(action);
 
-        If.trueThrow(Numbers.isNonPositive(step), InvalidStepOutOfBounds::new);
-        If.trueThrow(start > end, () -> new InvalidEndIndexException(start, end));
-        If.trueThrow(Numbers.isNegative(start), InvalidStartIndexException::new);
+        If.Throws(Numbers.isNonPositive(step), InvalidStepOutOfBounds::new);
+        If.Throws(start > end, () -> new InvalidEndIndexException(start, end));
+        If.Throws(Numbers.isNegative(start), InvalidStartIndexException::new);
         for (int i = start; i >= end; i -= step) act.accept(i);
     }
 
@@ -149,8 +149,8 @@ public class Iteration {
     public static void forEachInRange(int start, int end, @NotNull IntConsumer action) {
         IntConsumer act = Objects.requireNonNull(action);
 
-        If.trueThrow(start > end, () -> new InvalidEndIndexException(start, end));
-        If.trueThrow(Numbers.isNegative(start), InvalidStartIndexException::new);
+        If.Throws(start > end, () -> new InvalidEndIndexException(start, end));
+        If.Throws(Numbers.isNegative(start), InvalidStartIndexException::new);
         for (int i = start; i < end; i++) act.accept(i);
     }
 
@@ -163,7 +163,7 @@ public class Iteration {
      * }</pre>
      */
     public static void forEachIndex(int repetitions, @NotNull IntConsumer action) {
-        If.trueThrow(Numbers.isNegative(repetitions), InvalidStepOutOfBounds::new);
+        If.Throws(Numbers.isNegative(repetitions), InvalidStepOutOfBounds::new);
         for (int i = 0; i < repetitions; i++) action.accept(i);
     }
 
@@ -178,7 +178,7 @@ public class Iteration {
     public static void forEachDescending(int times, IntConsumer action) {
         IntConsumer act = Objects.requireNonNull(action);
 
-        If.trueThrow(times < 0, IllegalArgumentException::new);
+        If.Throws(times < 0, IllegalArgumentException::new);
         for (int i = times - 1; i >= 0; i--) act.accept(i);
     }
 
@@ -193,7 +193,7 @@ public class Iteration {
     public static void forEachDescending(int start, int end, IntConsumer action) {
         IntConsumer act = Objects.requireNonNull(action);
 
-        If.trueThrow(start < end, IllegalArgumentException::new);
+        If.Throws(start < end, IllegalArgumentException::new);
         for (int i = start; i >= end; i--) act.accept(i);
     }
 
@@ -209,7 +209,7 @@ public class Iteration {
         IntConsumer act = Objects.requireNonNull(action);
         Supplier<Boolean> can = Objects.requireNonNull(cancel);
 
-        If.trueThrow(times < 0, IllegalArgumentException::new);
+        If.Throws(times < 0, IllegalArgumentException::new);
         for (int i = 0; i < times && !can.get(); i++) act.accept(i);
     }
 
@@ -257,10 +257,10 @@ public class Iteration {
     public static void forEachHalf(int length, IntConsumer action) {
         IntConsumer act = Objects.requireNonNull(action);
 
-        If.trueThrow(
+        If.Throws(
                 Numbers.isZero(length),
                 () -> new InvalidEndIndexException(0, length));
-        If.trueThrow(
+        If.Throws(
                 Numbers.isNegative(length),
                 () -> new InvalidEndIndexException(length, 0, ErrorMessage.INDEX_NEGATIVE));
 

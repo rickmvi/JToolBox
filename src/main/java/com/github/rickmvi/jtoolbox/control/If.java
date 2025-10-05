@@ -36,8 +36,8 @@ import java.util.function.Supplier;
  * <p>
  * The interface is divided into two main concepts:
  * <ul>
- *     <li>{@link FluentRunner} – for executing {@link Runnable} based on conditions.</li>
- *     <li>{@link FluentSupplier} – for supplying values conditionally and handling results.</li>
+ *     <li>{@link Runner} – for executing {@link Runnable} based on conditions.</li>
+ *     <li>{@link Suppliers} – for supplying values conditionally and handling results.</li>
  * </ul>
  *
  * <h2>Usage Examples:</h2>
@@ -81,83 +81,105 @@ import java.util.function.Supplier;
 public interface If {
 
     @Contract(value = "_, _ -> new", pure = true)
-    static @NotNull FluentRunner runTrue(boolean condition, Runnable action) {
-        return new FluentRunner(condition, action, true);
+    static @NotNull If.Runner isTrue(boolean condition, Runnable action) {
+        return new Runner(condition, action, true);
     }
 
     @Contract(value = "_, _ -> new", pure = true)
-    static @NotNull FluentRunner runFalse(boolean condition, Runnable action) {
-        return new FluentRunner(condition, action, false);
+    static @NotNull If.Runner isFalse(boolean condition, Runnable action) {
+        return new Runner(condition, action, false);
     }
 
     @RequiredArgsConstructor(access = AccessLevel.PRIVATE)
-    class FluentRunner {
+    class Runner {
         private final boolean  condition;
         private final Runnable action;
         private final boolean  runOnTrue;
 
         public void orElse(Runnable elseAction) {
-            if ((runOnTrue && condition) || (!runOnTrue && !condition)) {
+            if (evaluateRunCondition()) {
                 action.run();
                 return;
             }
             elseAction.run();
         }
 
+        @Contract(pure = true)
+        private boolean evaluateRunCondition() {
+            return (runOnTrue && condition) || (!runOnTrue && !condition);
+        }
+
         public void run() {
-            if ((runOnTrue && condition) || (!runOnTrue && !condition)) action.run();
+            if (evaluateRunCondition()) action.run();
         }
 
         public void orElseThrow(Supplier<? extends RuntimeException> exceptionSupplier) {
-            if ((runOnTrue && condition) || (!runOnTrue && !condition)) {
+            if (evaluateRunCondition()) {
                 action.run();
                 return;
             }
             throw exceptionSupplier.get();
         }
 
-        public FluentRunner not() {
-            return new FluentRunner(condition, action, !runOnTrue);
+        public Runner not() {
+            return new Runner(condition, action, !runOnTrue);
         }
 
-        public void ifElse(Runnable elseAction) {
-            orElse(elseAction);
+        public Runner or(boolean condition) {
+            return new Runner(this.condition || condition, action, runOnTrue);
         }
+
+        public Runner and(boolean condition) {
+            return new Runner(this.condition && condition, action, runOnTrue);
+        }
+
     }
 
     @Contract(value = "_, _ -> new", pure = true)
-    static <T> @NotNull FluentSupplier<T> supplyTrue(boolean condition, Supplier<T> supplier) {
-        return new FluentSupplier<>(condition, supplier, true);
+    static <T> @NotNull Suppliers<T> supplyTrue(boolean condition, Supplier<T> supplier) {
+        return new Suppliers<>(condition, supplier, true);
     }
 
     @Contract(value = "_, _ -> new", pure = true)
-    static <T> @NotNull FluentSupplier<T> supplyFalse(boolean condition, Supplier<T> supplier) {
-        return new FluentSupplier<>(condition, supplier, false);
+    static <T> @NotNull Suppliers<T> supplyFalse(boolean condition, Supplier<T> supplier) {
+        return new Suppliers<>(condition, supplier, false);
     }
 
     @RequiredArgsConstructor(access = AccessLevel.PRIVATE)
-    class FluentSupplier<T> {
+    class Suppliers<T> {
         private final boolean     condition;
         private final Supplier<T> supplier;
         private final boolean     runOnTrue;
 
-        public T orElse(Supplier<T> elseSupplier) {
-            if ((runOnTrue && condition) || (!runOnTrue && !condition)) return supplier.get();
-            return elseSupplier.get();
-        }
-
         public T value() {
-            if ((runOnTrue && condition) || (!runOnTrue && !condition)) return supplier.get();
+            if (evaluateCondition()) return supplier.get();
             return null;
         }
 
+        @Contract(pure = true)
+        private boolean evaluateCondition() {
+            return (runOnTrue && condition) || (!runOnTrue && !condition);
+        }
+
+        public T orElseGet(Supplier<T> elseSupplier) {
+            if (evaluateCondition()) return supplier.get();
+            return elseSupplier.get();
+        }
+
         public T orElseThrow(Supplier<? extends RuntimeException> exceptionSupplier) {
-            if ((runOnTrue && condition) || (!runOnTrue && !condition)) return supplier.get();
+            if (evaluateCondition()) return supplier.get();
             throw exceptionSupplier.get();
         }
 
-        public <R> FluentSupplier<R> map(Function<T, R> mapper) {
-            return new FluentSupplier<>(condition, () -> mapper.apply(supplier.get()), runOnTrue);
+        public <R> Suppliers<R> map(Function<T, R> mapper) {
+            return new Suppliers<>(condition, () -> mapper.apply(supplier.get()), runOnTrue);
+        }
+
+        public <R> Suppliers<R> flatMap(Function<T, Suppliers<R>> mapper) {
+            if (evaluateCondition()) {
+                return mapper.apply(supplier.get());
+            }
+            return new Suppliers<>(false, null, false);
         }
 
         public Optional<T> toOptional() {
@@ -165,29 +187,24 @@ public interface If {
             return Optional.empty();
         }
 
-        public T ifElse(Supplier<T> elseSupplier) {
-            return orElse(elseSupplier);
+        public Suppliers<T> not() {
+            return new Suppliers<>(condition, supplier, !runOnTrue);
         }
+
     }
 
     @Contract("_, _ -> !null")
-    static <R> Optional<R> optionalTrue(boolean condition, Supplier<R> whenTrue) {
+    static <R> Optional<R> optional(boolean condition, Supplier<R> whenTrue) {
         if (condition) return Optional.ofNullable(whenTrue.get());
         return Optional.empty();
     }
 
-    @Contract("_, _ -> !null")
-    static <R> Optional<R> optionalFalse(boolean condition, Supplier<R> whenFalse) {
-        if (!condition) return Optional.ofNullable(whenFalse.get());
-        return Optional.empty();
-    }
-
-    static String messageOrDefault(Supplier<String> messageSupplier, String defaultMessage) {
+    static String MessageOrDefault(Supplier<String> messageSupplier, String defaultMessage) {
         return Objects.isNull(messageSupplier) ? defaultMessage : messageSupplier.get();
     }
 
     @Contract("true, _ -> fail")
-    static void trueThrow(boolean condition, Supplier<? extends RuntimeException> exceptionSupplier) {
+    static void Throws(boolean condition, Supplier<? extends RuntimeException> exceptionSupplier) {
         if (condition) throw exceptionSupplier.get();
     }
 }

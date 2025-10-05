@@ -17,7 +17,7 @@
  */
 package com.github.rickmvi.jtoolbox.control.fors;
 
-import com.github.rickmvi.jtoolbox.control.ifs.If;
+import com.github.rickmvi.jtoolbox.control.If;
 import org.jetbrains.annotations.ApiStatus;
 import lombok.RequiredArgsConstructor;
 import lombok.AccessLevel;
@@ -68,7 +68,7 @@ public class ForIterable<T> implements For<T> {
         T last = null;
         for (T item: iterable) {
             T finalLast = last;
-            last = If.supplyTrue(predicate.test(item), () -> item).orElse(() -> finalLast);
+            last = If.supplyTrue(predicate.test(item), () -> item).orElseGet(() -> finalLast);
         }
         return last;
     }
@@ -87,7 +87,7 @@ public class ForIterable<T> implements For<T> {
         List<R> results = new ArrayList<>();
         for (T item: iterable) {
             R mapped = mapper.apply(item);
-            If.runTrue(mapped != null, () -> results.add(mapped)).run();
+            If.isTrue(mapped != null, () -> results.add(mapped)).run();
         }
         return results;
     }

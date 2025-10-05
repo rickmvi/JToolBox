@@ -17,10 +17,9 @@
  */
 package com.github.rickmvi.jtoolbox.control.fors;
 
-import com.github.rickmvi.jtoolbox.control.ifs.If;
+import com.github.rickmvi.jtoolbox.control.If;
 import org.jetbrains.annotations.ApiStatus;
 import lombok.RequiredArgsConstructor;
-import lombok.AccessLevel;
 
 import java.util.List;
 import java.util.ArrayList;
@@ -30,34 +29,34 @@ import java.util.function.Predicate;
 import java.util.concurrent.CompletableFuture;
 
 @ApiStatus.Internal
-@RequiredArgsConstructor(access = AccessLevel.PACKAGE)
-public class ForInt implements For<Integer>{
+@RequiredArgsConstructor(access = lombok.AccessLevel.PACKAGE)
+public class ForLong implements For<Long> {
 
-    private final int     START;
-    private final int     END;
-    private final int     STEP;
+    private final long    START;
+    private final long    END;
+    private final long    STEP;
     private final boolean REVERSED;
 
     @Override
-    public void forEach(Consumer<Integer> action) {
-        If.runTrue(REVERSED, () -> {
-            for (int i = START; i >= END; i -= STEP) {
+    public void forEach(Consumer<Long> action) {
+        If.isTrue(REVERSED, () -> {
+            for (long i = START; i >= END; i -= STEP) {
                 action.accept(i);
             }
         }).orElse(() -> {
-            for (int i = START; i <= END; i += STEP) {
+            for (long i = START; i <= END; i += STEP) {
                 action.accept(i);
             }
         });
     }
 
     @Override
-    public CompletableFuture<Void> forEachAsync(Consumer<Integer> action) {
+    public CompletableFuture<Void> forEachAsync(Consumer<Long> action) {
         return CompletableFuture.runAsync(() -> forEach(action));
     }
 
     @Override
-    public boolean anyMatch(Predicate<Integer> predicate) {
+    public boolean anyMatch(Predicate<Long> predicate) {
         final boolean[] found = {false};
         forEach(i -> {
             if (predicate.test(i)) found[0] = true;
@@ -66,27 +65,27 @@ public class ForInt implements For<Integer>{
     }
 
     @Override
-    public Integer findFirst(Predicate<Integer> predicate) {
+    public Long findFirst(Predicate<Long> predicate) {
         if (REVERSED) {
-            for (int i = START; i >= END; i -= STEP) {
+            for (long i = START; i >= END; i -= STEP) {
                 if (predicate.test(i)) return i;
             }
         } else {
-            for (int i = START; i <= END; i += STEP) {
+            for (long i = START; i <= END; i += STEP) {
                 if (predicate.test(i)) return i;
             }
         }
         return null;
     }
 
-    public Integer findLast(Predicate<Integer> predicate) {
-        Integer last = null;
+    public Long findLast(Predicate<Long> predicate) {
+        Long last = null;
         if (REVERSED) {
-            for (int i = START; i >= END; i -= STEP) {
+            for (long i = START; i >= END; i -= STEP) {
                 if (predicate.test(i)) last = i;
             }
         } else {
-            for (int i = START; i <= END; i += STEP) {
+            for (long i = START; i <= END; i += STEP) {
                 if (predicate.test(i)) last = i;
             }
         }
@@ -94,14 +93,14 @@ public class ForInt implements For<Integer>{
     }
 
     @Override
-    public <R> R findFirstValue(Function<Integer, R> mapper) {
+    public <R> R findFirstValue(Function<Long, R> mapper) {
         if (REVERSED) {
-            for (int i = START; i >= END; i -= STEP) {
+            for (long i = START; i >= END; i -= STEP) {
                 R result = mapper.apply(i);
                 if (result != null) return result;
             }
         } else {
-            for (int i = START; i <= END; i += STEP) {
+            for (long i = START; i <= END; i += STEP) {
                 R result = mapper.apply(i);
                 if (result != null) return result;
             }
@@ -110,7 +109,7 @@ public class ForInt implements For<Integer>{
     }
 
     @Override
-    public <R> List<R> collect(Function<Integer, R> mapper) {
+    public <R> List<R> collect(Function<Long, R> mapper) {
         List<R> results = new ArrayList<>();
         forEach(i -> {
             R result = mapper.apply(i);
@@ -118,5 +117,4 @@ public class ForInt implements For<Integer>{
         });
         return results;
     }
-
 }
