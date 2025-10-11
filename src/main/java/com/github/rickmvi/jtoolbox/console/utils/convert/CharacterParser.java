@@ -1,6 +1,6 @@
 package com.github.rickmvi.jtoolbox.console.utils.convert;
 
-import com.github.rickmvi.jtoolbox.utils.SafeRun;
+import com.github.rickmvi.jtoolbox.util.SafeRun;
 import org.jetbrains.annotations.Contract;
 
 import java.util.Optional;

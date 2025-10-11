@@ -55,5 +55,4 @@ public interface InputReader {
     <T extends Number> T readNumberPrompt(String prompt, Function<String, T> parser);
 
     <T extends Number> T readNumberUntil(String prompt, Function<String, T> parser, Predicate<T> validator);
-
 }

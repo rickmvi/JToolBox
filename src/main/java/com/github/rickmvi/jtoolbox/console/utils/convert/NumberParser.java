@@ -17,7 +17,8 @@
  */
 package com.github.rickmvi.jtoolbox.console.utils.convert;
 
-import com.github.rickmvi.jtoolbox.utils.SafeRun;
+import com.github.rickmvi.jtoolbox.text.internal.NumberInterface;
+import com.github.rickmvi.jtoolbox.util.SafeRun;
 
 import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.Nullable;
@@ -46,8 +47,7 @@ import java.util.Optional;
  * Null or invalid inputs result in fallback values or empty optionals, ensuring
  * robust and null-safe numeric parsing in console applications or general utilities.
  */
-@lombok.experimental.UtilityClass
-public class NumberParser {
+public class NumberParser extends TypeAdapter {
 
     public static byte toByte(@Nullable String value) {
         return toByte(value, (byte) 0);
@@ -61,6 +61,7 @@ public class NumberParser {
         return SafeRun.convert(value, Byte::parseByte).orElseGet(fallback);
     }
 
+    @Contract("null -> !null")
     public static Optional<Byte> toByteOptional(@Nullable String value) {
         return SafeRun.convert(value, Byte::parseByte);
     }
@@ -77,6 +78,7 @@ public class NumberParser {
         return SafeRun.convert(value, Short::parseShort).orElseGet(fallback);
     }
 
+    @Contract("null -> !null")
     public static Optional<Short> toShortOptional(@Nullable String value) {
         return SafeRun.convert(value, Short::parseShort);
     }
@@ -137,15 +139,15 @@ public class NumberParser {
         return toFloat(value, 0.0f);
     }
 
-    public float toFloat(@Nullable String value, float fallback) {
+    public static float toFloat(@Nullable String value, float fallback) {
         return SafeRun.convert(value, Float::parseFloat).orElse(fallback);
     }
 
-    public float toFloat(@Nullable String value, @NotNull Supplier<Float> fallback) {
+    public static float toFloat(@Nullable String value, @NotNull Supplier<Float> fallback) {
         return SafeRun.convert(value, Float::parseFloat).orElseGet(fallback);
     }
 
-    public Optional<Float> toFloatOptional(@Nullable String value) {
+    public static Optional<Float> toFloatOptional(@Nullable String value) {
         return SafeRun.convert(value, Float::parseFloat);
     }
 

@@ -18,8 +18,8 @@
 package com.github.rickmvi.jtoolbox.control;
 
 import lombok.AccessLevel;
+import lombok.Getter;
 import lombok.RequiredArgsConstructor;
-import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
 
@@ -27,7 +27,6 @@ import java.util.Objects;
 import java.util.Optional;
 import java.util.function.Function;
 import java.util.function.Supplier;
-import java.util.stream.Stream;
 
 /**
  * Utility interface for conditional execution and functional-style flow control.
@@ -78,7 +77,7 @@ import java.util.stream.Stream;
  * </p>
  *
  * @author Rick M. Viana
- * @since 1.1
+ * @since 1.2
  */
 public interface If {
 
@@ -87,17 +86,30 @@ public interface If {
         return new Runner(condition, action, true);
     }
 
+    @Contract("_ -> new")
+    static If.@NotNull Runner isTrue(boolean condition) {
+        return new Runner(condition, true);
+    }
+
     @Contract(value = "_, _ -> new", pure = true)
     static @NotNull If.Runner isFalse(boolean condition, Runnable action) {
         return new Runner(condition, action, false);
     }
 
-    @ApiStatus.Internal
+    @Contract("_ -> new")
+    static If.@NotNull Runner isFalse(boolean condition) {
+        return new Runner(condition, false);
+    }
+
     @RequiredArgsConstructor(access = AccessLevel.PRIVATE)
     class Runner {
         private final boolean  condition;
         private final Runnable action;
         private final boolean  runOnTrue;
+
+        private Runner(boolean condition, boolean runOnTrue) {
+            this(condition, null, runOnTrue);
+        }
 
         public void orElse(Runnable elseAction) {
             if (evaluateRunCondition()) {
@@ -124,6 +136,10 @@ public interface If {
             throw exceptionSupplier.get();
         }
 
+        public Runner make(Runnable action) {
+            return new Runner(condition, action, runOnTrue);
+        }
+
         public Runner not() {
             return new Runner(condition, action, !runOnTrue);
         }
@@ -143,17 +159,28 @@ public interface If {
         return new Suppliers<>(condition, supplier, true);
     }
 
+    static <T> @NotNull Suppliers<T> ofTrue(boolean condition) {
+        return new Suppliers<>(condition, true);
+    }
+
     @Contract(value = "_, _ -> new", pure = true)
     static <T> @NotNull Suppliers<T> supplyFalse(boolean condition, Supplier<T> supplier) {
         return new Suppliers<>(condition, supplier, false);
     }
 
-    @ApiStatus.Internal
+    static <T> @NotNull Suppliers<T> ofFalse(boolean condition) {
+        return new Suppliers<>(condition, false);
+    }
+
     @RequiredArgsConstructor(access = AccessLevel.PRIVATE)
     class Suppliers<T> {
         private final boolean     condition;
         private final Supplier<T> supplier;
         private final boolean     runOnTrue;
+
+        private Suppliers(boolean condition, boolean runOnTrue) {
+            this(condition, null, runOnTrue);
+        }
 
         public T value() {
             if (evaluateCondition()) return supplier.get();
@@ -191,8 +218,20 @@ public interface If {
             return Optional.empty();
         }
 
+        public Suppliers<T> make(Supplier<T> supplier) {
+            return new Suppliers<>(condition, supplier, runOnTrue);
+        }
+
         public Suppliers<T> not() {
             return new Suppliers<>(condition, supplier, !runOnTrue);
+        }
+
+        public Suppliers<T> or(boolean condition) {
+            return new Suppliers<>(this.condition || condition, supplier, runOnTrue);
+        }
+
+        public Suppliers<T> and(boolean condition) {
+            return new Suppliers<>(this.condition && condition, supplier, runOnTrue);
         }
 
     }

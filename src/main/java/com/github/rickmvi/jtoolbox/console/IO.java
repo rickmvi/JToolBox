@@ -20,7 +20,7 @@ package com.github.rickmvi.jtoolbox.console;
 import com.github.rickmvi.jtoolbox.console.utils.convert.Stringifier;
 import com.github.rickmvi.jtoolbox.text.StringFormatter;
 import com.github.rickmvi.jtoolbox.control.If;
-import com.github.rickmvi.jtoolbox.utils.Numbers;
+import com.github.rickmvi.jtoolbox.util.Numbers;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -59,7 +59,7 @@ import java.util.function.Consumer;
  * @see Stringifier
  * @see If
  * @author Rick M. Viana
- * @since 1.6
+ * @since 1.7
  */
 public interface IO {
 
@@ -67,10 +67,18 @@ public interface IO {
         If.isTrue(o != null, () -> System.out.print(Stringifier.toString(o)))
                 .orElse(IO::newline);
     }
+    
+    static void print() {
+        newline();
+    }
 
     static void printf(Object o, Object... args) {
         If.isTrue(o != null, () -> System.out.printf(Stringifier.toString(o), args))
                 .orElse(IO::newline);
+    }
+    
+    static void printf() {
+        newline();
     }
 
     static void println(Object o) {
@@ -78,14 +86,26 @@ public interface IO {
                 .orElse(IO::newline);
     }
 
+    static void println() {
+        newline();
+    }
+
     static void format(Object format, Object @Nullable ... args) {
         If.isTrue(format != null, () -> print(StringFormatter.format(Stringifier.toString(format), args)))
                 .orElse(IO::newline);
     }
 
+    static void format() {
+        newline();
+    }
+
     static void interpolated(String format, Object @Nullable ... args) {
         If.isTrue(format != null, () -> println(StringFormatter.interpolate(format, args)))
                 .orElse(IO::newline);
+    }
+
+    static void interpolated() {
+        newline();
     }
 
     static void newline() {
@@ -100,6 +120,26 @@ public interface IO {
     static void to(PrintStream stream, Object text) {
         If.isTrue(text != null, () -> stream.print(Stringifier.toString(text)))
                 .orElseThrow(() -> new IllegalArgumentException("Text cannot be null"));
+    }
+
+    static void err(String text) {
+        IO.to(System.err, text);
+    }
+
+    static void err(Object text) {
+        IO.to(System.err, text);
+    }
+
+    static void err(Object @Nullable ... args) {
+        IO.format(System.err, args);
+    }
+
+    static void err(@NotNull Throwable t) {
+        t.printStackTrace(System.err);
+    }
+
+    static void out(String text) {
+        IO.to(System.out, text);
     }
 
     static void withOut(@NotNull Consumer<PrintStream> action) {

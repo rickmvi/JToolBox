@@ -24,4 +24,24 @@ class IOTest {
         IO.newline(3);
         IO.println("After multiple newlines");
     }
+
+    static class TestObject {
+        public String field = "value";
+    }
+
+    @Test
+    void interpolatedWithoutArguments() {
+        TestObject testObject = new TestObject();
+        IO.interpolated("Hello, World! {field} {1}", testObject, "fg3f");
+    }
+
+    @Test
+    void interpolatedWithArguments() {
+        IO.interpolated("Hello, {0}!", "Test");
+    }
+
+    @Test
+    void interpolatedWithNullFormat() {
+        IO.interpolated(null);
+    }
 }

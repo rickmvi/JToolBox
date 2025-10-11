@@ -45,7 +45,6 @@ import java.util.Objects;
  * @see Objects
  * @since 1.1
  */
-@lombok.experimental.UtilityClass
 public class TypeAdapter {
 
     public static byte toByte(Object o) {

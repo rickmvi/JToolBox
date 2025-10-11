@@ -19,15 +19,15 @@ package com.github.rickmvi.jtoolbox.text;
 
 import com.github.rickmvi.jtoolbox.console.utils.convert.NumberParser;
 import com.github.rickmvi.jtoolbox.console.utils.convert.Stringifier;
-import com.github.rickmvi.jtoolbox.collections.array.Array;
 import com.github.rickmvi.jtoolbox.collections.map.Mapping;
 import com.github.rickmvi.jtoolbox.control.If;
 import com.github.rickmvi.jtoolbox.control.While;
 import com.github.rickmvi.jtoolbox.debug.Logger;
 
-import com.github.rickmvi.jtoolbox.utils.constants.Constants;
-import com.github.rickmvi.jtoolbox.utils.Numbers;
-import com.github.rickmvi.jtoolbox.utils.Try;
+import com.github.rickmvi.jtoolbox.util.DateBuilder;
+import com.github.rickmvi.jtoolbox.util.constants.Constants;
+import com.github.rickmvi.jtoolbox.util.Numbers;
+import com.github.rickmvi.jtoolbox.util.Try;
 import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
 import lombok.experimental.UtilityClass;
@@ -35,6 +35,7 @@ import lombok.experimental.UtilityClass;
 import java.util.Map;
 import java.lang.reflect.Field;
 import java.time.LocalDateTime;
+import java.util.function.Supplier;
 import java.util.regex.Pattern;
 import java.util.regex.Matcher;
 import java.lang.reflect.Modifier;
@@ -43,8 +44,8 @@ import java.time.format.DateTimeFormatter;
 import static com.github.rickmvi.jtoolbox.collections.array.Array.lastIndex;
 import static com.github.rickmvi.jtoolbox.collections.array.Array.length;
 import static java.util.Map.entry;
-import static com.github.rickmvi.jtoolbox.utils.Numbers.isNegative;
-import static com.github.rickmvi.jtoolbox.utils.Numbers.isGreaterThan;
+import static com.github.rickmvi.jtoolbox.util.Numbers.isNegative;
+import static com.github.rickmvi.jtoolbox.util.Numbers.isGreaterThan;
 
 /**
  * Utility class for formatting strings using placeholders and custom tokens.
@@ -121,7 +122,7 @@ import static com.github.rickmvi.jtoolbox.utils.Numbers.isGreaterThan;
  * @see Stringifier
  * @see NumberParser
  * @see Logger
- * @since 1.2
+ * @since 1.3
  */
 @UtilityClass
 public final class StringFormatter {
@@ -138,7 +139,7 @@ public final class StringFormatter {
         TOKEN_PATTERN    = Pattern.compile(Constants.TOKENS_COMMUM);
         ADVANCED_TOKENS  = Pattern.compile(Constants.ADVANCED_TOKEN);
         NEW_LINE_PATTERN = Pattern.compile(Constants.NEW_LINE);
-        DATE_TIME        = DateTimeFormatter.ofPattern(Constants.DATE_TIME_FORMAT);
+        DATE_TIME        = DateBuilder.DatePattern.DD_MM_YYYY_HH_MM_SS.getFormatter();
         TOKENS           = Map.of(
                 "$n", System.lineSeparator(),
                 "$r", "\r",
@@ -151,7 +152,6 @@ public final class StringFormatter {
 
     public static @NotNull String format(@NotNull String templateString, Object @NotNull ... args) {
         templateString = applyTemplateFormatting(templateString, args);
-
         for (Object arg : args) {
             templateString = GENERIC_PATTERN
                     .matcher(templateString)
@@ -171,7 +171,7 @@ public final class StringFormatter {
 
     private static @NotNull String newLine(String template) {
         Matcher matcher = NEW_LINE_PATTERN.matcher(template);
-        StringBuffer buffer = new StringBuffer();
+        StringBuffer buffer = getBuffer().get();
 
         While.runTrue(matcher::find, () -> {
             int count = Try.of(() -> NumberParser.toInt(matcher.group(1)))
@@ -196,7 +196,7 @@ public final class StringFormatter {
             java.util.function.BiFunction<String,Object,String> formatter
     ) {
         Matcher matcher = pattern.matcher(template);
-        StringBuffer buffer = new StringBuffer();
+        StringBuffer buffer = getBuffer().get();
 
         While.runTrue(matcher::find, () -> {
             int index = getIndexOrElse(matcher);
@@ -213,13 +213,18 @@ public final class StringFormatter {
         return buffer.toString();
     }
 
+    @Contract(pure = true)
+    private static @NotNull Supplier<StringBuffer> getBuffer() {
+        return StringBuffer::new;
+    }
+
     private static boolean isPlaceholderIndexInvalid(
             Object @NotNull [] args,
             int index,
             Matcher matcher,
             StringBuffer buffer
     ) {
-        If.supplyTrue(isNegative(index) || isGreaterThan(index, length(args)), () -> {
+        return If.supplyTrue(isNegative(index) || isGreaterThan(index, length(args)), () -> {
             Logger.error(
                     "Invalid index '{}' for placeholder '{}' (args length: {}). Valid range is [0..{}].",
                     matcher.group(1),
@@ -230,7 +235,6 @@ public final class StringFormatter {
             matcher.appendReplacement(buffer, "");
             return true;
         }).orElseGet(() -> false);
-        return false;
     }
 
     @Contract("null, _ -> null; !null, null -> param1")
@@ -272,7 +276,7 @@ public final class StringFormatter {
             }
 
             if (placeholder.equalsIgnoreCase(clazz.getSimpleName())) {
-                replacement = obj.toString();
+                replacement = Stringifier.toString(obj);
                 index++;
             }
 

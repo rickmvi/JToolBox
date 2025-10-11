@@ -1,4 +1,4 @@
-package com.github.rickmvi.jtoolbox.utils.function;
+package com.github.rickmvi.jtoolbox.util.function;
 
 @FunctionalInterface
 public interface IntBiConsumer {

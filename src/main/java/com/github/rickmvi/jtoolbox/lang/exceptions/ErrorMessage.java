@@ -1,6 +1,6 @@
 package com.github.rickmvi.jtoolbox.lang.exceptions;
 
-import com.github.rickmvi.jtoolbox.utils.constants.Constants;
+import com.github.rickmvi.jtoolbox.util.constants.Constants;
 import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
 

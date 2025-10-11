@@ -1,4 +1,4 @@
-package com.github.rickmvi.jtoolbox.utils.condition;
+package com.github.rickmvi.jtoolbox.util.condition;
 
 import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.Nullable;

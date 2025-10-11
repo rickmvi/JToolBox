@@ -15,11 +15,11 @@
  * You should have received a copy of the GNU Lesser General Public License
  * along with this library. If not, see <https://www.gnu.org/licenses/>.
  */
-package com.github.rickmvi.jtoolbox.utils;
+package com.github.rickmvi.jtoolbox.util;
 
 import com.github.rickmvi.jtoolbox.debug.Logger;
-import com.github.rickmvi.jtoolbox.utils.function.ThrowingRunnable;
-import com.github.rickmvi.jtoolbox.utils.function.ThrowingSupplier;
+import com.github.rickmvi.jtoolbox.util.function.ThrowingRunnable;
+import com.github.rickmvi.jtoolbox.util.function.ThrowingSupplier;
 import lombok.*;
 import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;

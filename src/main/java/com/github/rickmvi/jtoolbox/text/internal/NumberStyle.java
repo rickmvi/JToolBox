@@ -17,7 +17,7 @@
  */
 package com.github.rickmvi.jtoolbox.text.internal;
 
-import com.github.rickmvi.jtoolbox.utils.constants.Constants;
+import com.github.rickmvi.jtoolbox.util.constants.Constants;
 import lombok.Getter;
 import org.jetbrains.annotations.Contract;
 

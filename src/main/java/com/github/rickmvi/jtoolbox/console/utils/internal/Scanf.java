@@ -24,8 +24,8 @@ import com.github.rickmvi.jtoolbox.console.utils.convert.NumberParser;
 import com.github.rickmvi.jtoolbox.console.utils.Location;
 import com.github.rickmvi.jtoolbox.control.Do;
 import com.github.rickmvi.jtoolbox.control.Switch;
-import com.github.rickmvi.jtoolbox.utils.Try;
-import com.github.rickmvi.jtoolbox.utils.condition.ObjectC;
+import com.github.rickmvi.jtoolbox.util.Try;
+import com.github.rickmvi.jtoolbox.util.condition.ObjectC;
 import lombok.AccessLevel;
 
 import lombok.Getter;
@@ -35,8 +35,8 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Contract;
 import com.github.rickmvi.jtoolbox.control.If;
 import com.github.rickmvi.jtoolbox.console.utils.Scan;
-import com.github.rickmvi.jtoolbox.utils.SafeRun;
-import com.github.rickmvi.jtoolbox.utils.constants.Constants;
+import com.github.rickmvi.jtoolbox.util.SafeRun;
+import com.github.rickmvi.jtoolbox.util.constants.Constants;
 
 import java.math.BigDecimal;
 import java.math.BigInteger;
@@ -60,7 +60,7 @@ import java.util.function.Predicate;
  * <p>
  * This class is used internally by the public-facing {@link Scan}.
  */
-public class  Scanf implements InputScan, AutoCloseable {
+public class Scanf implements InputScan, AutoCloseable {
 
     @Getter
     @Setter(value = AccessLevel.PRIVATE)
@@ -271,7 +271,7 @@ public class  Scanf implements InputScan, AutoCloseable {
     public byte readByteUntil(String prompt, Predicate<Byte> predicate) {
         ensureScannerInitialized();
         if (ObjectC.isNullOrEmpty(prompt)) prompt = "";
-        if (predicate == null) throw new IllegalArgumentException("predicate cannot be null");
+        If.Throws(predicate == null, () -> new IllegalArgumentException("predicate cannot be null"));
 
         AtomicReference<Byte> value = new AtomicReference<>();
         String finalPrompt = prompt;
@@ -300,7 +300,7 @@ public class  Scanf implements InputScan, AutoCloseable {
     public short readShortUntil(String prompt, Predicate<Short> predicate) {
         ensureScannerInitialized();
         if (ObjectC.isNullOrEmpty(prompt)) prompt = "";
-        if (predicate == null) throw new IllegalArgumentException("predicate cannot be null");
+        If.Throws(predicate == null, () -> new IllegalArgumentException("predicate cannot be null"));
 
         AtomicReference<Short> value = new AtomicReference<>();
         String finalPrompt = prompt;
@@ -342,8 +342,8 @@ public class  Scanf implements InputScan, AutoCloseable {
     @Override
     public int readIntUntil(String prompt, IntPredicate validator) {
         ensureScannerInitialized();
-        if (ObjectC.isNull(prompt)) throw new IllegalArgumentException("prompt cannot be null");
-        if (validator == null)      throw new IllegalArgumentException("validator cannot be null");
+        If.Throws(prompt == null,    () -> new IllegalArgumentException("prompt cannot be null"));
+        If.Throws(validator == null, () -> new IllegalArgumentException("validator cannot be null"));
 
         AtomicInteger input = new AtomicInteger();
         Do.runWhile(() -> {
@@ -370,7 +370,7 @@ public class  Scanf implements InputScan, AutoCloseable {
     public long readLongUntil(String prompt, Predicate<Long> predicate) {
         ensureScannerInitialized();
         if (ObjectC.isNullOrEmpty(prompt)) prompt = "";
-        if (predicate == null) throw new IllegalArgumentException("predicate cannot be null");
+        If.Throws(predicate == null, () -> new IllegalArgumentException("predicate cannot be null"));
 
         AtomicReference<Long> value = new AtomicReference<>();
         String finalPrompt = prompt;
@@ -398,7 +398,7 @@ public class  Scanf implements InputScan, AutoCloseable {
     public float readFloatUntil(String prompt, Predicate<Float> predicate) {
         ensureScannerInitialized();
         if (ObjectC.isNullOrEmpty(prompt)) prompt = "";
-        if (predicate == null) throw new IllegalArgumentException("predicate cannot be null");
+        If.Throws(predicate == null, () -> new IllegalArgumentException("predicate cannot be null"));
 
         AtomicReference<Float> value = new AtomicReference<>();
         String finalPrompt = prompt;
@@ -427,7 +427,7 @@ public class  Scanf implements InputScan, AutoCloseable {
     public double readDoubleUntil(String prompt, Predicate<Double> predicate) {
         ensureScannerInitialized();
         if (ObjectC.isNullOrEmpty(prompt)) prompt = "";
-        if (predicate == null) throw new IllegalArgumentException("predicate cannot be null");
+        If.Throws(predicate == null, () -> new IllegalArgumentException("predicate cannot be null"));
 
         AtomicReference<Double> value = new AtomicReference<>();
         String finalPrompt = prompt;
@@ -456,7 +456,7 @@ public class  Scanf implements InputScan, AutoCloseable {
     public boolean readBooleanUntil(String prompt, Predicate<Boolean> predicate) {
         ensureScannerInitialized();
         if (ObjectC.isNullOrEmpty(prompt)) prompt = "";
-        if (predicate == null) throw new IllegalArgumentException("predicate cannot be null");
+        If.Throws(predicate == null, () -> new IllegalArgumentException("predicate cannot be null"));
 
         AtomicReference<Boolean> value = new AtomicReference<>();
         String finalPrompt = prompt;
@@ -485,7 +485,7 @@ public class  Scanf implements InputScan, AutoCloseable {
     public char readCharUntil(String prompt, Predicate<Character> predicate) {
         ensureScannerInitialized();
         if (ObjectC.isNullOrEmpty(prompt)) prompt = "";
-        if (predicate == null) throw new IllegalArgumentException("predicate cannot be null");
+        If.Throws(predicate == null, () -> new IllegalArgumentException("predicate cannot be null"));
 
         AtomicReference<Character> value = new AtomicReference<>();
         String finalPrompt = prompt;
@@ -514,7 +514,7 @@ public class  Scanf implements InputScan, AutoCloseable {
     public BigDecimal readBigDecimalUntil(String prompt, Predicate<BigDecimal> predicate) {
         ensureScannerInitialized();
         if (ObjectC.isNullOrEmpty(prompt)) prompt = "";
-        if (predicate == null) throw new IllegalArgumentException("predicate cannot be null");
+        If.Throws(predicate == null, () -> new IllegalArgumentException("predicate cannot be null"));
 
         AtomicReference<BigDecimal> value = new AtomicReference<>();
 
@@ -544,7 +544,7 @@ public class  Scanf implements InputScan, AutoCloseable {
     public BigInteger readBigIntegerUntil(String prompt, Predicate<BigInteger> predicate) {
         ensureScannerInitialized();
         if (ObjectC.isNullOrEmpty(prompt)) prompt = "";
-        if (predicate == null) throw new IllegalArgumentException("predicate cannot be null");
+        If.Throws(predicate == null, () -> new IllegalArgumentException("predicate cannot be null"));
 
         AtomicReference<BigInteger> value = new AtomicReference<>();
 
@@ -566,7 +566,7 @@ public class  Scanf implements InputScan, AutoCloseable {
     public <T extends Number> T readNumberPrompt(String prompt, Function<String, T> parser) {
         ensureScannerInitialized();
         if (ObjectC.isNullOrEmpty(prompt)) prompt = "";
-        if (parser == null) throw new IllegalArgumentException("parser cannot be null");
+        If.Throws(parser == null, () -> new IllegalArgumentException("parser cannot be null"));
         displayPrompt(prompt);
         return parser.apply(read());
     }
@@ -575,7 +575,7 @@ public class  Scanf implements InputScan, AutoCloseable {
     public String readUntil(String prompt, Predicate<String> validator) {
         ensureScannerInitialized();
         if (ObjectC.isNullOrEmpty(prompt)) return "";
-        if (validator == null) throw new IllegalArgumentException("validator cannot be null");
+        If.Throws(validator == null, () -> new IllegalArgumentException("validator cannot be null"));
 
         AtomicReference<String> input = new AtomicReference<>("");
         Do.runWhile(() -> {
@@ -593,9 +593,9 @@ public class  Scanf implements InputScan, AutoCloseable {
             Predicate<T> validator
     ) {
         ensureScannerInitialized();
-        if (ObjectC.isNullOrEmpty(prompt)) throw new IllegalArgumentException("prompt cannot be null");
-        if (parser == null)                throw new IllegalArgumentException("parser cannot be null");
-        if (validator == null)             throw new IllegalArgumentException("validator cannot be null");
+        If.Throws(prompt == null,    () -> new IllegalArgumentException("prompt cannot be null"));
+        If.Throws(parser == null,    () -> new IllegalArgumentException("parser cannot be null"));
+        If.Throws(validator == null, () -> new IllegalArgumentException("validator cannot be null"));
 
         AtomicReference<T> value = new AtomicReference<>();
         Do.runWhile(() -> {

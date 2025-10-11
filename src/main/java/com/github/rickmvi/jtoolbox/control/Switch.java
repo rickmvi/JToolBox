@@ -1,6 +1,23 @@
+/*
+ * Console API - Utilitarian library for input, output and formatting on the console.
+ * Copyright (C) 2025  Rick M. Viana
+ *
+ * This library is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU Lesser General Public License as published by
+ * the Free Software Foundation; either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * This library is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+ * GNU Lesser General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with this library. If not, see <https://www.gnu.org/licenses/>.
+ */
 package com.github.rickmvi.jtoolbox.control;
 
-import com.github.rickmvi.jtoolbox.utils.Try;
+import com.github.rickmvi.jtoolbox.util.Try;
 import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
 
@@ -48,7 +65,7 @@ public final class Switch<T, R> {
     }
 
     @Contract("_, _ -> this")
-    public <U extends T> Switch<T, R> caseType(Class<U> type, Function<U, R> action) {
+    public <U extends T, R2 extends R> Switch<T, R> caseType(Class<U> type, Function<? super U, ? extends R2> action) {
         cases.add(v -> type.isInstance(v) ? action.apply(type.cast(v)) : null);
         return this;
     }
@@ -114,7 +131,7 @@ public final class Switch<T, R> {
                     break;
                 }
             }
-            if (!matched) throw new IllegalStateException("No case matched and no default provided");
+            If.Throws(!matched, () -> new IllegalStateException("No case matched and no default provided"));
             return tempResult.get();
         });
 
@@ -125,7 +142,6 @@ public final class Switch<T, R> {
 
         return result;
     }
-
 
     public R orElse(R fallback) {
         return Try.of(this::get).orElse(fallback);
@@ -143,5 +159,30 @@ public final class Switch<T, R> {
     @FunctionalInterface
     public interface Supplier<R> {
         R get();
+    }
+
+    @Contract("_ -> new")
+    public static <N extends Number> @NotNull Switch<Number, N> onNumber(N value) {
+        return new Switch<>(value);
+    }
+
+    @Contract("_ -> new")
+    public static @NotNull Switch<Object, String> onStringify(Object value) {
+        return new Switch<>(value);
+    }
+
+    @Contract("_ -> new")
+    public static @NotNull Switch<Object, Collection<?>> onCollection(Object value) {
+        return new Switch<>(value);
+    }
+
+    @Contract("_ -> new")
+    public static @NotNull Switch<Object, Object> of(Object value) {
+        return new Switch<>(value);
+    }
+
+    @Contract("_ -> new")
+    public static @NotNull Switch<Object, Map<?, ?>> onMap(Object value) {
+        return new Switch<>(value);
     }
 }

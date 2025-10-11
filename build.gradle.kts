@@ -4,7 +4,7 @@ plugins {
 }
 
 group = "io.github.rickmvi"
-version = "1.10.18"
+version = "1.10.25"
 
 repositories {
     mavenCentral()
@@ -17,6 +17,7 @@ dependencies {
     compileOnly(libs.lombok)
     annotationProcessor(libs.lombok)
 
+    implementation(libs.gson)
     implementation(libs.annotations)
 }
 

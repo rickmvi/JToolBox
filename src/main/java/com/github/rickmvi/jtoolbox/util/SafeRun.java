@@ -15,7 +15,7 @@
  * You should have received a copy of the GNU Lesser General Public License
  * along with this library. If not, see <https://www.gnu.org/licenses/>.
  */
-package com.github.rickmvi.jtoolbox.utils;
+package com.github.rickmvi.jtoolbox.util;
 
 import com.github.rickmvi.jtoolbox.debug.Logger;
 import org.jetbrains.annotations.Contract;
@@ -67,7 +67,7 @@ import java.util.function.*;
  *     <li>{@link #attemptOrElse(Supplier, Object)} – Execute a Supplier with a fallback value.</li>
  *     <li>{@link #attemptOrElseGet(Supplier, Supplier, String, Object...)} – Execute a Supplier with a fallback Supplier and log message.</li>
  *     <li>{@link #apply(Function, Object)} – Wrap a Function with fallback value.</li>
- *     <li>{@link #applyTry(Function)} – Wrap a Function to return a {@link com.github.rickmvi.jtoolbox.utils.Try}.</li>
+ *     <li>{@link #applyTry(Function)} – Wrap a Function to return a {@link com.github.rickmvi.jtoolbox.util.Try}.</li>
  *     <li>{@link #runWithMessage(Runnable, String, Object...)} – Run a Runnable with custom error message.</li>
  *     <li>{@link #retry(Runnable, int)} – Retry a Runnable multiple times with logging.</li>
  *     <li>{@link #consumer(Consumer)} – Wrap a Consumer safely.</li>

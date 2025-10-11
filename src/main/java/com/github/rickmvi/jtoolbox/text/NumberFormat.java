@@ -20,7 +20,6 @@ package com.github.rickmvi.jtoolbox.text;
 import com.github.rickmvi.jtoolbox.console.utils.convert.TypeAdapter;
 import com.github.rickmvi.jtoolbox.text.internal.NumberInterface;
 import com.github.rickmvi.jtoolbox.text.internal.NumberStyle;
-import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
 import lombok.experimental.UtilityClass;

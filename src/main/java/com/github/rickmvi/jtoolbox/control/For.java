@@ -1,142 +1,327 @@
 package com.github.rickmvi.jtoolbox.control;
 
-import com.github.rickmvi.jtoolbox.control.internal.ForDouble;
-import com.github.rickmvi.jtoolbox.control.internal.ForInt;
-import com.github.rickmvi.jtoolbox.control.internal.ForIterable;
-import com.github.rickmvi.jtoolbox.control.internal.ForLong;
+import com.github.rickmvi.jtoolbox.debug.log.LogLevel;
+import com.github.rickmvi.jtoolbox.debug.Logger;
+import com.github.rickmvi.jtoolbox.util.Numbers;
+import com.github.rickmvi.jtoolbox.util.Try;
+
+import lombok.RequiredArgsConstructor;
+import lombok.AccessLevel;
+
 import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
 
-import java.util.List;
-import java.util.function.Consumer;
-import java.util.function.Function;
-import java.util.function.Predicate;
+import java.math.BigDecimal;
+import java.util.*;
+import java.util.function.*;
+import java.util.stream.Stream;
+import java.util.stream.Collectors;
+import java.util.stream.StreamSupport;
 import java.util.concurrent.CompletableFuture;
 
 /**
- * Functional iteration utility interface for processing sequences of elements.
- * <p>
- * Provides a fluent and uniform API to iterate, filter, map, and collect values
- * from ranges of numbers or generic collections.
- * </p>
+ * Fluent and lazy iterable control structure with logging, error handling,
+ * and functional-style composition.
  *
- * <h2>Core Capabilities:</h2>
- * <ul>
- *     <li>{@link #forEach(Consumer)} – Iterate through each element sequentially.</li>
- *     <li>{@link #forEachAsync(Consumer)} – Iterate asynchronously using a {@link CompletableFuture}.</li>
- *     <li>{@link #filter(Predicate)} – Test whether any element satisfies a condition.</li>
- *     <li>{@link #findFirst(Predicate)} / {@link #findLast(Predicate)} – Search for the first or last element matching a condition.</li>
- *     <li>{@link #findFirstValue(Function)} – Apply a mapper to elements and return the first non-null result.</li>
- *     <li>{@link #collect(Function)} – Transform elements with a mapper and collect non-null results into a {@link List}.</li>
- * </ul>
+ * <p>Provides a declarative, Try-integrated iteration system with error handling,
+ * logging, and parallel execution support.</p>
  *
- * <h2>Static Factory Methods:</h2>
- * <p>
- * Supports iteration over primitive ranges or collections:
- * <ul>
- *     <li>{@link #range(int, int)} / {@link #range(long, long)} / {@link #range(double, double)} – Inclusive ascending ranges.</li>
- *     <li>{@link #rangeDescentive(int, int)} / {@link #rangeDescentive(long, long)} / {@link #rangeDescentive(double, double)} – Inclusive descending ranges.</li>
- *     <li>{@link #range(int, int, int)} / {@link #range(long, long, long)} / {@link #range(double, double, double)} – Ranges with custom step values.</li>
- *     <li>{@link #of(Iterable)} / {@link #of(Object...)} – Create a For from a collection or array of elements.</li>
- * </ul>
- * </p>
- *
- * <h2>Usage Examples:</h2>
  * <pre>{@code
- * // Iterate over an integer range
- * For.range(1, 5).forEach(System.out::println);
- *
- * // Find first even number in a range
- * Integer firstEven = For.range(1, 10)
- *                        .findFirst(i -> i % 2 == 0);
- *
- * // Map elements to strings and collect results
- * List<String> words = For.of("a", "bb", "ccc")
- *                         .collect(String::toUpperCase);
- *
- * // Async iteration
- * For.range(1, 3).forEachAsync(i -> System.out.println("Async: " + i));
+ * For.range(1, 10)
+ *    .filter(i -> i % 2 == 0)
+ *    .map(i -> i * i)
+ *    .debug()
+ *    .forEach(System.out::println);
  * }</pre>
  *
- * <p>
- * This interface unifies iteration over numeric ranges and generic collections,
- * providing a functional and fluent alternative to standard for-loops.
- * </p>
- *
- * @param <T> the type of elements to iterate over
  * @author Rick
- * @since 1.0
+ * @since 1.3
  */
-public interface For<T> {
+@RequiredArgsConstructor(access = AccessLevel.PRIVATE)
+public final class For<T> {
 
-    void forEach(Consumer<T> action);
+    private final Iterable<T> source;
+    private final List<UnaryOperator<Stream<T>>> operations;
 
-    CompletableFuture<Void> forEachAsync(Consumer<T> action);
+    private boolean parallel = false;
+    private Consumer<Throwable> errorHandler = null;
+    private Predicate<T> repeatUntil = null;
 
-    boolean filter(Predicate<T> predicate);
+    private static int START;
+    private static int END;
+    private static int STEP;
+    private static BiPredicate<Integer, Integer> condition;
 
-    T findFirst(Predicate<T> predicate);
-
-    T findLast(Predicate<T> predicate);
-
-    <R> R findFirstValue(Function<T, R> mapper);
-
-    <R> List<R> collect(Function<T, R> mapper);
-
-    @Contract(value = "_, _ -> new", pure = true)
-    static @NotNull For<Integer> range(int start, int end) {
-        return new ForInt(start, end, 1, false);
+    public static @NotNull For<Integer> range(int start, int end) {
+        return range(start, end, 1);
     }
 
-    @Contract(value = "_, _ -> new", pure = true)
-    static @NotNull For<Integer> rangeDescentive(int start, int end) {
-        return new ForInt(start, end, 1, true);
-    }
-
-    @Contract(value = "_, _, _ -> new", pure = true)
-    static @NotNull For<Integer> range(int start, int end, int step) {
-        return new ForInt(start, end, step, false);
-    }
-
-    @Contract(value = "_, _ -> new", pure = true)
-    static @NotNull For<Long> range(long start, long end) {
-        return new ForLong(start, end, 1, false);
-    }
-
-    @Contract(value = "_, _ -> new", pure = true)
-    static @NotNull For<Long> rangeDescentive(long start, long end) {
-        return new ForLong(start, end, 1, true);
-    }
-
-    @Contract(value = "_, _, _ -> new", pure = true)
-    static @NotNull For<Long> range(long start, long end, long step) {
-        return new ForLong(start, end, step, false);
+    public static @NotNull For<Integer> range(int end) {
+        return range(0, end, 1);
     }
 
     @Contract("_, _ -> new")
-    static @NotNull For<Double> rangeDescentive(double start, double end) {
-        return new ForDouble(start, end, 1, true);
+    public static @NotNull For<Long> range(long start, long end) {
+        return range(start, end, 1L);
     }
 
     @Contract("_, _, _ -> new")
-    static @NotNull For<Double> range(double start, double end, double step) {
-        return new ForDouble(start, end, step, false);
+    public static @NotNull For<Long> range(long start, long end, long step) {
+        return rangeInternal(start, end, step);
     }
 
     @Contract("_, _ -> new")
-    static @NotNull For<Double> range(double start, double end) {
-        return new ForDouble(start, end, 1, false);
+    public static @NotNull For<Double> range(double start, double end) {
+        return range(start, end, 1.0D);
     }
 
-    @Contract(value = "_ -> new", pure = true)
-    static <T> @NotNull For<T> of(Iterable<T> iterable) {
-        return new ForIterable<>(iterable);
+    @Contract("_, _, _ -> new")
+    public static @NotNull For<Double> range(double start, double end, double step) {
+        return rangeInternal(start, end, step);
+    }
+
+    @Contract("_, _ -> new")
+    public static @NotNull For<Float> range(float start, float end) {
+        return range(start, end, 1.0F);
+    }
+
+    @Contract("_, _, _ -> new")
+    public static @NotNull For<Float> range(float start, float end, float step) {
+        return rangeInternal(start, end, step);
+    }
+
+    public static @NotNull For<Integer> range(int start, int end, int step) {
+        START = start;
+        END = end;
+        STEP = step;
+        condition = (i, e) -> start <= end ? i <= e : i >= e;
+        return buildRange();
+    }
+
+    private static <N extends Number & Comparable<N>> @NotNull For<N> rangeInternal(N start, N end, N step) {
+        return Try.of(() -> {
+            If.Throws(Numbers.isZero(step), () -> new IllegalArgumentException("Step cannot be zero"));
+
+            List<N> list = new ArrayList<>();
+
+            BigDecimal s  = Numbers.toBigDecimal(start);
+            BigDecimal e  = Numbers.toBigDecimal(end);
+            BigDecimal st = Numbers.toBigDecimal(step);
+            boolean ascending = s.compareTo(e) <= 0;
+
+            BigDecimal current = s;
+            while (ascending ? current.compareTo(e) <= 0 : current.compareTo(e) >= 0) {
+                list.add(Numbers.castNumber(current, start));
+                current = current.add(ascending ? st : st.negate());
+            }
+
+            return new For<>(list, new ArrayList<>());
+        }).orElseThrow(e -> new RuntimeException("Failed to build numeric range", e));
+    }
+
+    public @NotNull For<Integer> conditional(@NotNull BiPredicate<Integer, Integer> predicate) {
+        condition = predicate;
+        return rebuildRange();
+    }
+
+    public @NotNull For<Integer> step(int steps) {
+        STEP = steps;
+        return rebuildRange();
+    }
+
+    private static @NotNull For<Integer> buildRange() {
+        return Try.of(() -> {
+            If.Throws(Numbers.isZero(STEP), () -> { throw new IllegalArgumentException("Step cannot be 0"); });
+
+            List<Integer> list = new ArrayList<>();
+            final int[] i = {START};
+
+            While.runTrue(() -> condition.test(i[0], END), () -> {
+                list.add(i[0]);
+                i[0] += (START <= END ? Math.abs(STEP) : -Math.abs(STEP));
+            });
+
+            return new For<>(list, new ArrayList<>());
+        }).orElseThrow(e -> new RuntimeException("Failed to build range", e));
+    }
+
+    private @NotNull For<Integer> rebuildRange() {
+        return buildRange();
     }
 
     @SafeVarargs
     @Contract("_ -> new")
-    static <T> @NotNull For<T> of(T ... item) {
-        return new ForIterable<>(List.of(item));
+    public static <T> @NotNull For<T> of(T... values) {
+        return new For<>(Arrays.asList(values), new ArrayList<>());
     }
 
+    @Contract("_ -> new")
+    public static <T> @NotNull For<T> of(Iterable<T> iterable) {
+        return new For<>(iterable, new ArrayList<>());
+    }
+
+    public For<T> filter(Predicate<T> predicate) {
+        return chain(stream -> stream.filter(predicate));
+    }
+
+    public <R> For<R> map(Function<? super T, ? extends R> mapper) {
+        List<UnaryOperator<Stream<R>>> nextOps = new ArrayList<>();
+        for (UnaryOperator<Stream<T>> op : operations) {
+            nextOps.add(stream -> {
+                @SuppressWarnings("unchecked")
+                Stream<T> prev = (Stream<T>) stream;
+                return op.apply(prev).map(mapper);
+            });
+        }
+        @SuppressWarnings("unchecked")
+        Iterable<R> castedSource = (Iterable<R>) source;
+
+        return new For<>(castedSource, nextOps)
+                .setParallel(parallel)
+                .setErrorHandler(errorHandler)
+                .setRepeatUntil(null);
+    }
+
+    public For<T> onEach(Consumer<T> action) {
+        return chain(stream -> stream.peek(action));
+    }
+
+    public For<T> limit(int limit) {
+        return chain(stream -> stream.limit(limit));
+    }
+
+    public For<T> skip(int skip) {
+        return chain(stream -> stream.skip(skip));
+    }
+
+    public For<T> reverse() {
+        return chain(stream -> {
+            List<T> list = stream.collect(Collectors.toList());
+            Collections.reverse(list);
+            return list.stream();
+        });
+    }
+
+    @Contract(value = "_ -> this")
+    public For<T> repeatUntil(Predicate<T> condition) {
+        this.repeatUntil = condition;
+        return this;
+    }
+
+    @Contract(value = " -> this")
+    public For<T> parallel() {
+        this.parallel = true;
+        return this;
+    }
+
+    @Contract(value = "_ -> this")
+    public For<T> onError(Consumer<Throwable> handler) {
+        this.errorHandler = handler;
+        return this;
+    }
+
+    public For<T> debug() {
+        return debug(LogLevel.DEBUG);
+    }
+
+    public For<T> debug(LogLevel level) {
+        return onEach(e -> Logger.log(level, "Processing element: {}", e));
+    }
+
+    public void forEach(Consumer<T> action) {
+        Try.run(() -> If.isTrue(repeatUntil != null, () -> repeatStream(build(), action))
+                .orElse(() -> build().forEach(action))
+        ).onFailure(this::handleError);
+    }
+
+    @Contract("_ -> new")
+    public @NotNull CompletableFuture<Void> forEachAsync(Consumer<T> action) {
+        return CompletableFuture.runAsync(() -> forEach(action));
+    }
+
+    public Optional<T> findFirst() {
+        return Try.of(() -> build().findFirst())
+                .onFailure(this::handleError)
+                .orElse(Optional.empty());
+    }
+
+    @SuppressWarnings("unchecked")
+    public Optional<T> findLast() {
+        return (Optional<T>) Try.of(() -> {
+            List<T> list = build().toList();
+            return list.isEmpty() ? Optional.empty() : Optional.of(list.getLast());
+        }).onFailure(this::handleError).orElse(Optional.empty());
+    }
+
+    public List<T> toList() {
+        return Try.of(() -> build().collect(Collectors.toList()))
+                .onFailure(this::handleError)
+                .orElse(Collections.emptyList());
+    }
+
+    public long count() {
+        return Try.of(() -> build().count())
+                .onFailure(this::handleError)
+                .orElse(0L);
+    }
+
+    public Stream<T> stream() {
+        return Try.of(this::build)
+                .onFailure(this::handleError)
+                .orElse(Stream.empty());
+    }
+
+    private For<T> chain(UnaryOperator<Stream<T>> op) {
+        List<UnaryOperator<Stream<T>>> next = new ArrayList<>(operations);
+        next.add(op);
+        return new For<>(source, next)
+                .setParallel(parallel)
+                .setErrorHandler(errorHandler)
+                .setRepeatUntil(repeatUntil);
+    }
+
+    private Stream<T> build() {
+        Stream<T> stream = StreamSupport.stream(source.spliterator(), parallel);
+        for (UnaryOperator<Stream<T>> op : operations)
+            stream = op.apply(stream);
+        return stream;
+    }
+
+    private void repeatStream(@NotNull Stream<T> stream, Consumer<T> action) {
+        List<T> list = stream.toList();
+        boolean shouldStop;
+        do {
+            shouldStop = false;
+            for (T element : list) {
+                action.accept(element);
+                if (repeatUntil != null && repeatUntil.test(element)) {
+                    shouldStop = true;
+                    break;
+                }
+            }
+        } while (!shouldStop);
+    }
+
+    private void handleError(Throwable t) {
+        If.isTrue(errorHandler != null, () -> errorHandler.accept(t))
+                .orElse(() -> Logger.error("Error in For pipeline: {}", t));
+    }
+
+    @Contract(value = "_ -> this")
+    private For<T> setParallel(boolean parallel) {
+        this.parallel = parallel;
+        return this;
+    }
+
+    @Contract(value = "_ -> this")
+    private For<T> setErrorHandler(Consumer<Throwable> handler) {
+        this.errorHandler = handler;
+        return this;
+    }
+
+    @Contract(value = "_ -> this")
+    private For<T> setRepeatUntil(Predicate<T> condition) {
+        this.repeatUntil = condition;
+        return this;
+    }
 }

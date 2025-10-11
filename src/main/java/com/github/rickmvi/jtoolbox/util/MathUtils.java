@@ -15,10 +15,10 @@
  * You should have received a copy of the GNU Lesser General Public License
  * along with this library. If not, see <https://www.gnu.org/licenses/>.
  */
-package com.github.rickmvi.jtoolbox.utils;
+package com.github.rickmvi.jtoolbox.util;
 
 
-import com.github.rickmvi.jtoolbox.utils.constants.Constants;
+import com.github.rickmvi.jtoolbox.util.constants.Constants;
 import com.github.rickmvi.jtoolbox.text.StringFormatter;
 import com.github.rickmvi.jtoolbox.control.If;
 import com.github.rickmvi.jtoolbox.control.While;
@@ -29,7 +29,7 @@ import lombok.experimental.UtilityClass;
 
 import java.util.stream.IntStream;
 
-import static com.github.rickmvi.jtoolbox.utils.ArrayUtils.length;
+import static com.github.rickmvi.jtoolbox.util.ArrayUtils.length;
 
 /**
  * Provides utility methods for performing basic mathematical operations
@@ -1046,7 +1046,6 @@ public class MathUtils {
         If.Throws(Numbers.isNegative(exponent), () -> new ArithmeticException(Constants.NEGATIVE_EXPONENT));
 
         double result = Math.pow(base, exponent);
-
         If.Throws(Double.isInfinite(result), () -> new ArithmeticException(Constants.NEGATIVE_EXPONENT));
         If.Throws(Double.isNaN(result), () -> new ArithmeticException(Constants.INVALID_EXPONENTIATION));
         return result;

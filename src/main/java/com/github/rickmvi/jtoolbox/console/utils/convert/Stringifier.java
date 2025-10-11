@@ -18,8 +18,8 @@
 package com.github.rickmvi.jtoolbox.console.utils.convert;
 
 import com.github.rickmvi.jtoolbox.control.Switch;
-import com.github.rickmvi.jtoolbox.utils.Numbers;
-import com.github.rickmvi.jtoolbox.utils.Try;
+import com.github.rickmvi.jtoolbox.util.Numbers;
+import com.github.rickmvi.jtoolbox.util.Try;
 import lombok.experimental.UtilityClass;
 import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
@@ -29,7 +29,6 @@ import java.util.Collection;
 import java.util.Arrays;
 import java.util.Map;
 import java.util.Objects;
-import java.util.function.Function;
 
 /**
  * Utility class for converting various Java objects into their string representations.
@@ -154,13 +153,13 @@ public class Stringifier {
                 .get();
     }
 
-    private static String joinCollection(Collection<?> col) {
+    private static @NotNull String joinCollection(@NotNull Collection<?> col) {
         return "[" + col.stream()
                 .map(Stringifier::toString)
                 .reduce((a, b) -> a + ", " + b).orElse("") + "]";
     }
 
-    private static String serializeMap(Map<?, ?> map) {
+    private static @NotNull String serializeMap(@NotNull Map<?, ?> map) {
         return "{" + map.entrySet().stream()
                 .map(e -> toString(e.getKey()) + "=" + toString(e.getValue()))
                 .reduce((a, b) -> a + ", " + b).orElse("") + "}";

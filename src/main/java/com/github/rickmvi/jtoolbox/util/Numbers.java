@@ -15,21 +15,65 @@
  * You should have received a copy of the GNU Lesser General Public License
  * along with this library. If not, see <https://www.gnu.org/licenses/>.
  */
-package com.github.rickmvi.jtoolbox.utils;
+package com.github.rickmvi.jtoolbox.util;
 
+import com.github.rickmvi.jtoolbox.console.utils.convert.NumberParser;
+import com.github.rickmvi.jtoolbox.console.utils.convert.TypeAdapter;
 import com.github.rickmvi.jtoolbox.control.If;
-import com.github.rickmvi.jtoolbox.utils.constants.Constants;
+import com.github.rickmvi.jtoolbox.control.Switch;
+import com.github.rickmvi.jtoolbox.util.constants.Constants;
 import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.Nullable;
 import org.jetbrains.annotations.NotNull;
 import lombok.experimental.UtilityClass;
 
+import java.math.BigDecimal;
 import java.util.function.Supplier;
 
 @UtilityClass
 @SuppressWarnings("unused")
-public final class Numbers {
+public final class Numbers extends NumberParser {
+
+    public static boolean isZero(Number n) {
+        return toBigDecimal(n).compareTo(BigDecimal.ZERO) == 0;
+    }
+
+    public static BigDecimal toBigDecimal(Number n) {
+        return Switch.<Number, BigDecimal>on(n)
+                .caseType(BigDecimal.class, b -> b)
+                .caseCondition(v ->
+                        v instanceof Double ||
+                        v instanceof Float, num -> BigDecimal.valueOf(num.doubleValue()))
+                .caseDefault(number -> BigDecimal.valueOf(number.longValue()))
+                .get();
+    }
+
+    @SuppressWarnings("unchecked")
+    public static <N extends Number> N castNumber(BigDecimal value, N example) {
+        return Switch.onNumber(example)
+                .caseType(Integer.class, v -> (N) Integer.valueOf(value.intValue()))
+                .caseType(Long.class,      v -> (N) Long.valueOf(value.longValue()))
+                .caseType(Float.class,     v -> (N) Float.valueOf(value.floatValue()))
+                .caseType(Double.class,  v -> (N) Double.valueOf(value.doubleValue()))
+                .caseType(Short.class,    v -> (N) Short.valueOf(value.shortValue()))
+                .caseType(Byte.class,      v -> (N) Byte.valueOf(value.byteValue()))
+                .caseDefault(v -> (N) value)
+                .get();
+    }
+
+    @SuppressWarnings("unchecked")
+    private static <N extends Number> N oneOf(N sample) {
+        return Switch.onNumber(sample)
+                .caseType(Integer.class, v -> (N) Integer.valueOf(1))
+                .caseType(Long.class,      v -> (N) Long.valueOf(1L))
+                .caseType(Float.class,     v -> (N) Float.valueOf(1f))
+                .caseType(Double.class,  v -> (N) Double.valueOf(1.0))
+                .caseType(Short.class,    v -> (N) Short.valueOf((short) 1))
+                .caseType(Byte.class,      v -> (N) Byte.valueOf((byte) 1))
+                .caseDefault(v -> (N) BigDecimal.ONE)
+                .get();
+    }
 
     /* ================================= Byte Methods  ================================= */
 
@@ -170,6 +214,10 @@ public final class Numbers {
         return Byte.compareUnsigned(x, y);
     }
 
+    public static boolean isBetween(byte value, byte min, byte max) {
+        return value >= min && value <= max;
+    }
+
     /* ================================= Short Methods  ================================= */
 
     @Contract(pure = true)
@@ -307,6 +355,10 @@ public final class Numbers {
     @Contract(pure = true)
     public static int compareUnsigned(short x, short y) {
         return Short.compareUnsigned(x, y);
+    }
+
+    public static boolean isBetween(short value, short min, short max) {
+        return value >= min && value <= max;
     }
 
     /* ================================= Int Methods  ================================= */
@@ -588,6 +640,10 @@ public final class Numbers {
         return Long.compareUnsigned(x, y);
     }
 
+    public static boolean isBetween(long value, long min, long max) {
+        return value >= min && value <= max;
+    }
+
     /* ================================= Float Methods  ================================= */
 
     @Contract(pure = true)
@@ -733,6 +789,10 @@ public final class Numbers {
         return Float.isInfinite(value);
     }
 
+    public static boolean isBetween(float value, float min, float max) {
+        return value >= min && value <= max;
+    }
+
     /* ================================= Double Methods  ================================= */
 
     @Contract(pure = true)
@@ -875,6 +935,10 @@ public final class Numbers {
     @Contract(pure = true)
     public static boolean isInfinite(double value) {
         return Double.isInfinite(value);
+    }
+
+    public static boolean isBetween(double value, double min, double max) {
+        return value >= min && value <= max;
     }
 
     /* ================================= Assistants Methods  ================================= */
