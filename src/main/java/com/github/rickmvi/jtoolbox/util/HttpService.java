@@ -201,14 +201,14 @@ public class HttpService {
     private static String getCode(@NotNull HttpResponse<String> response) {
         ApiResponse apiResponse = new ApiResponse(response.statusCode(), response.body());
         return If.supplyTrue(apiResponse.isSuccess(), () ->
-                         AnsiColor.GREEN.getAnsiCode() +
+                         AnsiColor.GREEN.getCode() +
                          response.statusCode()         +
-                         AnsiColor.RESET.getAnsiCode())
+                         AnsiColor.RESET.getCode())
                 .orElseGet(() ->
-                        AnsiColor.BOLD.getAnsiCode() +
-                        AnsiColor.RED.getAnsiCode()  +
+                        AnsiColor.BOLD.getCode() +
+                        AnsiColor.RED.getCode()  +
                         response.statusCode()        +
-                        AnsiColor.RESET.getAnsiCode());
+                        AnsiColor.RESET.getCode());
     }
 
     public CompletableFuture<ApiResponse> sendAsync() {

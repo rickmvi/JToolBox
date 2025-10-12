@@ -1,4 +1,4 @@
-package com.github.rickmvi.jtoolbox.console.utils.internal;
+package com.github.rickmvi.jtoolbox.console.util.internal;
 
 import java.math.BigDecimal;
 import java.math.BigInteger;

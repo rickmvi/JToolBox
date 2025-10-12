@@ -33,7 +33,7 @@ import java.util.function.Supplier;
  *
  * <h2>Core Methods:</h2>
  * <ul>
- *     <li>{@link #runTrue(BooleanSupplier, Runnable)} – Executes the action while the condition evaluates to true.</li>
+ *     <li>{@link #isTrue(BooleanSupplier, Runnable)} – Executes the action while the condition evaluates to true.</li>
  *     <li>{@link #trueCancelable(BooleanSupplier, Runnable, BooleanSupplier)} – Executes the action while the condition is true and the cancel supplier is false.</li>
  *     <li>{@link #trueCancelable(BooleanSupplier, Runnable, Supplier)} – Variation of the cancelable loop using a generic {@link Supplier} for cancellation.</li>
  *     <li>{@link #whileTrueAsync(BooleanSupplier, Runnable)} – Executes a while loop asynchronously, returning a {@link CompletableFuture}.</li>
@@ -64,7 +64,7 @@ import java.util.function.Supplier;
  */
 public interface While {
 
-    static void runTrue(@NotNull BooleanSupplier condition, Runnable action) {
+    static void isTrue(@NotNull BooleanSupplier condition, Runnable action) {
         while (condition.getAsBoolean()) action.run();
     }
 
@@ -86,7 +86,7 @@ public interface While {
 
     @Contract("_, _ -> new")
     static @NotNull CompletableFuture<Void> whileTrueAsync(BooleanSupplier condition, Runnable action) {
-        return CompletableFuture.runAsync(() -> runTrue(condition, action));
+        return CompletableFuture.runAsync(() -> isTrue(condition, action));
     }
     
 }

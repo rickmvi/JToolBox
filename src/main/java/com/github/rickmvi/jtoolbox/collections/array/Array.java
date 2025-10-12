@@ -23,20 +23,15 @@ import com.github.rickmvi.jtoolbox.util.ArrayUtils;
 import com.github.rickmvi.jtoolbox.control.If;
 
 import com.github.rickmvi.jtoolbox.util.MathUtils;
+import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
 import lombok.experimental.UtilityClass;
 
+import java.util.*;
 import java.util.function.IntFunction;
 import java.util.function.Predicate;
 import java.util.function.Function;
-import java.util.LinkedHashSet;
-import java.util.Collections;
-import java.util.ArrayList;
-import java.util.Objects;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Set;
 
 import static com.github.rickmvi.jtoolbox.text.StringFormatter.format;
 
@@ -104,19 +99,25 @@ import static com.github.rickmvi.jtoolbox.text.StringFormatter.format;
  * @see ArrayUtils
  * @see For
  * @see Arrays
- * @since 1.1
+ * @see AdaptiveArray
+ * @since 1.2
  */
 @UtilityClass
 @SuppressWarnings({"unused", "WeakerAccess"})
 public class Array extends ArrayUtils {
 
-    /* ==================================== ADD METHOD ========================================= */
-
-    public static <T> T @NotNull [] add(T @NotNull [] array, T element) {
-        T[] result = Arrays.copyOf(array, length(array) + 1);
-        result[length(array)] = element;
-        return result;
+    @SafeVarargs
+    @ApiStatus.Internal
+    private static <T> @NotNull AdaptiveArray<T> adapt(T @NotNull ... array) {
+        return AdaptiveArray.of(array);
     }
+
+    @SafeVarargs
+    public static <T> @NotNull AdaptiveArray<T> from(T @NotNull ... array) {
+        return adapt(array);
+    }
+
+    /* ==================================== ADD METHOD ========================================= */
 
     public static <T> T @NotNull [] add(T @NotNull [] array, int index, T element) {
         If.Throws(index < 0 || index > array.length, () ->
@@ -136,9 +137,9 @@ public class Array extends ArrayUtils {
     /* ==================================== CONCAT METHOD ========================================= */
 
     public static <T> T @NotNull [] concat(T[] first, T @NotNull [] second) {
-        T[] result = Arrays.copyOf(first, first.length + second.length);
-        System.arraycopy(second, 0, result, first.length, second.length);
-        return result;
+        return adapt(first)
+                .addAll(second)
+                .toArray(size -> Arrays.copyOf(first, size));
     }
 
     /* ==================================== INDEX METHOD ========================================= */
@@ -161,10 +162,7 @@ public class Array extends ArrayUtils {
 
     @Contract(pure = true)
     public static <T> boolean contains(T @NotNull [] array, T element) {
-        for (T t : array) {
-            if (Objects.equals(t, element)) return true;
-        }
-        return false;
+        return adapt(array).contains(element);
     }
 
     /* ==================================== IS EMPTY METHOD ========================================= */
@@ -205,16 +203,15 @@ public class Array extends ArrayUtils {
     }
 
     public static <T> T @NotNull [] remove(T @NotNull [] array, T element) {
-        int index = indexOf(array, element);
-        return index >= 0 ? remove(array, index) : array;
+        return adapt(array)
+                .remove(element)
+                .toArray(size -> Arrays.copyOf(array, size));
     }
 
     public static <T> T @NotNull [] removeAll(T @NotNull [] array, T @NotNull [] elements) {
-        T[] result = array;
-        for (T element : elements) {
-            result = remove(result, element);
-        }
-        return result;
+        return adapt(array)
+                .removeIf(new HashSet<>(Arrays.asList(elements))::contains)
+                .toArray(size -> Arrays.copyOf(array, size));
     }
 
     public static <T> T @NotNull [] removeAll(T @NotNull [] array, @NotNull Iterable<T> elements) {
@@ -228,7 +225,7 @@ public class Array extends ArrayUtils {
     /* ==================================== REVERSE METHOD'S ========================================= */
 
     public static <T> @NotNull T @NotNull [] reversed(T @NotNull [] array) {
-        T[] result = java.util.Arrays.copyOf(array, array.length);
+        T[] result = Arrays.copyOf(array, array.length);
         For.range(0, length(array) / 2).forEach(i -> {
             T t = result[i];
             result[i] = result[length(array) - i - 1];
@@ -248,9 +245,9 @@ public class Array extends ArrayUtils {
     /* =================================== FILTER METHOD ======================================= */
 
     public static <T> T @NotNull [] filter(T @NotNull [] array, @NotNull Predicate<T> predicate, @NotNull IntFunction<T[]> generator) {
-        List<T> list = new ArrayList<>();
-        For.of(array).filter(predicate).forEach(list::add);
-        return list.toArray(generator.apply(list.size()));
+        return adapt(array)
+                .filter(predicate)
+                .toArray(generator);
     }
 
     /* ==================================== MAP METHOD ========================================= */
@@ -263,7 +260,19 @@ public class Array extends ArrayUtils {
     /* ================================== DISTINCT METHOD ======================================= */
 
     public static <T> T @NotNull [] distinct(T @NotNull [] array, @NotNull IntFunction<T[]> generator) {
-        return Arrays.stream(array).distinct().toArray(generator);
+        return adapt(array)
+                .distinct()
+                .toArray(generator);
+    }
+
+    public static <T, K> T @NotNull [] distinctBy(
+            T @NotNull [] array,
+            @NotNull Function<T, K> keyExtractor,
+            @NotNull IntFunction<T[]> generator
+    ) {
+        return adapt(array)
+                .distinctBy(keyExtractor)
+                .toArray(generator);
     }
 
     /* ==================================== JOIN METHOD'S ========================================= */
@@ -279,12 +288,12 @@ public class Array extends ArrayUtils {
 
     @Contract("_ -> !null")
     public static <T> List<T> toList(T[] array) {
-        return array == null ? Collections.emptyList() : Arrays.asList(array);
+        return adapt(array).toList();
     }
 
     @Contract("!null -> new")
     public static <T> @NotNull Set<T> toSet(T[] array) {
-        return array == null ? Collections.emptySet() : new LinkedHashSet<>(Arrays.asList(array));
+        return adapt(array).toSet();
     }
 
     /* ==================================== SORT METHOD'S ========================================= */
@@ -293,33 +302,33 @@ public class Array extends ArrayUtils {
         Arrays.sort(array);
     }
 
-    public static void sort(int @NotNull [] array) {
+    public static void sort(int @NotNull ... array) {
         Arrays.sort(array);
     }
 
-    public static void sort(double @NotNull [] array) {
+    public static void sort(double @NotNull ... array) {
         Arrays.sort(array);
     }
 
-    public static void sort(float @NotNull [] array) {
+    public static void sort(float @NotNull ... array) {
         Arrays.sort(array);
     }
 
     /* ==================================== SUM METHOD'S ========================================= */
 
-    public static int sum(int @NotNull [] array) {
+    public static int sum(int @NotNull ... array) {
         return MathUtils.sumInt(array);
     }
 
-    public static long sum(long @NotNull [] array) {
+    public static long sum(long @NotNull ... array) {
         return MathUtils.sumLong(array);
     }
 
-    public static float sum(float @NotNull [] array) {
+    public static float sum(float @NotNull ... array) {
         return MathUtils.sumFloat(array);
     }
 
-    public static double sum(double @NotNull [] array) {
+    public static double sum(double @NotNull ... array) {
         return MathUtils.sumDouble(array);
     }
 

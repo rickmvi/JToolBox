@@ -17,8 +17,7 @@
  */
 package com.github.rickmvi.jtoolbox.util;
 
-import com.github.rickmvi.jtoolbox.console.utils.convert.NumberParser;
-import com.github.rickmvi.jtoolbox.console.utils.convert.TypeAdapter;
+import com.github.rickmvi.jtoolbox.console.util.convert.NumberParser;
 import com.github.rickmvi.jtoolbox.control.If;
 import com.github.rickmvi.jtoolbox.control.Switch;
 import com.github.rickmvi.jtoolbox.util.constants.Constants;

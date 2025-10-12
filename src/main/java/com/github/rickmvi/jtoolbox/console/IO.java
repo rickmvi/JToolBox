@@ -17,7 +17,7 @@
  */
 package com.github.rickmvi.jtoolbox.console;
 
-import com.github.rickmvi.jtoolbox.console.utils.convert.Stringifier;
+import com.github.rickmvi.jtoolbox.text.Stringifier;
 import com.github.rickmvi.jtoolbox.text.StringFormatter;
 import com.github.rickmvi.jtoolbox.control.If;
 import com.github.rickmvi.jtoolbox.util.Numbers;

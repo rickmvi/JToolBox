@@ -17,9 +17,8 @@
  */
 package com.github.rickmvi.jtoolbox.text;
 
-import com.github.rickmvi.jtoolbox.console.utils.convert.NumberParser;
-import com.github.rickmvi.jtoolbox.console.utils.convert.Stringifier;
 import com.github.rickmvi.jtoolbox.collections.map.Mapping;
+import com.github.rickmvi.jtoolbox.console.util.convert.NumberParser;
 import com.github.rickmvi.jtoolbox.control.If;
 import com.github.rickmvi.jtoolbox.control.While;
 import com.github.rickmvi.jtoolbox.debug.Logger;
@@ -173,7 +172,7 @@ public final class StringFormatter {
         Matcher matcher = NEW_LINE_PATTERN.matcher(template);
         StringBuffer buffer = getBuffer().get();
 
-        While.runTrue(matcher::find, () -> {
+        While.isTrue(matcher::find, () -> {
             int count = Try.of(() -> NumberParser.toInt(matcher.group(1)))
                     .onFailure(e -> Logger.error("Invalid new line count '{}'", e, matcher.group(1)))
                     .orElse(1);
@@ -198,7 +197,7 @@ public final class StringFormatter {
         Matcher matcher = pattern.matcher(template);
         StringBuffer buffer = getBuffer().get();
 
-        While.runTrue(matcher::find, () -> {
+        While.isTrue(matcher::find, () -> {
             int index = getIndexOrElse(matcher);
             if (isPlaceholderIndexInvalid(args, index, matcher, buffer)) return;
 
@@ -252,15 +251,17 @@ public final class StringFormatter {
 
             int finalIndex = index;
             If.Throws(index >= length(objects),
-                    () -> new ArrayIndexOutOfBoundsException("The index '"
-                            + finalIndex
-                            + "' overlapping the maximum index '"
-                            + (lastIndex(objects))
-                            + "'"));
+                    () -> new ArrayIndexOutOfBoundsException(format(
+                            "The index '{}' overlapping the maximum index '{}'",
+                            finalIndex,
+                            lastIndex(objects)
+                    )));
 
             Object obj = objects[index];
 
-            If.Throws(obj == null, () -> new IllegalArgumentException("Invalid null value for placeholder '" + placeholder + "'"));
+            If.Throws(obj == null, () -> new IllegalArgumentException(format(
+                    "Invalid null value for placeholder '{}'", placeholder)
+            ));
 
             Class<?> clazz = obj.getClass();
 
@@ -303,7 +304,6 @@ public final class StringFormatter {
 
     }
 
-    @Contract(pure = true)
     private static @NotNull String formatPlaceholder(String fieldName) {
         return "{" + fieldName + "}";
     }

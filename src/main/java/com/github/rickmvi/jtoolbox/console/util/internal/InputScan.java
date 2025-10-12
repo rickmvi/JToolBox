@@ -15,9 +15,9 @@
  * You should have received a copy of the GNU Lesser General Public License
  * along with this library. If not, see <https://www.gnu.org/licenses/>.
  */
-package com.github.rickmvi.jtoolbox.console.utils.internal;
+package com.github.rickmvi.jtoolbox.console.util.internal;
 
-import com.github.rickmvi.jtoolbox.console.utils.Location;
+import com.github.rickmvi.jtoolbox.console.util.Location;
 import org.jetbrains.annotations.NotNull;
 
 import java.math.BigDecimal;

@@ -18,7 +18,6 @@
 package com.github.rickmvi.jtoolbox.control;
 
 import lombok.AccessLevel;
-import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
@@ -73,7 +72,7 @@ import java.util.function.Supplier;
  *
  * <p>
  * Null values in suppliers are handled gracefully: they return {@code null} or empty {@link Optional}.
- * Exceptions can be rethrown or logged according to the method used.
+ * Exceptions can be rethrown or logged, according to the method used.
  * </p>
  *
  * @author Rick M. Viana
@@ -86,19 +85,14 @@ public interface If {
         return new Runner(condition, action, true);
     }
 
-    @Contract("_ -> new")
-    static If.@NotNull Runner isTrue(boolean condition) {
-        return new Runner(condition, true);
-    }
-
     @Contract(value = "_, _ -> new", pure = true)
     static @NotNull If.Runner isFalse(boolean condition, Runnable action) {
         return new Runner(condition, action, false);
     }
 
     @Contract("_ -> new")
-    static If.@NotNull Runner isFalse(boolean condition) {
-        return new Runner(condition, false);
+    static @NotNull If.Runner when(boolean condition) {
+        return new Runner(condition, true);
     }
 
     @RequiredArgsConstructor(access = AccessLevel.PRIVATE)
@@ -121,7 +115,7 @@ public interface If {
 
         @Contract(pure = true)
         private boolean evaluateRunCondition() {
-            return (runOnTrue && condition) || (!runOnTrue && !condition);
+            return (runOnTrue && this.condition) || (!runOnTrue && !this.condition);
         }
 
         public void run() {
@@ -136,12 +130,12 @@ public interface If {
             throw exceptionSupplier.get();
         }
 
-        public Runner make(Runnable action) {
-            return new Runner(condition, action, runOnTrue);
+        public Runner apply(Runnable action) {
+            return new Runner(this.condition, action, runOnTrue);
         }
 
         public Runner not() {
-            return new Runner(condition, action, !runOnTrue);
+            return new Runner(this.condition, action, !runOnTrue);
         }
 
         public Runner or(boolean condition) {
@@ -154,22 +148,16 @@ public interface If {
 
     }
 
-    @Contract(value = "_, _ -> new", pure = true)
     static <T> @NotNull Suppliers<T> supplyTrue(boolean condition, Supplier<T> supplier) {
         return new Suppliers<>(condition, supplier, true);
     }
-
-    static <T> @NotNull Suppliers<T> ofTrue(boolean condition) {
-        return new Suppliers<>(condition, true);
-    }
-
-    @Contract(value = "_, _ -> new", pure = true)
+    
     static <T> @NotNull Suppliers<T> supplyFalse(boolean condition, Supplier<T> supplier) {
         return new Suppliers<>(condition, supplier, false);
     }
 
-    static <T> @NotNull Suppliers<T> ofFalse(boolean condition) {
-        return new Suppliers<>(condition, false);
+    static <T> @NotNull Suppliers<T> whens(boolean condition) {
+        return new Suppliers<>(condition, true);
     }
 
     @RequiredArgsConstructor(access = AccessLevel.PRIVATE)
@@ -189,7 +177,7 @@ public interface If {
 
         @Contract(pure = true)
         private boolean evaluateCondition() {
-            return (runOnTrue && condition) || (!runOnTrue && !condition);
+            return (runOnTrue && this.condition) || (!runOnTrue && !this.condition);
         }
 
         public T orElseGet(Supplier<T> elseSupplier) {
@@ -203,7 +191,7 @@ public interface If {
         }
 
         public <R> Suppliers<R> map(Function<T, R> mapper) {
-            return new Suppliers<>(condition, () -> mapper.apply(supplier.get()), runOnTrue);
+            return new Suppliers<>(this.condition, () -> mapper.apply(supplier.get()), runOnTrue);
         }
 
         public <R> Suppliers<R> flatMap(Function<T, Suppliers<R>> mapper) {
@@ -214,16 +202,16 @@ public interface If {
         }
 
         public Optional<T> toOptional() {
-            if (condition == runOnTrue) return Optional.ofNullable(supplier.get());
+            if (this.condition == runOnTrue) return Optional.ofNullable(supplier.get());
             return Optional.empty();
         }
 
-        public Suppliers<T> make(Supplier<T> supplier) {
-            return new Suppliers<>(condition, supplier, runOnTrue);
+        public Suppliers<T> apply(Supplier<T> supplier) {
+            return new Suppliers<>(this.condition, supplier, runOnTrue);
         }
 
         public Suppliers<T> not() {
-            return new Suppliers<>(condition, supplier, !runOnTrue);
+            return new Suppliers<>(this.condition, supplier, !runOnTrue);
         }
 
         public Suppliers<T> or(boolean condition) {

@@ -136,7 +136,7 @@ public final class For<T> {
             List<Integer> list = new ArrayList<>();
             final int[] i = {START};
 
-            While.runTrue(() -> condition.test(i[0], END), () -> {
+            While.isTrue(() -> condition.test(i[0], END), () -> {
                 list.add(i[0]);
                 i[0] += (START <= END ? Math.abs(STEP) : -Math.abs(STEP));
             });

@@ -17,7 +17,7 @@
  */
 package com.github.rickmvi.jtoolbox.text;
 
-import com.github.rickmvi.jtoolbox.console.utils.convert.TypeAdapter;
+import com.github.rickmvi.jtoolbox.console.util.convert.TypeAdapter;
 import com.github.rickmvi.jtoolbox.text.internal.NumberInterface;
 import com.github.rickmvi.jtoolbox.text.internal.NumberStyle;
 import org.jetbrains.annotations.Contract;
@@ -70,5 +70,6 @@ public class NumberFormat {
     /** Formatter in scientific notation */
     public static final NumberInterface SCIENTIFIC     = of(NumberStyle.SCIENTIFIC);
 
+    /** Formatter in exponentiation */
     public static final NumberInterface EXPONENTIATION = of(NumberStyle.EXPONENTIATION);
 }

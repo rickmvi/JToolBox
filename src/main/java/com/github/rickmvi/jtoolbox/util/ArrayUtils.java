@@ -467,7 +467,7 @@ public abstract class ArrayUtils {
 
     @Contract(pure = true)
     public static byte @NotNull [] remove(byte @NotNull [] array, byte element) {
-        byte[] result = new byte[array.length - 1];
+        byte[] result = new byte[lastIndex(array)];
         int index = 0;
         for (byte i : array) {
             if (Numbers.notEquals(i, element)) {
@@ -479,7 +479,7 @@ public abstract class ArrayUtils {
 
     @Contract(pure = true)
     public static short @NotNull [] remove(short @NotNull [] array, short element) {
-        short[] result = new short[array.length - 1];
+        short[] result = new short[lastIndex(array)];
         int index = 0;
         for (short i : array) {
             if (Numbers.notEquals(i, element)) {
@@ -517,7 +517,7 @@ public abstract class ArrayUtils {
 
     @Contract(pure = true)
     public static float @NotNull [] remove(float @NotNull [] array, float element) {
-        float[] result = new float[array.length - 1];
+        float[] result = new float[lastIndex(array)];
         int index = 0;
         for (float i : array) {
             if (Numbers.notEquals(i, element)) {
@@ -542,7 +542,7 @@ public abstract class ArrayUtils {
 
     @Contract(pure = true)
     public static char @NotNull [] remove(char @NotNull [] array, char element) {
-        char[] result = new char[array.length - 1];
+        char[] result = new char[lastIndex(array)];
         int index = 0;
         for (char i : array) {
             if (i != element) {
@@ -554,7 +554,7 @@ public abstract class ArrayUtils {
 
     @Contract(pure = true)
     public static boolean @NotNull [] remove(boolean @NotNull [] array, boolean element) {
-        boolean[] result = new boolean[array.length - 1];
+        boolean[] result = new boolean[lastIndex(array)];
         int index = 0;
         for (boolean i : array) {
             if (i != element) {
@@ -566,7 +566,7 @@ public abstract class ArrayUtils {
 
     @Contract(pure = true)
     public static int @NotNull [] remove(int @NotNull [] array, int @NotNull [] elements) {
-        if (isEmpty(elements) || elements.length > array.length) return array;
+        if (isEmpty(elements) || length(elements) > length(array)) return array;
 
         int[] result = new int[length(array) - length(elements)];
         int index = 0;
@@ -589,7 +589,7 @@ public abstract class ArrayUtils {
         int[] start = {0};
         int[] end = {array.length - 1};
 
-        While.runTrue(() -> start[0] < end[0], () -> {
+        While.isTrue(() -> start[0] < end[0], () -> {
             byte tmp = array[start[0]];
             array[start[0]] = array[end[0]];
             array[end[0]] = tmp;
@@ -609,7 +609,7 @@ public abstract class ArrayUtils {
         int[] start = {0};
         int[] end = {array.length - 1};
 
-        While.runTrue(() -> start[0] < end[0], () -> {
+        While.isTrue(() -> start[0] < end[0], () -> {
             short tmp = array[start[0]];
             array[start[0]] = array[end[0]];
             array[end[0]] = tmp;
@@ -629,7 +629,7 @@ public abstract class ArrayUtils {
         int[] start = {0};
         int[] end = {array.length - 1};
 
-        While.runTrue(() -> start[0] < end[0], () -> {
+        While.isTrue(() -> start[0] < end[0], () -> {
             int tmp = array[start[0]];
             array[start[0]] = array[end[0]];
             array[end[0]] = tmp;
@@ -649,7 +649,7 @@ public abstract class ArrayUtils {
         int[] start = {0};
         int[] end = {array.length - 1};
 
-        While.runTrue(() -> start[0] < end[0], () -> {
+        While.isTrue(() -> start[0] < end[0], () -> {
             long tmp = array[start[0]];
             array[start[0]] = array[end[0]];
             array[end[0]] = tmp;
@@ -669,7 +669,7 @@ public abstract class ArrayUtils {
         int[] start = {0};
         int[] end = {array.length - 1};
 
-        While.runTrue(() -> start[0] < end[0], () -> {
+        While.isTrue(() -> start[0] < end[0], () -> {
             float tmp = array[start[0]];
             array[start[0]] = array[end[0]];
             array[end[0]] = tmp;
@@ -689,7 +689,7 @@ public abstract class ArrayUtils {
         int[] start = {0};
         int[] end = {array.length - 1};
 
-        While.runTrue(() -> start[0] < end[0], () -> {
+        While.isTrue(() -> start[0] < end[0], () -> {
             double tmp = array[start[0]];
             array[start[0]] = array[end[0]];
             array[end[0]] = tmp;
@@ -710,7 +710,7 @@ public abstract class ArrayUtils {
         int[] start = {0};
         int[] end = {array.length - 1};
 
-        While.runTrue(() -> start[0] < end[0], () -> {
+        While.isTrue(() -> start[0] < end[0], () -> {
             char tmp = array[start[0]];
             array[start[0]] = array[end[0]];
             array[end[0]] = tmp;
@@ -730,7 +730,7 @@ public abstract class ArrayUtils {
         int[] start = {0};
         int[] end = {array.length - 1};
 
-        While.runTrue(() -> start[0] < end[0], () -> {
+        While.isTrue(() -> start[0] < end[0], () -> {
             boolean tmp = array[start[0]];
             array[start[0]] = array[end[0]];
             array[end[0]] = tmp;

@@ -15,13 +15,13 @@
  * You should have received a copy of the GNU Lesser General Public License
  * along with this library. If not, see <https://www.gnu.org/licenses/>.
  */
-package com.github.rickmvi.jtoolbox.console.utils.internal;
+package com.github.rickmvi.jtoolbox.console.util;
 
 import com.github.rickmvi.jtoolbox.console.IO;
-import com.github.rickmvi.jtoolbox.console.utils.convert.BooleanParser;
-import com.github.rickmvi.jtoolbox.console.utils.convert.CharacterParser;
-import com.github.rickmvi.jtoolbox.console.utils.convert.NumberParser;
-import com.github.rickmvi.jtoolbox.console.utils.Location;
+import com.github.rickmvi.jtoolbox.console.util.convert.BooleanParser;
+import com.github.rickmvi.jtoolbox.console.util.convert.CharacterParser;
+import com.github.rickmvi.jtoolbox.console.util.convert.NumberParser;
+import com.github.rickmvi.jtoolbox.console.util.internal.InputScan;
 import com.github.rickmvi.jtoolbox.control.Do;
 import com.github.rickmvi.jtoolbox.control.Switch;
 import com.github.rickmvi.jtoolbox.util.Try;
@@ -34,7 +34,6 @@ import lombok.Setter;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Contract;
 import com.github.rickmvi.jtoolbox.control.If;
-import com.github.rickmvi.jtoolbox.console.utils.Scan;
 import com.github.rickmvi.jtoolbox.util.SafeRun;
 import com.github.rickmvi.jtoolbox.util.constants.Constants;
 
@@ -79,7 +78,7 @@ public class Scanf implements InputScan, AutoCloseable {
     public void locale(@NotNull Location location) {
         ensureScannerInitialized();
         scanner.ifPresent(sc -> Switch.on(location)
-                .caseValue(Location.US, () -> sc.useLocale(Locale.US))
+                .caseValue(Location.US,   () -> sc.useLocale(Locale.US))
                 .caseValue(Location.PTBR, () -> sc.useLocale(Locale.of("pt", "BR")))
                 .caseValue(Location.ROOT, () -> sc.useLocale(Locale.ROOT))
                 .caseDefault(l -> sc.useLocale(Locale.getDefault()))

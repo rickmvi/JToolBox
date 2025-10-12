@@ -15,7 +15,7 @@
  * You should have received a copy of the GNU Lesser General Public License
  * along with this library. If not, see <https://www.gnu.org/licenses/>.
  */
-package com.github.rickmvi.jtoolbox.console.utils.convert;
+package com.github.rickmvi.jtoolbox.text;
 
 import com.github.rickmvi.jtoolbox.control.Switch;
 import com.github.rickmvi.jtoolbox.util.Numbers;
@@ -75,7 +75,6 @@ import java.util.Objects;
  */
 @UtilityClass
 public class Stringifier {
-
 
     @Contract(value = "null -> !null", pure = true)
     public static String valueOf(@Nullable Object o) {

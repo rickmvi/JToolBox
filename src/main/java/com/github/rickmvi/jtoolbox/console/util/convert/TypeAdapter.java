@@ -15,9 +15,10 @@
  * You should have received a copy of the GNU Lesser General Public License
  * along with this library. If not, see <https://www.gnu.org/licenses/>.
  */
-package com.github.rickmvi.jtoolbox.console.utils.convert;
+package com.github.rickmvi.jtoolbox.console.util.convert;
 
 import com.github.rickmvi.jtoolbox.control.Switch;
+import com.github.rickmvi.jtoolbox.text.Stringifier;
 
 import java.util.Objects;
 

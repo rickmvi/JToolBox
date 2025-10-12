@@ -17,6 +17,7 @@
  */
 package com.github.rickmvi.jtoolbox.debug;
 
+import com.github.rickmvi.jtoolbox.control.If;
 import com.github.rickmvi.jtoolbox.util.DateBuilder;
 import com.github.rickmvi.jtoolbox.text.StringFormatter;
 import com.github.rickmvi.jtoolbox.debug.log.LogLevel;
@@ -27,6 +28,7 @@ import lombok.Setter;
 import lombok.experimental.UtilityClass;
 import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.Contract;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.Set;
 import java.util.EnumSet;
@@ -62,7 +64,7 @@ public class Logger {
     @ApiStatus.Internal
     @Contract(pure = true)
     private static String colorize(String message, String color) {
-        return useAnsiColor ? color + message + AnsiColor.RESET.getAnsiCode() : message;
+        return useAnsiColor ? color + message + AnsiColor.RESET.getCode() : message;
     }
 
     public static void log(LogLevel level, String message) {
@@ -84,16 +86,20 @@ public class Logger {
         IO.format("[{}] [{}] {}$n", time, coloredLevel, message);
     }
 
-    public static void log(LogLevel level, String message, Throwable t) {
+    public static void log(LogLevel level, String message, @NotNull Throwable t) {
         log(level, message);
-        if (ENABLED_LEVELS.contains(level) && level != LogLevel.OFF && t != null)
-            t.printStackTrace(System.err);
+        If.when(ENABLED_LEVELS.contains(level))
+                .and(level != LogLevel.OFF)
+                .apply(t::printStackTrace)
+                .run();
     }
 
-    public static void log(LogLevel level, String template, Throwable t, Object... args) {
+    public static void log(LogLevel level, String template, @NotNull Throwable t, Object... args) {
         log(level, StringFormatter.format(template, args));
-        if (ENABLED_LEVELS.contains(level) && level != LogLevel.OFF && t != null)
-            t.printStackTrace(System.err);
+        If.when(ENABLED_LEVELS.contains(level))
+                .and(level != LogLevel.OFF)
+                .apply(t::printStackTrace)
+                .run();
     }
 
     public static void trace(String message)   { log(LogLevel.TRACE, message); }

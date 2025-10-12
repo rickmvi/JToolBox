@@ -15,7 +15,7 @@
  * You should have received a copy of the GNU Lesser General Public License
  * along with this library. If not, see <https://www.gnu.org/licenses/>.
  */
-package com.github.rickmvi.jtoolbox.console.utils;
+package com.github.rickmvi.jtoolbox.console.util;
 
 public enum Location {
     US,
