@@ -18,7 +18,7 @@
 package com.github.rickmvi.jtoolbox.text;
 
 import com.github.rickmvi.jtoolbox.collections.map.Mapping;
-import com.github.rickmvi.jtoolbox.console.util.convert.NumberParser;
+import com.github.rickmvi.jtoolbox.util.convert.NumberParser;
 import com.github.rickmvi.jtoolbox.control.If;
 import com.github.rickmvi.jtoolbox.control.While;
 import com.github.rickmvi.jtoolbox.debug.Logger;

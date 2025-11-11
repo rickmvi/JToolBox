@@ -17,7 +17,7 @@
  */
 package com.github.rickmvi.jtoolbox.util;
 
-import com.github.rickmvi.jtoolbox.console.util.convert.NumberParser;
+import com.github.rickmvi.jtoolbox.util.convert.NumberParser;
 import com.github.rickmvi.jtoolbox.control.If;
 import com.github.rickmvi.jtoolbox.control.Switch;
 import com.github.rickmvi.jtoolbox.util.constants.Constants;
@@ -28,6 +28,8 @@ import org.jetbrains.annotations.NotNull;
 import lombok.experimental.UtilityClass;
 
 import java.math.BigDecimal;
+import java.util.Queue;
+import java.util.Stack;
 import java.util.function.Supplier;
 
 @UtilityClass
@@ -943,25 +945,21 @@ public final class Numbers extends NumberParser {
     /* ================================= Assistants Methods  ================================= */
 
     @ApiStatus.Internal
-    @Contract(pure = true)
     private static boolean isIntegral(double value) {
         return !isNaN(value) && !isInfinite(value) && value % 1 == 0;
     }
 
     @ApiStatus.Internal
-    @Contract(pure = true)
     private static boolean isIntegral(float value) {
         return !isNaN(value) && !isInfinite(value) && value % 1 == 0;
     }
 
     @ApiStatus.Internal
-    @Contract(value = " -> new", pure = true)
     public static @NotNull IllegalArgumentException getValueCannotBeNegative() {
         return new IllegalArgumentException(Constants.NON_NEGATIVE);
     }
 
     @ApiStatus.Internal
-    @Contract(value = " -> new", pure = true)
     public static @NotNull IllegalArgumentException getValueMustBePositive() {
         return new IllegalArgumentException(Constants.POSITIVE_VALUE);
     }

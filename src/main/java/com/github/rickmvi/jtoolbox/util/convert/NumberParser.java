@@ -15,7 +15,7 @@
  * You should have received a copy of the GNU Lesser General Public License
  * along with this library. If not, see <https://www.gnu.org/licenses/>.
  */
-package com.github.rickmvi.jtoolbox.console.util.convert;
+package com.github.rickmvi.jtoolbox.util.convert;
 
 import com.github.rickmvi.jtoolbox.util.SafeRun;
 
@@ -95,7 +95,6 @@ public class NumberParser extends TypeAdapter {
         
     }
 
-    @Contract("null -> !null")
     public static Optional<Integer> toIntOptional(@Nullable String value) {
         return SafeRun.convert(value, Integer::parseInt);
     }
@@ -112,13 +111,12 @@ public class NumberParser extends TypeAdapter {
         return SafeRun.convert(value, Long::parseLong).orElseGet(fallback);
     }
 
-    @Contract("null -> !null")
     public static Optional<Long> toLongOptional(@Nullable String value) {
         return SafeRun.convert(value, Long::parseLong);
     }
 
     public static double toDouble(@Nullable String value) {
-        return toDouble(value, 0.0);
+        return toDouble(value, 0.0D);
     }
 
     public static double toDouble(@Nullable String value, double fallback) {
@@ -129,13 +127,12 @@ public class NumberParser extends TypeAdapter {
         return SafeRun.convert(value, Double::parseDouble).orElseGet(fallback);
     }
 
-    @Contract("null -> !null")
     public static Optional<Double> toDoubleOptional(@Nullable String value) {
         return SafeRun.convert(value, Double::parseDouble);
     }
 
     public static float toFloat(@Nullable String value) {
-        return toFloat(value, 0.0f);
+        return toFloat(value, 0.0F);
     }
 
     public static float toFloat(@Nullable String value, float fallback) {

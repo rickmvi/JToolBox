@@ -17,17 +17,18 @@
  */
 package com.github.rickmvi.jtoolbox.util;
 
-import com.github.rickmvi.jtoolbox.debug.Logger;
 import com.github.rickmvi.jtoolbox.util.function.ThrowingRunnable;
 import com.github.rickmvi.jtoolbox.util.function.ThrowingSupplier;
 import lombok.*;
 import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
 
+import java.util.NoSuchElementException;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.function.Consumer;
 import java.util.function.Function;
+import java.util.function.Predicate;
 import java.util.function.Supplier;
 
 /**
@@ -74,11 +75,10 @@ import java.util.function.Supplier;
  * <h2>Notes:</h2>
  * <ul>
  *     <li>All methods are designed to avoid null pointer exceptions.</li>
- *     <li>Exceptions are logged internally using {@link com.github.rickmvi.jtoolbox.debug.Logger}.</li>
  * </ul>
  *
  * @param <T> the type of the successfully computed value
- * @since 1.0
+ * @since 1.1
  * @author Rick M. Viana
  */
 @Getter(value = AccessLevel.PRIVATE)
@@ -94,7 +94,6 @@ public class Try<T> {
         try {
             return new Try<>(supplier.get(), null);
         } catch (Throwable t) {
-            Logger.error("Try.of() failed", t);
             return new Try<>(null, t);
         }
     }
@@ -105,7 +104,6 @@ public class Try<T> {
             runnable.run();
             return new Try<>(null, null);
         } catch (Throwable t) {
-            Logger.error("Try.run() failed", t);
             return new Try<>(null, t);
         }
     }
@@ -115,7 +113,6 @@ public class Try<T> {
         try {
             return new Try<>(supplier.get(), null);
         } catch (Throwable t) {
-            Logger.error("Try.of() failed", t);
             return new Try<>(null, t);
         }
     }
@@ -126,7 +123,6 @@ public class Try<T> {
             runnable.run();
             return new Try<>(null, null);
         } catch (Throwable t) {
-            Logger.error("Try.run() failed", t);
             return new Try<>(null, t);
         }
     }
@@ -144,7 +140,9 @@ public class Try<T> {
     }
 
     public T orThrow() {
-        if (isFailure()) throw new RuntimeException(failure);
+        if (isFailure()) {
+            throw new IllegalStateException("Cannot retrieve value from a failed Try.", failure);
+        }
         return value;
     }
 
@@ -161,13 +159,29 @@ public class Try<T> {
         return value;
     }
 
+    public Try<T> filter(Predicate<? super T> predicate) {
+        Objects.requireNonNull(predicate);
+        if (isFailure()) return this;
+
+        try {
+            if (!predicate.test(value)) return new Try<>(null, new NoSuchElementException("Try filter failed."));
+            return this;
+        } catch (Throwable t) {
+            return new Try<>(null, t);
+        }
+    }
+
+    public Try<T> peek(Consumer<T> action) {
+        onSuccess(action);
+        return this;
+    }
+
     public <R> Try<R> map(Function<? super T, ? extends R> mapper) {
         Objects.requireNonNull(mapper);
         if (isFailure()) return new Try<>(null, failure);
         try {
             return new Try<>(mapper.apply(value), null);
         } catch (Throwable t) {
-            Logger.error("Try.map() failed", t);
             return new Try<>(null, t);
         }
     }
@@ -178,7 +192,6 @@ public class Try<T> {
         try {
             return mapper.apply(value);
         } catch (Throwable t) {
-            Logger.error("Try.flatMap() failed", t);
             return new Try<>(null, t);
         }
     }
@@ -188,7 +201,16 @@ public class Try<T> {
         try {
             return new Try<>(recovery.apply(failure), null);
         } catch (Throwable t) {
-            Logger.error("Try.recover() failed", t);
+            return new Try<>(null, t);
+        }
+    }
+
+    public Try<T> recoverWith(Function<Throwable, Try<T>> recovery) {
+        Objects.requireNonNull(recovery);
+        if (isSuccess()) return this;
+        try {
+            return recovery.apply(failure);
+        } catch (Throwable t) {
             return new Try<>(null, t);
         }
     }

@@ -58,6 +58,7 @@ public class Constants {
     public static final String STEP_OUT_OF_BOUNDS     = "Step {} is out of bounds.";
 
     public static final String INVALID_OPERATION         = "Invalid {} operation (NaN encountered)";
+    public static final String OVERFLOW                  = "Overflow Memory Cause: {}";
     public static final String SUM_OVERFLOW              = "Sum overflow";
     public static final String SUBTRACT_OVERFLOW         = "Subtract overflow";
     public static final String PRODUCT_OVERFLOW          = "Product overflow";
@@ -74,6 +75,5 @@ public class Constants {
     public static final String OVERFLOW_DIVISIBLE_NUMBER = "Overflow while searching nearest divisible number";
 
     public static final String NEXTSAFE_FAILED           = "nextSafe() failed. Returning empty string. Cause: {}";
-    public static final String SCANNER_NOT_INITIALIZED   = "Mistake: Scanner not initialized. Call Scan.init() first.";
 
 }

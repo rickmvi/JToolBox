@@ -76,7 +76,7 @@ public interface IO {
         If.isTrue(o != null, () -> System.out.printf(Stringifier.toString(o), args))
                 .orElse(IO::newline);
     }
-    
+
     static void printf() {
         newline();
     }
@@ -127,7 +127,7 @@ public interface IO {
     }
 
     static void err(Object text) {
-        IO.to(System.err, text);
+        IO.to(System.err, Stringifier.toString(text));
     }
 
     static void err(Object @Nullable ... args) {

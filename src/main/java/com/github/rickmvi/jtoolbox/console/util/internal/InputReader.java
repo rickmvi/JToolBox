@@ -53,6 +53,4 @@ public interface InputReader {
     BigInteger readBigIntegerUntil(String prompt, Predicate<BigInteger> predicate);
 
     <T extends Number> T readNumberPrompt(String prompt, Function<String, T> parser);
-
-    <T extends Number> T readNumberUntil(String prompt, Function<String, T> parser, Predicate<T> validator);
 }

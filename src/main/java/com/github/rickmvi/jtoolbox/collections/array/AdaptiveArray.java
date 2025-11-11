@@ -19,7 +19,6 @@ package com.github.rickmvi.jtoolbox.collections.array;
 
 import com.github.rickmvi.jtoolbox.control.Switch;
 import lombok.Getter;
-import lombok.ToString;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.*;
@@ -30,19 +29,87 @@ import java.util.stream.Stream;
 import static com.github.rickmvi.jtoolbox.control.If.when;
 
 /**
- * A generic and dynamic collection that adapts its internal storage between different
- * data structures to provide optimized performance based on usage patterns.
+ * AdaptiveArray is a versatile and dynamic collection that adapts its internal storage
+ * between different data structures (ARRAY, LINKED, or SET) to optimize performance based
+ * on usage patterns.
  * <p>
- * The {@code AdaptiveArray} allows for configurable duplicate handling, supports sorting,
- * filtering, mapping, and other operations typical of a collection. It also provides
- * flexibility to switch between ARRAY and LINKED storage modes.
+ * This collection supports configurable duplicate handling, allowing you to enable
+ * or disable duplicates. It provides typical collection operations such as adding,
+ * removing, merging, filtering, mapping, sorting, reversing, and retrieving elements.
+ * The class also offers functional-style utilities for stream operations and iteration.
+ * <p>
+ * AdaptiveArray can automatically optimize its internal storage after multiple
+ * modifications, ensuring efficient memory usage and performance.
+ *
+ * <h2>Storage Modes</h2>
+ * <ul>
+ * <li>{@link StorageMode#ARRAY} - Uses an ArrayList internally (Fast random access).</li>
+ * <li>{@link StorageMode#LINKED} - Uses a LinkedList internally (Fast insertions/removals).</li>
+ * <li>{@link StorageMode#SET} - Uses a LinkedHashSet internally (Guarantees uniqueness).</li>
+ * </ul>
+ * Switching storage modes can be done dynamically via {@link #use(StorageMode)}.
+ *
+ * <h2>Duplicate Handling</h2>
+ * <p>You can control whether duplicates are allowed using {@link #allowDuplicates(boolean)}.
+ * If duplicates are not allowed, the collection automatically converts its storage
+ * to a LinkedHashSet ({@code SET} mode) to maintain uniqueness. Indexed operations (like {@link #get(int)})
+ * are not supported in {@code SET} mode.</p>
+ *
+ * <h2>Element Operations</h2>
+ * <ul>
+ * <li>{@link #add(Object)} / {@link #addAll(Object[])} - Add elements to the collection.</li>
+ * <li>{@link #remove(Object)} / {@link #removeIf(Predicate)} - Remove elements based on value or condition.</li>
+ * <li>{@link #merge(AdaptiveArray)} - Merge another AdaptiveArray into this one.</li>
+ * <li>{@link #contains(Object)} - Checks if an element exists, using binary search if sorted.</li>
+ * <li>{@link #find(Predicate)}, {@link #findFirst()}, {@link #findAny()} - Retrieve elements based on conditions.</li>
+ * </ul>
+ *
+ * <h2>Transformation and Filtering</h2>
+ * <ul>
+ * <li>{@link #map(Function)} - Transforms elements to another type.</li>
+ * <li>{@link #filter(Predicate)} - Returns a new AdaptiveArray containing only elements matching a predicate.</li>
+ * <li>{@link #distinct()} - Removes duplicate elements.</li>
+ * <li>{@link #distinctBy(Function)} - Removes duplicates based on a key extractor.</li>
+ * <li>{@link #reverse()} - Reverses the order of elements.</li>
+ * </ul>
+ *
+ * <h2>Sorting</h2>
+ * <ul>
+ * <li>{@link #sort(Comparator)} - Sorts elements using a custom comparator.</li>
+ * <li>{@link #sortIfComparable()} - Sorts elements if they implement Comparable.</li>
+ * </ul>
+ *
+ * <h2>Conversion and Access</h2>
+ * <ul>
+ * <li>{@link #get(int)} - Retrieves element by index (not supported in SET mode).</li>
+ * <li>{@link #set(int, Object)} - Replaces element by index (not supported in SET mode).</li>
+ * <li>{@link #toList()} - Returns a List of elements.</li>
+ * <li>{@link #toSet()} - Returns a Set of elements.</li>
+ * <li>{@link #toArray(IntFunction)} - Returns an array of elements.</li>
+ * <li>{@link #stream()} - Returns a Stream of elements.</li>
+ * <li>{@link #size()} / {@link #isEmpty()} - Retrieves collection size and emptiness.</li>
+ * </ul>
+ *
+ * <h2>Iteration and Functional Utilities</h2>
+ * <ul>
+ * <li>{@link #forEachDo(Consumer)} - Executes an action for each element in the collection.</li>
+ * <li>{@link #iterator()} - Provides an iterator over the elements.</li>
+ * </ul>
+ *
+ * <h2>Auto-Optimization</h2>
+ * <p>The collection tracks modifications and automatically optimizes its storage
+ * mode when certain thresholds are exceeded to maintain performance efficiency.</p>
  *
  * @param <T> The type of elements stored in this AdaptiveArray.
+ * @author Rick
+ * @version 1.1
+ * @since 2025
  */
-@ToString(of = { "elements", "allowDuplicates", "mode"})
+
+@SuppressWarnings({"unused", "unchecked"})
 public class AdaptiveArray<T> implements Iterable<T> {
 
-    public enum StorageMode { ARRAY, LINKED }
+    public enum StorageMode { ARRAY, LINKED, SET }
 
     private Collection<T> elements;
     private boolean allowDuplicates;
@@ -57,7 +124,9 @@ public class AdaptiveArray<T> implements Iterable<T> {
         this.mode = mode;
         this.elements = createStorage(mode);
         this.elements.addAll(initial);
-        applyDuplicateRule();
+        if (!allowDuplicates) {
+            applyDuplicateRule();
+        }
     }
 
     @SafeVarargs
@@ -70,11 +139,31 @@ public class AdaptiveArray<T> implements Iterable<T> {
     }
 
     private @NotNull Collection<T> createStorage(@NotNull StorageMode mode) {
-        return mode == StorageMode.LINKED ? new LinkedList<>() : new ArrayList<>();
+        return switch (mode) {
+            case LINKED -> new LinkedList<>();
+            case ARRAY -> new ArrayList<>();
+            case SET -> new LinkedHashSet<>();
+        };
     }
 
+    /**
+     * Helper to retrieve the internal storage as a List, throwing an exception if in SET mode.
+     */
+    private List<T> requireList() {
+        if (elements instanceof List) {
+            return (List<T>) elements;
+        }
+        throw new UnsupportedOperationException("Indexed operations are not supported in SET storage mode (duplicates disallowed).");
+    }
+
+    /**
+     * Changes the internal storage mode, transferring all elements to the new structure.
+     *
+     * @param mode The new storage mode to use.
+     * @return This AdaptiveArray instance.
+     */
     public AdaptiveArray<T> use(StorageMode mode) {
-        if (this.mode != mode) {
+        if (this.mode != StorageMode.SET && this.mode != mode) {
             Collection<T> newStorage = createStorage(mode);
             newStorage.addAll(elements);
             elements = newStorage;
@@ -83,6 +172,12 @@ public class AdaptiveArray<T> implements Iterable<T> {
         return this;
     }
 
+    /**
+     * Configures whether duplicate elements are allowed.
+     *
+     * @param allow true to allow duplicates, false to enforce uniqueness (switches to SET mode).
+     * @return This AdaptiveArray instance.
+     */
     public AdaptiveArray<T> allowDuplicates(boolean allow) {
         this.allowDuplicates = allow;
         applyDuplicateRule();
@@ -90,18 +185,27 @@ public class AdaptiveArray<T> implements Iterable<T> {
     }
 
     private void applyDuplicateRule() {
-        if (!allowDuplicates) {
+        if (!allowDuplicates && this.mode != StorageMode.SET) {
+            this.mode = StorageMode.SET;
             elements = new LinkedHashSet<>(elements);
+            return;
+        }
+
+        if (allowDuplicates && this.mode == StorageMode.SET) {
+            this.mode = StorageMode.ARRAY;
+            elements = new ArrayList<>(elements);
         }
     }
 
+    /** Adds an element, respecting the allowDuplicates rule. */
     public AdaptiveArray<T> add(T element) {
-        if (allowDuplicates || !elements.contains(element)) {
-            elements.add(element);
-            sorted = false;
-            modificationCount++;
-            autoOptimize();
-        }
+        when(allowDuplicates || !elements.contains(element))
+                .apply(() -> {
+                    elements.add(element);
+                    sorted = false;
+                    modificationCount++;
+                    autoOptimize();
+                }).run();
         return this;
     }
 
@@ -112,27 +216,73 @@ public class AdaptiveArray<T> implements Iterable<T> {
     }
 
     public AdaptiveArray<T> remove(T element) {
-        elements.remove(element);
-        modificationCount++;
-        autoOptimize();
+        if (elements.remove(element)) {
+            modificationCount++;
+            autoOptimize();
+        }
         return this;
     }
 
     public AdaptiveArray<T> removeIf(Predicate<T> filter) {
-        elements.removeIf(filter);
-        modificationCount++;
-        autoOptimize();
+        if (elements.removeIf(filter)) {
+            modificationCount++;
+            autoOptimize();
+        }
         return this;
     }
 
-    @SuppressWarnings("unchecked")
+    /**
+     * Retrieves the element at the specified position in this list.
+     *
+     * @param index The index of the element to return.
+     * @return The element at the specified index.
+     * @throws UnsupportedOperationException if in SET mode.
+     * @throws IndexOutOfBoundsException if the index is out of range.
+     */
+    public T get(int index) {
+        return requireList().get(index);
+    }
+
+    /**
+     * Replaces the element at the specified position in this list with the specified element.
+     *
+     * @param index The index of the element to replace.
+     * @param element The element to be stored at the specified position.
+     * @return The element previously at the specified position.
+     * @throws UnsupportedOperationException if in SET mode.
+     * @throws IndexOutOfBoundsException if the index is out of range.
+     */
+    public T set(int index, T element) {
+        T oldValue = requireList().set(index, element);
+        modificationCount++;
+        return oldValue;
+    }
+
+    /**
+     * Removes the element at the specified position in this list.
+     *
+     * @param index The index of the element to be removed.
+     * @return The element previously at the specified position.
+     * @throws UnsupportedOperationException if in SET mode.
+     * @throws IndexOutOfBoundsException if the index is out of range.
+     */
+    public T remove(int index) {
+        T removed = requireList().remove(index);
+        modificationCount++;
+        autoOptimize();
+        return removed;
+    }
+
     public AdaptiveArray<T> merge(@NotNull AdaptiveArray<T> other) {
-        addAll((T[]) other.elements.toArray());
+        elements.addAll(other.elements);
+        if (!allowDuplicates) {
+            applyDuplicateRule();
+        }
         return this;
     }
 
     public AdaptiveArray<T> sort(Comparator<T> comparator) {
-        List<T> sortedList = new ArrayList<>(elements);
+        List<T> sortedList = getElementsAsList().get();
         sortedList.sort(comparator);
         elements.clear();
         elements.addAll(sortedList);
@@ -140,10 +290,9 @@ public class AdaptiveArray<T> implements Iterable<T> {
         return this;
     }
 
-    @SuppressWarnings("unchecked")
     public AdaptiveArray<T> sortIfComparable() {
         if (!elements.isEmpty() && elements.iterator().next() instanceof Comparable) {
-            List<T> sortedList = new ArrayList<>(elements);
+            List<T> sortedList = getElementsAsList().get();
             Collections.sort((List<? extends Comparable>) sortedList);
             elements.clear();
             elements.addAll(sortedList);
@@ -152,19 +301,17 @@ public class AdaptiveArray<T> implements Iterable<T> {
         return this;
     }
 
-    @SuppressWarnings("unchecked")
+    @SuppressWarnings({"unchecked", "rawtypes"})
     public boolean contains(T element) {
-        if (sorted && element instanceof Comparable && elements instanceof List) {
-            List<? extends Comparable<? super T>> list = (List<? extends Comparable<? super T>>) elements;
-            return Collections.binarySearch(list, element) >= 0;
+        if (sorted && element instanceof Comparable rawElement && elements instanceof List rawList) {
+            return Collections.binarySearch(rawList, rawElement) >= 0;
         }
+
         return elements.contains(element);
     }
 
     public Optional<T> find(Predicate<T> condition) {
-        for (T e : elements)
-            if (condition.test(e)) return Optional.of(e);
-        return Optional.empty();
+        return elements.stream().filter(condition).findFirst();
     }
 
     public Optional<T> findFirst() {
@@ -192,7 +339,7 @@ public class AdaptiveArray<T> implements Iterable<T> {
     }
 
     public AdaptiveArray<T> distinct() {
-        return new AdaptiveArray<>(new LinkedHashSet<>(elements), false, mode);
+        return new AdaptiveArray<>(new LinkedHashSet<>(elements), false, StorageMode.SET);
     }
 
     public <K> AdaptiveArray<T> distinctBy(Function<T, K> keyExtractor) {
@@ -207,21 +354,22 @@ public class AdaptiveArray<T> implements Iterable<T> {
     }
 
     public AdaptiveArray<T> reverse() {
-        if (elements instanceof List) {
-            Collections.reverse((List<T>) elements);
-            return this;
+        if (!(elements instanceof List)) {
+            elements = getElementsAsList().get();
         }
-
-        elements = new ArrayList<>(elements);
         Collections.reverse((List<T>) elements);
         return this;
     }
 
-    public AdaptiveArray<T> copy() {
-        return new AdaptiveArray<>(new ArrayList<>(elements), allowDuplicates, mode);
+    private @NotNull Supplier<ArrayList<T>> getElementsAsList() {
+        return () -> new ArrayList<>(elements);
     }
 
-    public List<T> toList() { return new ArrayList<>(elements); }
+    public AdaptiveArray<T> copy() {
+        return new AdaptiveArray<>(getElementsAsList().get(), allowDuplicates, mode);
+    }
+
+    public List<T> toList() { return getElementsAsList().get(); }
 
     public Set<T> toSet() { return new LinkedHashSet<>(elements); }
 
@@ -241,18 +389,26 @@ public class AdaptiveArray<T> implements Iterable<T> {
     @Override
     public @NotNull Iterator<T> iterator() { return elements.iterator(); }
 
+    @Override
+    public String toString() {
+        return String.format("AdaptiveArray[mode=%s, size=%d, duplicates=%b, elements=%s]",
+                mode, elements.size(), allowDuplicates, Arrays.deepToString(elements.toArray()));
+    }
+
+    /** Automatically changes storage mode based on modification count and size heuristics. */
     private void autoOptimize() {
-       when(modificationCount > 100)
-                .apply(() -> {
-                    Switch.on(mode)
-                            .caseCondition(storage  ->
-                                    mode == StorageMode.LINKED && elements.size() > 1000,
-                                    modes -> use(StorageMode.LINKED))
-                            .caseCondition(storage ->
-                                    mode == StorageMode.ARRAY && elements.size() < 500,
-                                    modes -> use(StorageMode.ARRAY))
-                            .get();
-                    modificationCount = 0;
-                }).run();
+        final int OPT_THRESHOLD = 100;
+        final int SIZE_LARGE = 5000;
+        final int SIZE_SMALL = 100;
+
+        if (modificationCount > OPT_THRESHOLD && allowDuplicates) {
+            Switch.on(mode)
+                    .caseCondition(m -> m == StorageMode.LINKED && elements.size() > SIZE_LARGE,
+                            m -> use(StorageMode.ARRAY))
+                    .caseCondition(m -> m == StorageMode.ARRAY && elements.size() < SIZE_SMALL,
+                            m -> use(StorageMode.LINKED))
+                    .get();
+            modificationCount = 0;
+        }
     }
 }

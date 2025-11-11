@@ -17,6 +17,7 @@
  */
 package com.github.rickmvi.jtoolbox.control;
 
+import lombok.RequiredArgsConstructor;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.function.Supplier;

@@ -1,7 +1,7 @@
 package com.github.rickmvi.jtoolbox.text;
 
 import com.github.rickmvi.jtoolbox.collections.array.Array;
-import com.github.rickmvi.jtoolbox.console.util.convert.NumberParser;
+import com.github.rickmvi.jtoolbox.util.convert.NumberParser;
 import lombok.experimental.UtilityClass;
 import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.NotNull;

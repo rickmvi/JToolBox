@@ -1,20 +1,3 @@
-/*
- * Console API - Utilitarian library for input, output and formatting on the console.
- * Copyright (C) 2025  Rick M. Viana
- *
- * This library is free software; you can redistribute it and/or modify
- * it under the terms of the GNU Lesser General Public License as published by
- * the Free Software Foundation; either version 3 of the License, or
- * (at your option) any later version.
- *
- * This library is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
- * GNU Lesser General Public License for more details.
- *
- * You should have received a copy of the GNU Lesser General Public License
- * along with this library. If not, see <https://www.gnu.org/licenses/>.
- */
 package com.github.rickmvi.jtoolbox.control;
 
 import lombok.AccessLevel;
@@ -33,209 +16,159 @@ import java.util.function.Supplier;
  * Provides a fluent API for executing {@link Runnable} or {@link Supplier}
  * operations based on a boolean condition. Supports conditional execution,
  * mapping, optional conversion, and exception handling.
- * <p>
- * The interface is divided into two main concepts:
- * <ul>
- *     <li>{@link Runner} – for executing {@link Runnable} based on conditions.</li>
- *     <li>{@link Suppliers} – for supplying values conditionally and handling results.</li>
- * </ul>
  *
- * <h2>Usage Examples:</h2>
- * <pre>{@code
- * // Conditional runnable
- * If.runTrue(obj != null, () -> System.out.println("Object is not null")).run();
- *
- * // Runnable with else
- * If.runFalse(obj == null, () -> System.out.println("Object is null"))
- *     .orElse(() -> System.out.println("Object is not null"));
- *
- * // Conditional supplier
- * Integer value = If.supplyTrue(obj != null, () -> 10)
- *                   .map(i -> i * 2)
- *                   .value();
- *
- * // Supplier with fallback
- * Integer safeValue = If.supplyFalse(obj == null, () -> 5)
- *                       .orElse(() -> 0);
- *
- * // Optional conversion
- * Optional<String> maybe = If.optionalTrue(obj != null, () -> "Hello");
- *
- * // Throw exception on condition
- * If.trueThrow(obj == null, () -> new IllegalStateException("Object cannot be null"));
- * }</pre>
- *
- * <p>
- * All methods are static and designed to be used without instantiating the interface.
- * The API encourages safe, readable, and concise handling of conditional logic.
- * </p>
- *
- * <p>
- * Null values in suppliers are handled gracefully: they return {@code null} or empty {@link Optional}.
- * Exceptions can be rethrown or logged, according to the method used.
- * </p>
- *
- * @author Rick M. Viana
- * @since 1.2
+ * @author Rick
+ * @since 1.3
  */
 public interface If {
 
     @Contract(value = "_, _ -> new", pure = true)
     static @NotNull If.Runner isTrue(boolean condition, Runnable action) {
-        return new Runner(condition, action, true);
-    }
-
-    @Contract(value = "_, _ -> new", pure = true)
-    static @NotNull If.Runner isFalse(boolean condition, Runnable action) {
-        return new Runner(condition, action, false);
+        return new Runner(condition, action);
     }
 
     @Contract("_ -> new")
     static @NotNull If.Runner when(boolean condition) {
-        return new Runner(condition, true);
+        return new Runner(condition, null);
     }
 
     @RequiredArgsConstructor(access = AccessLevel.PRIVATE)
     class Runner {
-        private final boolean  condition;
+        private final boolean condition;
         private final Runnable action;
-        private final boolean  runOnTrue;
-
-        private Runner(boolean condition, boolean runOnTrue) {
-            this(condition, null, runOnTrue);
-        }
 
         public void orElse(Runnable elseAction) {
-            if (evaluateRunCondition()) {
-                action.run();
-                return;
+            if (condition) {
+                if (action != null) action.run();
+            } else {
+                elseAction.run();
             }
-            elseAction.run();
-        }
-
-        @Contract(pure = true)
-        private boolean evaluateRunCondition() {
-            return (runOnTrue && this.condition) || (!runOnTrue && !this.condition);
         }
 
         public void run() {
-            if (evaluateRunCondition()) action.run();
+            if (condition && action != null) action.run();
         }
 
-        public void orElseThrow(Supplier<? extends RuntimeException> exceptionSupplier) {
-            if (evaluateRunCondition()) {
-                action.run();
-                return;
+        public void orElseThrow(@NotNull Supplier<? extends RuntimeException> exceptionSupplier) {
+            if (condition) {
+                if (action != null) action.run();
+            } else {
+                throw exceptionSupplier.get();
             }
-            throw exceptionSupplier.get();
         }
 
         public Runner apply(Runnable action) {
-            return new Runner(this.condition, action, runOnTrue);
+            return new Runner(this.condition, action);
         }
 
-        public Runner not() {
-            return new Runner(this.condition, action, !runOnTrue);
+        public Runner negate() {
+            return new Runner(!this.condition, this.action);
         }
 
-        public Runner or(boolean condition) {
-            return new Runner(this.condition || condition, action, runOnTrue);
+        public Runner or(boolean otherCondition) {
+            return new Runner(this.condition || otherCondition, this.action);
         }
 
-        public Runner and(boolean condition) {
-            return new Runner(this.condition && condition, action, runOnTrue);
+        public Runner and(boolean otherCondition) {
+            return new Runner(this.condition && otherCondition, this.action);
         }
-
     }
 
+    @Contract(value = "_, _ -> new", pure = true)
     static <T> @NotNull Suppliers<T> supplyTrue(boolean condition, Supplier<T> supplier) {
-        return new Suppliers<>(condition, supplier, true);
-    }
-    
-    static <T> @NotNull Suppliers<T> supplyFalse(boolean condition, Supplier<T> supplier) {
-        return new Suppliers<>(condition, supplier, false);
+        return new Suppliers<>(condition, supplier);
     }
 
-    static <T> @NotNull Suppliers<T> whens(boolean condition) {
-        return new Suppliers<>(condition, true);
+    @Contract("_ -> new")
+    static <T> @NotNull Suppliers<T> whenSupply(boolean condition) {
+        return new Suppliers<>(condition, null);
     }
 
     @RequiredArgsConstructor(access = AccessLevel.PRIVATE)
     class Suppliers<T> {
-        private final boolean     condition;
+        private final boolean condition;
         private final Supplier<T> supplier;
-        private final boolean     runOnTrue;
 
-        private Suppliers(boolean condition, boolean runOnTrue) {
-            this(condition, null, runOnTrue);
+        public @NotNull Optional<T> getOptional() {
+            return condition ? Optional.ofNullable(supplier.get()) : Optional.empty();
         }
 
-        public T value() {
-            if (evaluateCondition()) return supplier.get();
-            return null;
+        public T orElseGet(@NotNull Supplier<T> elseSupplier) {
+            return condition ? supplier.get() : elseSupplier.get();
         }
 
-        @Contract(pure = true)
-        private boolean evaluateCondition() {
-            return (runOnTrue && this.condition) || (!runOnTrue && !this.condition);
-        }
-
-        public T orElseGet(Supplier<T> elseSupplier) {
-            if (evaluateCondition()) return supplier.get();
-            return elseSupplier.get();
-        }
-
-        public T orElseThrow(Supplier<? extends RuntimeException> exceptionSupplier) {
-            if (evaluateCondition()) return supplier.get();
+        public T orElseThrow(@NotNull Supplier<? extends RuntimeException> exceptionSupplier) {
+            if (condition) return supplier.get();
             throw exceptionSupplier.get();
         }
 
-        public <R> Suppliers<R> map(Function<T, R> mapper) {
-            return new Suppliers<>(this.condition, () -> mapper.apply(supplier.get()), runOnTrue);
+        public <R> Suppliers<R> map(@NotNull Function<T, R> mapper) {
+            return new Suppliers<>(this.condition, () -> mapper.apply(supplier.get()));
         }
 
-        public <R> Suppliers<R> flatMap(Function<T, Suppliers<R>> mapper) {
-            if (evaluateCondition()) {
+        public <R> Suppliers<R> flatMap(@NotNull Function<T, Suppliers<R>> mapper) {
+            if (condition) {
                 return mapper.apply(supplier.get());
             }
-            return new Suppliers<>(false, null, false);
-        }
-
-        public Optional<T> toOptional() {
-            if (this.condition == runOnTrue) return Optional.ofNullable(supplier.get());
-            return Optional.empty();
+            return new Suppliers<>(false, null);
         }
 
         public Suppliers<T> apply(Supplier<T> supplier) {
-            return new Suppliers<>(this.condition, supplier, runOnTrue);
+            return new Suppliers<>(this.condition, supplier);
         }
 
-        public Suppliers<T> not() {
-            return new Suppliers<>(this.condition, supplier, !runOnTrue);
+        /**
+         * Inverts the stored condition.
+         */
+        public Suppliers<T> negate() {
+            return new Suppliers<>(!this.condition, this.supplier);
         }
 
-        public Suppliers<T> or(boolean condition) {
-            return new Suppliers<>(this.condition || condition, supplier, runOnTrue);
+        public Suppliers<T> or(boolean otherCondition) {
+            return new Suppliers<>(this.condition || otherCondition, this.supplier);
         }
 
-        public Suppliers<T> and(boolean condition) {
-            return new Suppliers<>(this.condition && condition, supplier, runOnTrue);
+        public Suppliers<T> and(boolean otherCondition) {
+            return new Suppliers<>(this.condition && otherCondition, this.supplier);
         }
-
     }
 
+    /* ---------------------------- UTILITIES ---------------------------- */
+
+    /**
+     * Throws a RuntimeException if the condition is TRUE. Use this for assertions.
+     *
+     * @param condition The condition that, if true, triggers the exception.
+     * @param exceptionSupplier A supplier for the exception to be thrown.
+     * @throws RuntimeException The supplied exception if the condition is true.
+     */
+    @Contract("true, _ -> fail")
+    static void throwWhen(boolean condition, @NotNull Supplier<? extends RuntimeException> exceptionSupplier) {
+        if (condition) throw exceptionSupplier.get();
+    }
+
+    /**
+     * Helper utility to convert a condition and a supplier into an Optional.
+     * This method is superseded by {@link Suppliers#getOptional()}.
+     *
+     * @deprecated Use {@link If#supplyTrue(boolean, Supplier)} followed by {@link Suppliers#getOptional()}.
+     */
+    @Deprecated
     @Contract("_, _ -> !null")
-    static <R> Optional<R> optional(boolean condition, Supplier<R> whenTrue) {
-        if (condition) return Optional.ofNullable(whenTrue.get());
-        return Optional.empty();
+    static <R> @NotNull Optional<R> optional(boolean condition, Supplier<R> whenTrue) {
+        return supplyTrue(condition, whenTrue).getOptional();
     }
 
     static String MessageOrDefault(Supplier<String> messageSupplier, String defaultMessage) {
         return Objects.isNull(messageSupplier) ? defaultMessage : messageSupplier.get();
     }
 
+    /**
+     * @deprecated Use {@link If#throwWhen(boolean, Supplier)} for consistency.
+     */
+    @Deprecated
     @Contract("true, _ -> fail")
     static void Throws(boolean condition, Supplier<? extends RuntimeException> exceptionSupplier) {
-        if (condition) throw exceptionSupplier.get();
+        throwWhen(condition, exceptionSupplier);
     }
 }

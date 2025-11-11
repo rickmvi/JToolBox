@@ -17,7 +17,7 @@
  */
 package com.github.rickmvi.jtoolbox.text;
 
-import com.github.rickmvi.jtoolbox.console.util.convert.TypeAdapter;
+import com.github.rickmvi.jtoolbox.util.convert.TypeAdapter;
 import com.github.rickmvi.jtoolbox.text.internal.NumberInterface;
 import com.github.rickmvi.jtoolbox.text.internal.NumberStyle;
 import org.jetbrains.annotations.Contract;

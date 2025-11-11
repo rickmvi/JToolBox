@@ -19,9 +19,9 @@ package com.github.rickmvi.jtoolbox.collections.array;
 
 import com.github.rickmvi.jtoolbox.lang.exceptions.InvalidStartIndexException;
 import com.github.rickmvi.jtoolbox.control.For;
-import com.github.rickmvi.jtoolbox.util.ArrayUtils;
 import com.github.rickmvi.jtoolbox.control.If;
 
+import com.github.rickmvi.jtoolbox.util.ArrayUtils;
 import com.github.rickmvi.jtoolbox.util.MathUtils;
 import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.Contract;
@@ -36,75 +36,104 @@ import java.util.function.Function;
 import static com.github.rickmvi.jtoolbox.text.StringFormatter.format;
 
 /**
- * Utility class for working with arrays in a functional and safe way.
+ * High-level utility class that provides a rich, functional, and type-safe API for array manipulation.
  * <p>
- * This class extends {@link ArrayUtils} and provides additional methods for:
- * <ul>
- *     <li>Adding, removing, and inserting elements</li>
- *     <li>Concatenation of arrays</li>
- *     <li>Finding indices and checking containment</li>
- *     <li>Copying, reversing, filtering, and mapping arrays</li>
- *     <li>Converting arrays to {@link List} or {@link Set}</li>
- *     <li>Sorting arrays of various types</li>
- *     <li>Summing numeric arrays</li>
- *     <li>Repeating values to create arrays</li>
- *     <li>Joining arrays into strings</li>
- *     <li>Getting distinct elements</li>
- * </ul>
+ * Built on top of {@link AdaptiveArray}, this class offers a static and lightweight interface for
+ * working with Java arrays while preserving immutability and type consistency. It combines the
+ * simplicity of array operations with the expressiveness of functional-style programming.
  * </p>
  *
- * <h2>Examples:</h2>
+ * <h2>Overview</h2>
+ * <p>
+ * The {@code Array} class enhances the standard {@link java.util.Arrays} utilities by integrating
+ * functional constructs and extended operations such as:
+ * </p>
+ * <ul>
+ *   <li>Adding, inserting, and removing elements safely</li>
+ *   <li>Concatenation and range-copying of arrays</li>
+ *   <li>Mapping, filtering, and distinct transformations</li>
+ *   <li>Sorting and reversing arrays (in-place or returning new instances)</li>
+ *   <li>Summation of numeric arrays with overflow protection (via {@link com.github.rickmvi.jtoolbox.util.MathUtils})</li>
+ *   <li>Converting arrays to {@link java.util.List} or {@link java.util.Set}</li>
+ *   <li>Repeating and joining array elements</li>
+ * </ul>
+ *
+ * <h2>Design Notes</h2>
+ * <ul>
+ *   <li>All methods are {@code static} and return new arrays unless explicitly documented otherwise.</li>
+ *   <li>All parameters must be non-null unless specified; invalid indices throw descriptive exceptions.</li>
+ *   <li>Index operations are validated through {@link com.github.rickmvi.jtoolbox.lang.exceptions.InvalidStartIndexException}
+ *       and {@link IndexOutOfBoundsException}.</li>
+ *   <li>Internally uses {@link AdaptiveArray} for fluent data transformations.</li>
+ *   <li>Numeric operations delegate to {@link com.github.rickmvi.jtoolbox.util.MathUtils} for precision and safety.</li>
+ * </ul>
+ *
+ * <h2>Examples</h2>
  * <pre>{@code
  * // Adding an element
  * Integer[] arr = {1, 2, 3};
- * arr = Array.add(arr, 4); // [1, 2, 3, 4]
+ * arr = Array.add(arr, 4); // → [1, 2, 3, 4]
  *
- * // Removing an element
- * arr = Array.remove(arr, 1); // [1, 3, 4]
+ * // Removing by index
+ * arr = Array.remove(arr, 1); // → [1, 3, 4]
  *
  * // Concatenating arrays
- * Integer[] b = {5, 6};
- * arr = Array.concat(arr, b); // [1, 3, 4, 5, 6]
+ * Integer[] more = {5, 6};
+ * arr = Array.concat(arr, more); // → [1, 3, 4, 5, 6]
  *
- * // Mapping an array
- * String[] sArr = Array.map(arr, Object::toString, String[]::new);
+ * // Filtering and mapping
+ * String[] str = Array.map(
+ *     Array.filter(arr, i -> i % 2 == 0, String[]::new),
+ *     Object::toString,
+ *     String[]::new
+ * ); // → ["4", "6"]
  *
- * // Filtering an array
- * Integer[] filtered = Array.filter(arr, i -> i % 2 == 0, Integer[]::new); // [4, 6]
+ * // Distinct elements
+ * Integer[] distinct = Array.distinct(new Integer[]{1, 2, 2, 3}, Integer[]::new); // → [1, 2, 3]
  *
- * // Getting distinct elements
- * Integer[] distinct = Array.distinct(new Integer[]{1,2,2,3}, Integer[]::new); // [1,2,3]
+ * // Reverse and join
+ * String joined = Array.join(Array.reversed(arr), ", "); // "6, 5, 4, 3, 1"
  *
- * // Reversing an array
- * Integer[] reversed = Array.reversed(arr); // [6,5,4,3,1]
- *
- * // Summing numeric arrays
- * int sum = Array.sum(new int[]{1,2,3}); // 6
- *
- * // Repeating a value
- * Integer[] repeated = Array.repeat(7, 3, Integer[]::new); // [7,7,7]
+ * // Repeat and sum
+ * Integer[] repeated = Array.repeat(7, 3, Integer[]::new); // [7, 7, 7]
+ * int sum = Array.sum(new int[]{1, 2, 3}); // 6
  * }</pre>
  *
- * <h2>Notes:</h2>
+ * <h2>Key Methods</h2>
+ * <table border="1" cellspacing="0" cellpadding="4">
+ *   <tr><th>Category</th><th>Examples</th></tr>
+ *   <tr><td>Mutation</td><td>{@link #add(Object[], int, Object)}, {@link #remove(Object[], int)}</td></tr>
+ *   <tr><td>Transformation</td><td>{@link #map(Object[], Function, IntFunction)}, {@link #filter(Object[], Predicate, IntFunction)}</td></tr>
+ *   <tr><td>Query</td><td>{@link #indexOf(Object[], Object)}, {@link #contains(Object[], Object)}</td></tr>
+ *   <tr><td>Conversion</td><td>{@link #toList(Object[])}, {@link #toSet(Object[])}</td></tr>
+ *   <tr><td>Aggregation</td><td>{@link #sum(int...)}, {@link #join(Object[], String)}</td></tr>
+ * </table>
+ *
+ * <h2>Thread Safety</h2>
+ * <p>
+ * This class is thread-safe when arrays are not modified concurrently from multiple threads.
+ * Methods that modify arrays always return new instances to avoid shared-state issues.
+ * </p>
+ *
+ * <h2>See Also</h2>
  * <ul>
- *     <li>All array parameters must not be {@code null} unless explicitly allowed.</li>
- *     <li>Methods that modify arrays (like {@code remove}, {@code reverseInPlace}) return new arrays or modify in place depending on the method.</li>
- *     <li>Methods are designed to work with generics and preserve type safety using {@link IntFunction} generators.</li>
- *     <li>Index-based methods throw {@link InvalidStartIndexException} or {@link IndexOutOfBoundsException} when indices are invalid.</li>
- *     <li>Numeric operations delegate to {@link MathUtils} for type-specific calculations.</li>
+ *   <li>{@link AdaptiveArray}</li>
+ *   <li>{@link com.github.rickmvi.jtoolbox.util.MathUtils}</li>
+ *   <li>{@link com.github.rickmvi.jtoolbox.control.For}</li>
+ *   <li>{@link com.github.rickmvi.jtoolbox.control.If}</li>
  * </ul>
  *
- * @apiNote This class provides functional and safe alternatives to {@link java.util.Arrays} methods,
- *          with added convenience for generics, type safety, and array manipulation.
- * @see ArrayUtils
+ * @author Rick M.
+ * @version 1.3
+ * @since 1.2
  * @see For
  * @see Arrays
  * @see AdaptiveArray
- * @since 1.2
+ * @apiNote Provides a functional abstraction over native arrays for use within the Console API ecosystem.
  */
 @UtilityClass
 @SuppressWarnings({"unused", "WeakerAccess"})
-public class Array extends ArrayUtils {
+public class Array {
 
     @SafeVarargs
     @ApiStatus.Internal
@@ -113,7 +142,7 @@ public class Array extends ArrayUtils {
     }
 
     @SafeVarargs
-    public static <T> @NotNull AdaptiveArray<T> from(T @NotNull ... array) {
+    public static <T> @NotNull AdaptiveArray<T> wrap(T @NotNull ... array) {
         return adapt(array);
     }
 
@@ -160,26 +189,22 @@ public class Array extends ArrayUtils {
 
     /* ==================================== CONTAINS METHOD ========================================= */
 
-    @Contract(pure = true)
     public static <T> boolean contains(T @NotNull [] array, T element) {
         return adapt(array).contains(element);
     }
 
     /* ==================================== IS EMPTY METHOD ========================================= */
 
-    @Contract(value = "null -> true", pure = true)
     public static <T> boolean isEmpty(T[] array) {
         return array == null || array.length == 0;
     }
 
     /* ==================================== LENGTH METHOD ========================================= */
 
-    @Contract(pure = true)
     public static int length(Object[] array) {
         return isEmpty(array) ? 0 : array.length;
     }
 
-    @Contract(pure = true)
     public static int lastIndex(Object[] array) {
         return isEmpty(array) ? -1 : array.length - 1;
     }
@@ -277,7 +302,6 @@ public class Array extends ArrayUtils {
 
     /* ==================================== JOIN METHOD'S ========================================= */
 
-    @Contract("_, _ -> new")
     public static @NotNull String join(Object @NotNull [] array, @NotNull String delimiter) {
         return String.join(delimiter, Arrays.stream(array)
                 .map(String::valueOf)
@@ -286,12 +310,10 @@ public class Array extends ArrayUtils {
 
     /* ================================ To List / Set METHOD'S ==================================== */
 
-    @Contract("_ -> !null")
     public static <T> List<T> toList(T[] array) {
         return adapt(array).toList();
     }
 
-    @Contract("!null -> new")
     public static <T> @NotNull Set<T> toSet(T[] array) {
         return adapt(array).toSet();
     }
@@ -317,24 +339,19 @@ public class Array extends ArrayUtils {
     /* ==================================== SUM METHOD'S ========================================= */
 
     public static int sum(int @NotNull ... array) {
-        return MathUtils.sumInt(array);
+        return Arrays.stream(array).sum();
     }
 
     public static long sum(long @NotNull ... array) {
-        return MathUtils.sumLong(array);
-    }
-
-    public static float sum(float @NotNull ... array) {
-        return MathUtils.sumFloat(array);
+        return Arrays.stream(array).sum();
     }
 
     public static double sum(double @NotNull ... array) {
-        return MathUtils.sumDouble(array);
+        return Arrays.stream(array).sum();
     }
 
     /* ==================================== REPEAT METHOD ========================================= */
 
-    @Contract("_, _, _ -> new")
     public static <T> T[] repeat(T value, int times, @NotNull IntFunction<T[]> generator) {
         If.Throws(times < 0, () -> new IllegalArgumentException("times: " + times));
         T[] array = generator.apply(times);

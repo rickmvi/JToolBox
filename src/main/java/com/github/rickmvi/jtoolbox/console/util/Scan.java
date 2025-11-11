@@ -17,7 +17,6 @@
  */
 package com.github.rickmvi.jtoolbox.console.util;
 
-import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
 import lombok.AccessLevel;
 import lombok.Getter;
@@ -78,17 +77,14 @@ public interface Scan {
         scannerInstance.close();
     }
 
-    @Contract(pure = true)
     static String read() {
         return scannerInstance.read();
     }
 
-    @Contract(pure = true)
     static String read(@NotNull String pattern) {
         return scannerInstance.read(pattern);
     }
 
-    @Contract(pure = true)
     static String readLine() {
         return scannerInstance.readLine();
     }
@@ -121,7 +117,6 @@ public interface Scan {
         return scannerInstance.readShortUntil(prompt, validator);
     }
 
-    @Contract(pure = true)
     static int readInt() {
         return scannerInstance.readInt();
     }
@@ -134,7 +129,6 @@ public interface Scan {
         return scannerInstance.readIntUntil(prompt, validator);
     }
 
-    @Contract(pure = true)
     static long readLong() {
         return scannerInstance.readLong();
     }
@@ -147,7 +141,6 @@ public interface Scan {
         return scannerInstance.readLongUntil(prompt, validator);
     }
 
-    @Contract(pure = true)
     static float readFloat() {
         return scannerInstance.readFloat();
     }
@@ -160,7 +153,6 @@ public interface Scan {
         return scannerInstance.readFloatUntil(prompt, validator);
     }
 
-    @Contract(pure = true)
     static double readDouble() {
         return scannerInstance.readDouble();
     }
@@ -173,7 +165,6 @@ public interface Scan {
         return scannerInstance.readDoubleUntil(prompt, validator);
     }
 
-    @Contract(pure = true)
     static boolean readBoolean() {
         return scannerInstance.readBoolean();
     }
@@ -224,14 +215,6 @@ public interface Scan {
 
     static <T extends Number> T readNumberPrompt(String prompt, Function<String, T> parser) {
         return scannerInstance.readNumberPrompt(prompt, parser);
-    }
-
-    static <T extends Number> T readNumberUntil(
-            String prompt,
-            Function<String, T> parser,
-            Predicate<T> validator)
-    {
-        return scannerInstance.readNumberUntil(prompt, parser, validator);
     }
 
     static String readPrompt(String prompt) {
