@@ -19,6 +19,7 @@ import java.util.concurrent.CompletableFuture;
 import java.util.function.Consumer;
 import java.util.function.Supplier;
 
+@SuppressWarnings("unused")
 public class HttpService {
 
     private final HttpClient client;
@@ -90,21 +91,54 @@ public class HttpService {
         return sb.toString();
     }
 
+    /**
+     * Sends an HTTP GET request to the specified URL. This method constructs the request URL,
+     * including query parameters if present, sets the HTTP method to GET, and prepares the
+     * request for execution. The method does not execute the request itself; it must be followed
+     * by an appropriate method to send the request.
+     *
+     * @param url The target URL for the HTTP GET request. Must not be null.
+     * @return The current instance of {@code HttpService} to enable method chaining.
+     * @throws NullPointerException If the {@code url} parameter is null.
+     */
     public HttpService GET(@NotNull String url) {
         requestBuilder.uri(URI.create(buildUrl(url))).GET();
         return this;
     }
 
+    /**
+     * Sends an HTTP POST request to the specified URL. This method constructs the request
+     * URL and builds the appropriate HTTP request body. If form parameters are provided,
+     * they will be encoded and included in the body of the request with the content type
+     * set to "application/x-www-form-urlencoded". If no form parameters are present, the
+     * request will be sent with an empty body.
+     *
+     * @param url The target URL for the HTTP POST request. Must not be null.
+     * @return The current instance of {@code HttpService} to allow for method chaining.
+     * @throws NullPointerException If the {@code url} parameter is null.
+     */
     public HttpService POST(@NotNull String url) {
         String formData = buildFormData();
         If.isTrue(!formData.isEmpty(), () ->
-                        requestBuilder.uri(URI.create(buildUrl(url)))
+                        requestBuilder
+                                .uri(URI.create(buildUrl(url)))
                                 .POST(HttpRequest.BodyPublishers.ofString(formData))
                                 .header("Content-Type", "application/x-www-form-urlencoded"))
                 .orElse(() -> requestBuilder.uri(URI.create(buildUrl(url))).POST(HttpRequest.BodyPublishers.noBody()));
         return this;
     }
 
+    /**
+     * Sends an HTTP POST request to the specified URL with the provided request body
+     * and content type. The method builds the request URL, sets the request method to POST,
+     * and adds the appropriate Content-Type header.
+     *
+     * @param url The target URL for the HTTP POST request. Must not be null.
+     * @param body The request body to be included in the HTTP POST request. Must not be null.
+     * @param contentType The MIME type of the request body, specified as the Content-Type header. Must not be null.
+     * @return The current instance of {@code HttpService} to allow for method chaining.
+     * @throws NullPointerException If {@code url}, {@code body}, or {@code contentType} is null.
+     */
     public HttpService POST(@NotNull String url, @NotNull String body, @NotNull String contentType) {
         requestBuilder.uri(URI.create(buildUrl(url)))
                 .POST(HttpRequest.BodyPublishers.ofString(body))
@@ -112,23 +146,62 @@ public class HttpService {
         return this;
     }
 
+    /**
+     * Sends an HTTP PUT request to the specified URL with the provided request body.
+     * The method constructs the full request URL, sets the HTTP method to PUT, and
+     * sets the body of the request to the provided {@code body}.
+     *
+     * @param url The target URL for the HTTP PUT request. Must not be null.
+     * @param body The request body to be included in the HTTP PUT request. Must not be null.
+     * @return The current instance of {@code HttpService} to enable method chaining.
+     * @throws NullPointerException If either {@code url} or {@code body} is null.
+     */
     public HttpService PUT(@NotNull String url, @NotNull String body) {
         requestBuilder.uri(URI.create(buildUrl(url)))
                 .PUT(HttpRequest.BodyPublishers.ofString(body));
         return this;
     }
 
+    /**
+     * Sends an HTTP DELETE request to the specified URL. This method constructs the
+     * full request URL, sets the HTTP method to DELETE, and prepares the request
+     * for execution. It does not execute the request itself but configures the
+     * current request for subsequent sending.
+     *
+     * @param url The target URL for the HTTP DELETE request. Must not be null.
+     * @return The current instance of {@code HttpService} to enable method chaining.
+     * @throws NullPointerException If the {@code url} parameter is null.
+     */
     public HttpService DELETE(@NotNull String url) {
         requestBuilder.uri(URI.create(buildUrl(url))).DELETE();
         return this;
     }
 
+    /**
+     * Sends an HTTP PATCH request to the specified URL with the provided request body.
+     * This method constructs the full request URL, sets the HTTP method to PATCH,
+     * and includes the specified body as the request payload.
+     *
+     * @param url The target URL for the HTTP PATCH request. Must not be null.
+     * @param body The request body to be included in the HTTP PATCH request. Must not be null.
+     * @return The current instance of {@code HttpService} to enable method chaining.
+     * @throws NullPointerException If either {@code url} or {@code body} is null.
+     */
     public HttpService PATCH(@NotNull String url, @NotNull String body) {
         requestBuilder.uri(URI.create(buildUrl(url)))
                 .method("PATCH", HttpRequest.BodyPublishers.ofString(body));
         return this;
     }
 
+    /**
+     * Sends an HTTP OPTIONS request to the specified URL. This method constructs the
+     * full request URL, sets the HTTP method to OPTIONS, and prepares the request for execution.
+     * It does not execute the request but configures the current request for subsequent sending.
+     *
+     * @param url The target URL for the HTTP OPTIONS request. Must not be null.
+     * @return The current instance of {@code HttpService} to enable method chaining.
+     * @throws NullPointerException If the {@code url} parameter is null.
+     */
     public HttpService OPTIONS(@NotNull String url) {
         requestBuilder.uri(URI.create(buildUrl(url)))
                 .method("OPTIONS", HttpRequest.BodyPublishers.noBody());
