@@ -17,14 +17,12 @@
  */
 package com.github.rickmvi.jtoolbox.text;
 
-import com.github.rickmvi.jtoolbox.collections.map.Mapping;
 import com.github.rickmvi.jtoolbox.util.convert.NumberParser;
+import com.github.rickmvi.jtoolbox.collections.map.Mapping;
+import com.github.rickmvi.jtoolbox.logger.Logger;
 import com.github.rickmvi.jtoolbox.control.If;
-import com.github.rickmvi.jtoolbox.control.While;
-import com.github.rickmvi.jtoolbox.debug.Logger;
 
-import com.github.rickmvi.jtoolbox.util.DateBuilder;
-import com.github.rickmvi.jtoolbox.util.constants.Constants;
+import com.github.rickmvi.jtoolbox.datetime.DateTime;
 import com.github.rickmvi.jtoolbox.util.Numbers;
 import com.github.rickmvi.jtoolbox.util.Try;
 import org.jetbrains.annotations.Contract;
@@ -33,18 +31,16 @@ import lombok.experimental.UtilityClass;
 
 import java.util.Map;
 import java.lang.reflect.Field;
-import java.time.LocalDateTime;
-import java.util.function.Supplier;
 import java.util.regex.Pattern;
 import java.util.regex.Matcher;
 import java.lang.reflect.Modifier;
-import java.time.format.DateTimeFormatter;
+import java.util.function.Supplier;
 
-import static com.github.rickmvi.jtoolbox.collections.array.Array.lastIndex;
-import static com.github.rickmvi.jtoolbox.collections.array.Array.length;
 import static java.util.Map.entry;
 import static com.github.rickmvi.jtoolbox.util.Numbers.isNegative;
 import static com.github.rickmvi.jtoolbox.util.Numbers.isGreaterThan;
+import static com.github.rickmvi.jtoolbox.collections.array.Array.length;
+import static com.github.rickmvi.jtoolbox.collections.array.Array.lastIndex;
 
 /**
  * Utility class for formatting strings using placeholders and custom tokens.
@@ -121,7 +117,9 @@ import static com.github.rickmvi.jtoolbox.util.Numbers.isGreaterThan;
  * @see Stringifier
  * @see NumberParser
  * @see Logger
- * @since 1.3
+ * @author Rick M. Viana
+ * @version 1.5
+ * @since 2025
  */
 @UtilityClass
 public final class StringFormatter {
@@ -130,22 +128,20 @@ public final class StringFormatter {
     private static final Pattern       TOKEN_PATTERN;
     private static final Pattern     ADVANCED_TOKENS;
     private static final Pattern    NEW_LINE_PATTERN;
-    private static final DateTimeFormatter DATE_TIME;
     private static final Map<String, Object>  TOKENS;
 
     static {
-        GENERIC_PATTERN  = Pattern.compile(Constants.GENERIC);
-        TOKEN_PATTERN    = Pattern.compile(Constants.TOKENS_COMMUM);
-        ADVANCED_TOKENS  = Pattern.compile(Constants.ADVANCED_TOKEN);
-        NEW_LINE_PATTERN = Pattern.compile(Constants.NEW_LINE);
-        DATE_TIME        = DateBuilder.DatePattern.DD_MM_YYYY_HH_MM_SS.getFormatter();
+        GENERIC_PATTERN  = Pattern.compile("\\{}");
+        TOKEN_PATTERN    = Pattern.compile("\\{(\\d+)(?::(dc|dp|i|p|sc|e|U|lc))?}");
+        ADVANCED_TOKENS  = Pattern.compile("\\{(\\d+):([^}]+)}");
+        NEW_LINE_PATTERN = Pattern.compile("\\$N:(\\d+)");
         TOKENS           = Map.of(
                 "$n", System.lineSeparator(),
                 "$r", "\r",
                 "$t", "\t",
                 "$sp", " ",
-                "$tmp", DATE_TIME.format(LocalDateTime.now()),
-                "$rand", Math.random() * 1000000000L
+                "$tmp", DateTime.now().format(DateTime.DatePattern.DD_MM_YYYY_HH_MM_SS),
+                "$rand", Math.random() * 1024L
         );
     }
 
@@ -162,8 +158,8 @@ public final class StringFormatter {
 
     private static @NotNull String applyTemplateFormatting(@NotNull String templateString, Object @NotNull ... args) {
         templateString = Mapping.applyReplacements(templateString, TOKENS);
-        templateString = replacePlaceholders(templateString, args, TOKEN_PATTERN, StringFormatter::formatOriginalToken);
-        templateString = replacePlaceholders(templateString, args, ADVANCED_TOKENS, StringFormatter::formatAdvancedToken);
+        templateString = replacePlaceholders(templateString, args, TOKEN_PATTERN, StringFormatter::formatToken);
+        templateString = replacePlaceholders(templateString, args, ADVANCED_TOKENS, StringFormatter::formatToken);
         templateString = newLine(templateString);
         return templateString;
     }
@@ -172,7 +168,7 @@ public final class StringFormatter {
         Matcher matcher = NEW_LINE_PATTERN.matcher(template);
         StringBuffer buffer = getBuffer().get();
 
-        While.isTrue(matcher::find, () -> {
+        while (matcher.find()) {
             int count = Try.of(() -> NumberParser.toInt(matcher.group(1)))
                     .onFailure(e -> Logger.error("Invalid new line count '{}'", e, matcher.group(1)))
                     .orElse(1);
@@ -182,7 +178,7 @@ public final class StringFormatter {
             String replacement = System.lineSeparator().repeat(count);
 
             matcher.appendReplacement(buffer, Matcher.quoteReplacement(replacement));
-        });
+        }
 
         matcher.appendTail(buffer);
         return buffer.toString();
@@ -197,33 +193,23 @@ public final class StringFormatter {
         Matcher matcher = pattern.matcher(template);
         StringBuffer buffer = getBuffer().get();
 
-        While.isTrue(matcher::find, () -> {
+        while (matcher.find()) {
             int index = getIndexOrElse(matcher);
-            if (isPlaceholderIndexInvalid(args, index, matcher, buffer)) return;
+            handleInvalidIndex(args, index, matcher, buffer);
 
             Object value = args[index];
             String token = matcher.group(2);
             String replacement = token == null ? Stringifier.valueOf(value) : formatter.apply(token, value);
 
             matcher.appendReplacement(buffer, Matcher.quoteReplacement(replacement));
-        });
+        }
 
         matcher.appendTail(buffer);
         return buffer.toString();
     }
 
-    @Contract(pure = true)
-    private static @NotNull Supplier<StringBuffer> getBuffer() {
-        return StringBuffer::new;
-    }
-
-    private static boolean isPlaceholderIndexInvalid(
-            Object @NotNull [] args,
-            int index,
-            Matcher matcher,
-            StringBuffer buffer
-    ) {
-        return If.supplyTrue(isNegative(index) || isGreaterThan(index, length(args)), () -> {
+    private static void handleInvalidIndex(Object @NotNull [] args, int index, Matcher matcher, StringBuffer buffer) {
+        if (isNegative(index) || isGreaterThan(index, length(args))) {
             Logger.error(
                     "Invalid index '{}' for placeholder '{}' (args length: {}). Valid range is [0..{}].",
                     matcher.group(1),
@@ -232,8 +218,12 @@ public final class StringFormatter {
                     lastIndex(args)
             );
             matcher.appendReplacement(buffer, "");
-            return true;
-        }).orElseGet(() -> false);
+        }
+    }
+
+    @Contract(pure = true)
+    private static @NotNull Supplier<StringBuffer> getBuffer() {
+        return StringBuffer::new;
     }
 
     @Contract("null, _ -> null; !null, null -> param1")
@@ -245,12 +235,24 @@ public final class StringFormatter {
         StringBuilder sb = new StringBuilder();
 
         int index = 0;
+        applyFormatting(objects, matcher, index, sb);
+
+        matcher.appendTail(sb);
+        return sb.toString();
+    }
+
+    private static void applyFormatting(
+            Object[] objects,
+            @NotNull Matcher matcher,
+            int index,
+            StringBuilder sb
+    ) {
         while (matcher.find()) {
             String placeholder = matcher.group(1);
             String replacement = matcher.group();
 
             int finalIndex = index;
-            If.Throws(index >= length(objects),
+            If.ThrowWhen(index >= length(objects),
                     () -> new ArrayIndexOutOfBoundsException(format(
                             "The index '{}' overlapping the maximum index '{}'",
                             finalIndex,
@@ -259,7 +261,7 @@ public final class StringFormatter {
 
             Object obj = objects[index];
 
-            If.Throws(obj == null, () -> new IllegalArgumentException(format(
+            If.ThrowWhen(obj == null, () -> new IllegalArgumentException(format(
                     "Invalid null value for placeholder '{}'", placeholder)
             ));
 
@@ -283,9 +285,6 @@ public final class StringFormatter {
 
             matcher.appendReplacement(sb, Matcher.quoteReplacement(replacement));
         }
-
-        matcher.appendTail(sb);
-        return sb.toString();
     }
 
     @Contract("null, _ -> !null")
@@ -331,24 +330,7 @@ public final class StringFormatter {
                 .orElse(-1);
     }
 
-    private static @NotNull String formatOriginalToken(String token, Object value) {
-        return Mapping.returning(
-                token, 
-                Map.of(
-                        "dc", () -> NumberFormat.DECIMAL_COMMA.format(value),
-                        "dp", () -> NumberFormat.DECIMAL_POINT.format(value),
-                        "i",  () -> NumberFormat.INTEGER.format(value),
-                        "p",  () -> NumberFormat.PERCENT.format(value),
-                        "sc", () -> NumberFormat.SCIENTIFIC.format(value),
-                        "e",  () -> NumberFormat.EXPONENTIATION.format(value),
-                        "U",  () -> Stringifier.valueOf(value).toUpperCase(),
-                        "lc", () -> Stringifier.valueOf(value).toLowerCase()
-                ),
-                () -> ""
-        );
-    }
-
-    private static @NotNull String formatAdvancedToken(@NotNull String token, Object value) {
+    private static @NotNull String formatToken(@NotNull String token, Object value) {
         String[] split = token.split(":", 2);
         String command = split[0];
         String option  = split.length > 1 ? split[1] : "";
@@ -361,7 +343,15 @@ public final class StringFormatter {
                         entry("sub",  () -> StringEnhancer.substring(value + (option.isEmpty() ? "" : ":" + option))),
                         entry("rev",  () -> StringEnhancer.reverse(value)),
                         entry("trim", () -> StringEnhancer.trim(value)),
-                        entry("cap",  () -> StringEnhancer.capitalize(value))
+                        entry("cap",  () -> StringEnhancer.capitalize(value)),
+                        entry("dc",   () -> NumberFormat.DECIMAL_COMMA.format(value)),
+                        entry("dp",   () -> NumberFormat.DECIMAL_POINT.format(value)),
+                        entry("i",    () -> NumberFormat.INTEGER.format(value)),
+                        entry("p",    () -> NumberFormat.PERCENT.format(value)),
+                        entry("sc",   () -> NumberFormat.SCIENTIFIC.format(value)),
+                        entry("e",    () -> NumberFormat.EXPONENTIATION.format(value)),
+                        entry("U",    () -> Stringifier.valueOf(value).toUpperCase()),
+                        entry("lc",   () -> Stringifier.valueOf(value).toLowerCase())
                 ),
                 () -> ""
         );

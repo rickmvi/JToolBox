@@ -17,14 +17,10 @@
  */
 package com.github.rickmvi.jtoolbox.collections.array;
 
-import com.github.rickmvi.jtoolbox.lang.exceptions.InvalidStartIndexException;
+import com.github.rickmvi.jtoolbox.collections.Dynamic;
 import com.github.rickmvi.jtoolbox.control.For;
 import com.github.rickmvi.jtoolbox.control.If;
-
-import com.github.rickmvi.jtoolbox.util.ArrayUtils;
-import com.github.rickmvi.jtoolbox.util.MathUtils;
 import org.jetbrains.annotations.ApiStatus;
-import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
 import lombok.experimental.UtilityClass;
 
@@ -38,7 +34,7 @@ import static com.github.rickmvi.jtoolbox.text.StringFormatter.format;
 /**
  * High-level utility class that provides a rich, functional, and type-safe API for array manipulation.
  * <p>
- * Built on top of {@link AdaptiveArray}, this class offers a static and lightweight interface for
+ * Built on top of {@link Dynamic}, this class offers a static and lightweight interface for
  * working with Java arrays while preserving immutability and type consistency. It combines the
  * simplicity of array operations with the expressiveness of functional-style programming.
  * </p>
@@ -53,7 +49,6 @@ import static com.github.rickmvi.jtoolbox.text.StringFormatter.format;
  *   <li>Concatenation and range-copying of arrays</li>
  *   <li>Mapping, filtering, and distinct transformations</li>
  *   <li>Sorting and reversing arrays (in-place or returning new instances)</li>
- *   <li>Summation of numeric arrays with overflow protection (via {@link com.github.rickmvi.jtoolbox.util.MathUtils})</li>
  *   <li>Converting arrays to {@link java.util.List} or {@link java.util.Set}</li>
  *   <li>Repeating and joining array elements</li>
  * </ul>
@@ -62,10 +57,8 @@ import static com.github.rickmvi.jtoolbox.text.StringFormatter.format;
  * <ul>
  *   <li>All methods are {@code static} and return new arrays unless explicitly documented otherwise.</li>
  *   <li>All parameters must be non-null unless specified; invalid indices throw descriptive exceptions.</li>
- *   <li>Index operations are validated through {@link com.github.rickmvi.jtoolbox.lang.exceptions.InvalidStartIndexException}
  *       and {@link IndexOutOfBoundsException}.</li>
- *   <li>Internally uses {@link AdaptiveArray} for fluent data transformations.</li>
- *   <li>Numeric operations delegate to {@link com.github.rickmvi.jtoolbox.util.MathUtils} for precision and safety.</li>
+ *   <li>Internally uses {@link Dynamic} for fluent data transformations.</li>
  * </ul>
  *
  * <h2>Examples</h2>
@@ -117,18 +110,16 @@ import static com.github.rickmvi.jtoolbox.text.StringFormatter.format;
  *
  * <h2>See Also</h2>
  * <ul>
- *   <li>{@link AdaptiveArray}</li>
- *   <li>{@link com.github.rickmvi.jtoolbox.util.MathUtils}</li>
- *   <li>{@link com.github.rickmvi.jtoolbox.control.For}</li>
- *   <li>{@link com.github.rickmvi.jtoolbox.control.If}</li>
+ *   <li>{@link Dynamic}</li>
+ *   <li>{@link For}</li>
+ *   <li>{@link If}</li>
  * </ul>
- *
- * @author Rick M.
+ * @author Rick M. Viana
  * @version 1.3
- * @since 1.2
+ * @since 2025
  * @see For
  * @see Arrays
- * @see AdaptiveArray
+ * @see Dynamic
  * @apiNote Provides a functional abstraction over native arrays for use within the Console API ecosystem.
  */
 @UtilityClass
@@ -137,20 +128,20 @@ public class Array {
 
     @SafeVarargs
     @ApiStatus.Internal
-    private static <T> @NotNull AdaptiveArray<T> adapt(T @NotNull ... array) {
-        return AdaptiveArray.of(array);
+    private static <T> @NotNull Dynamic<T> adapt(T @NotNull ... array) {
+        return Dynamic.of(array);
     }
 
     @SafeVarargs
-    public static <T> @NotNull AdaptiveArray<T> wrap(T @NotNull ... array) {
+    public static <T> @NotNull Dynamic<T> wrap(T @NotNull ... array) {
         return adapt(array);
     }
 
     /* ==================================== ADD METHOD ========================================= */
 
     public static <T> T @NotNull [] add(T @NotNull [] array, int index, T element) {
-        If.Throws(index < 0 || index > array.length, () ->
-                new InvalidStartIndexException(format("Index: {}, Length: {}", index, length(array))));
+        If.ThrowWhen(index < 0 || index > array.length, () ->
+                new IndexOutOfBoundsException(format("Index: {}, Length: {}", index, length(array))));
         T[] result = Arrays.copyOf(array, array.length + 1);
 
         System.arraycopy(
@@ -212,7 +203,7 @@ public class Array {
     /* =================================== COPY RANGE METHOD ======================================== */
 
     public static <T> T @NotNull [] copyRange(T @NotNull [] array, int from, int to) {
-        If.Throws(from < 0 || to > array.length || from > to,
+        If.ThrowWhen(from < 0 || to > array.length || from > to,
                 () -> new IndexOutOfBoundsException(format("Invalid range: {} to {}", from, to)));
         return Arrays.copyOfRange(array, from, to);
     }
@@ -220,8 +211,8 @@ public class Array {
     /* =================================== REMOVER METHOD'S ======================================== */
 
     public static <T> T @NotNull [] remove(T @NotNull [] array, int index) {
-        If.Throws(index < 0 || index >= length(array), () ->
-                new InvalidStartIndexException(format("Index: {}, Length: {}", index, length(array))));
+        If.ThrowWhen(index < 0 || index >= length(array), () ->
+                new IndexOutOfBoundsException(format("Index: {}, Length: {}", index, length(array))));
         T[] result = Arrays.copyOf(array, array.length - 1);
         System.arraycopy(array, index + 1, result, index, array.length - index - 1);
         return result;
@@ -353,7 +344,7 @@ public class Array {
     /* ==================================== REPEAT METHOD ========================================= */
 
     public static <T> T[] repeat(T value, int times, @NotNull IntFunction<T[]> generator) {
-        If.Throws(times < 0, () -> new IllegalArgumentException("times: " + times));
+        If.ThrowWhen(times < 0, () -> new IllegalArgumentException("times: " + times));
         T[] array = generator.apply(times);
         Arrays.fill(array, value);
         return array;

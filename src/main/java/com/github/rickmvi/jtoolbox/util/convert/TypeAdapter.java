@@ -46,6 +46,7 @@ import java.util.Objects;
  * @see Objects
  * @since 1.1
  */
+@SuppressWarnings("unused")
 public class TypeAdapter {
 
     public static byte toByte(Object o) {

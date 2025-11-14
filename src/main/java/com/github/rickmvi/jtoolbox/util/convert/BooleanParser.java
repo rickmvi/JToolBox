@@ -17,7 +17,7 @@
  */
 package com.github.rickmvi.jtoolbox.util.convert;
 
-import com.github.rickmvi.jtoolbox.util.SafeRun;
+import com.github.rickmvi.jtoolbox.util.TypeConverter;
 import lombok.experimental.UtilityClass;
 import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
@@ -36,7 +36,7 @@ import java.util.function.Supplier;
  *     <li>Returning the conversion result wrapped in {@link Optional} for functional-style handling.</li>
  * </ul>
  * <p>
- * All conversions internally use {@link SafeRun} to handle conversion exceptions gracefully,
+ * All conversions internally use {@link TypeConverter} to handle conversion exceptions gracefully,
  * preventing runtime errors and facilitating robust input parsing from unreliable sources.
  * <p>
  * Typical use cases include parsing user input, configuration values, or environment variables where boolean semantics are needed.
@@ -55,7 +55,7 @@ public class BooleanParser {
      * @throws IllegalArgumentException if the underlying parsing logic encounters an unexpected issue
      */
     public static boolean toBoolean(@Nullable String value) {
-        return SafeRun.convert(value, Boolean::parseBoolean).orElse(false);
+        return TypeConverter.convert(value, Boolean::parseBoolean).orElse(false);
     }
 
     /**
@@ -75,7 +75,7 @@ public class BooleanParser {
      *                              logic requires it during execution
      */
     public static boolean toBoolean(@Nullable String value, boolean fallback) {
-        return SafeRun.convert(value, Boolean::parseBoolean).orElse(fallback);
+        return TypeConverter.convert(value, Boolean::parseBoolean).orElse(fallback);
     }
 
     /**
@@ -95,7 +95,7 @@ public class BooleanParser {
      *                              and is invoked
      */
     public static boolean toBoolean(@Nullable String value, @NotNull Supplier<Boolean> fallback) {
-        return SafeRun.convert(value, Boolean::parseBoolean).orElseGet(fallback);
+        return TypeConverter.convert(value, Boolean::parseBoolean).orElseGet(fallback);
     }
 
     /**
@@ -112,6 +112,6 @@ public class BooleanParser {
      */
     @Contract("null -> !null")
     public static Optional<Boolean> toBooleanOptional(@Nullable String value) {
-        return SafeRun.convert(value, Boolean::parseBoolean);
+        return TypeConverter.convert(value, Boolean::parseBoolean);
     }
 }

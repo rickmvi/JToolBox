@@ -17,7 +17,7 @@ O pacote `debug` fornece uma solução simples e extensível para logs com supor
 ### Importação
 
 ```java
-import com.github.rickmvi.jtoolbox.debug.Logger;
+
 ```
 ---
 ### 📤 Log básico

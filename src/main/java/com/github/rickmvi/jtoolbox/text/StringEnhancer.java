@@ -8,7 +8,7 @@ import org.jetbrains.annotations.NotNull;
 
 @ApiStatus.Internal
 @UtilityClass
-public class StringEnhancer {
+public final class StringEnhancer {
     
     public static @NotNull String pad(@NotNull Object value) {
         String[] parts = Stringifier.valueOf(value).split(":", 2);

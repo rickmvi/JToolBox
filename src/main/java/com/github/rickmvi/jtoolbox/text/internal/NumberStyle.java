@@ -17,7 +17,6 @@
  */
 package com.github.rickmvi.jtoolbox.text.internal;
 
-import com.github.rickmvi.jtoolbox.util.constants.Constants;
 import lombok.Getter;
 import org.jetbrains.annotations.Contract;
 
@@ -47,22 +46,22 @@ import java.text.DecimalFormat;
 public enum NumberStyle {
 
     /** Format with comma as decimal separator (e.g., 1.234,56) */
-    DECIMAL_COMMA (Constants.DECIMAL_COMMA),
+    DECIMAL_COMMA ("#,##0.00"),
 
     /** Format with dot as decimal separator (e.g., 1234.56) */
-    DECIMAL_POINT (Constants.DECIMAL_POINT),
+    DECIMAL_POINT ("###0.00"),
 
     /** Integer format with a thousand separator (e.g., 1.234) */
-    INTEGER       (Constants.INTEGER),
+    INTEGER       ("#,##0"),
 
     /** Percentage format (e.g., 12.50%) */
-    PERCENT       (Constants.PERCENT),
+    PERCENT       ("#0.00%"),
 
     /** Scientific notation format (e.g., 1.23E3) */
-    SCIENTIFIC    (Constants.SCIENTIFIC),
+    SCIENTIFIC    ("00.#######E0"),
 
     /** Exponential format for numeric values (e.g., "1.23E3"). */
-    EXPONENTIATION(Constants.SCIENTIFIC_EXP);
+    EXPONENTIATION("##0.######E0");
 
     @Getter(value = lombok.AccessLevel.PUBLIC)
     private final DecimalFormat format;

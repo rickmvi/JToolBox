@@ -15,25 +15,25 @@
  * You should have received a copy of the GNU Lesser General Public License
  * along with this library. If not, see <https://www.gnu.org/licenses/>.
  */
-package com.github.rickmvi.jtoolbox.debug;
+package com.github.rickmvi.jtoolbox.logger;
 
-import com.github.rickmvi.jtoolbox.control.If;
-import com.github.rickmvi.jtoolbox.util.DateBuilder;
 import com.github.rickmvi.jtoolbox.text.StringFormatter;
-import com.github.rickmvi.jtoolbox.debug.log.LogLevel;
+import com.github.rickmvi.jtoolbox.logger.log.LogLevel;
+import com.github.rickmvi.jtoolbox.datetime.DateTime;
 import com.github.rickmvi.jtoolbox.console.IO;
+import com.github.rickmvi.jtoolbox.control.If;
 import lombok.AccessLevel;
+
 import lombok.Getter;
 import lombok.Setter;
 import lombok.experimental.UtilityClass;
-import org.jetbrains.annotations.ApiStatus;
-import org.jetbrains.annotations.Contract;
+
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Contract;
+import org.jetbrains.annotations.ApiStatus;
 
 import java.util.Set;
 import java.util.EnumSet;
-import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
 
 /**
  * A simple logging utility class that provides colored console output with timestamp and log level information.
@@ -44,16 +44,18 @@ import java.time.format.DateTimeFormatter;
  * </p>
  *
  * @author Rick M. Viana
- * @since 1.1
+ * @version 1.2
+ * @since 2025
  */
 @UtilityClass
+@SuppressWarnings("unused")
 public class Logger {
 
-    private static final DateTimeFormatter  FORMATTER;
+    private static final String TIME;
     private static final Set<LogLevel> ENABLED_LEVELS;
 
     static {
-        FORMATTER  = DateBuilder.DatePattern.DD_MM_YYYY_HH_MM_SS.getFormatter();
+        TIME = DateTime.now().format(DateTime.DatePattern.DD_MM_YYYY_HH_MM_SS);
         ENABLED_LEVELS = EnumSet.complementOf(EnumSet.of(LogLevel.OFF));
     }
 
@@ -70,20 +72,18 @@ public class Logger {
     public static void log(LogLevel level, String message) {
         if (!ENABLED_LEVELS.contains(level) || level == LogLevel.OFF) return;
 
-        String time         = FORMATTER.format(LocalDateTime.now());
         String coloredLevel = colorize(level.name(), AnsiColor.getColor(level));
 
-        IO.format("[{}] [{}] {}$n", time, coloredLevel, message);
+        IO.format("[{}] [{}] {}$n", TIME, coloredLevel, message);
     }
 
     public static void log(LogLevel level, String template, Object... args) {
         if (!ENABLED_LEVELS.contains(level) || level == LogLevel.OFF) return;
 
-        String time         = FORMATTER.format(LocalDateTime.now());
         String coloredLevel = colorize(level.name(), AnsiColor.getColor(level));
         String message      = StringFormatter.format(template, args);
 
-        IO.format("[{}] [{}] {}$n", time, coloredLevel, message);
+        IO.format("[{}] [{}] {}$n", TIME, coloredLevel, message);
     }
 
     public static void log(LogLevel level, String message, @NotNull Throwable t) {

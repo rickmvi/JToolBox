@@ -1,7 +1,7 @@
 package com.github.rickmvi.jtoolbox.control;
 
-import com.github.rickmvi.jtoolbox.debug.log.LogLevel;
-import com.github.rickmvi.jtoolbox.debug.Logger;
+import com.github.rickmvi.jtoolbox.logger.log.LogLevel;
+import com.github.rickmvi.jtoolbox.logger.Logger;
 import com.github.rickmvi.jtoolbox.util.Numbers;
 import com.github.rickmvi.jtoolbox.util.Try;
 
@@ -100,7 +100,7 @@ public final class For<T> {
 
     private static <N extends Number & Comparable<N>> @NotNull For<N> rangeInternal(N start, N end, N step) {
         return Try.of(() -> {
-            If.Throws(Numbers.isZero(step), () -> new IllegalArgumentException("Step cannot be zero"));
+            If.ThrowWhen(Numbers.isZero(step), () -> new IllegalArgumentException("Step cannot be zero"));
 
             List<N> list = new ArrayList<>();
 
@@ -131,15 +131,17 @@ public final class For<T> {
 
     private static @NotNull For<Integer> buildRange() {
         return Try.of(() -> {
-            If.Throws(Numbers.isZero(STEP), () -> { throw new IllegalArgumentException("Step cannot be 0"); });
+            If.ThrowWhen(Numbers.isZero(STEP), () -> {
+                throw new IllegalArgumentException("Step cannot be 0");
+            });
 
             List<Integer> list = new ArrayList<>();
-            final int[] i = {START};
+            int i = START;
 
-            While.isTrue(() -> condition.test(i[0], END), () -> {
-                list.add(i[0]);
-                i[0] += (START <= END ? Math.abs(STEP) : -Math.abs(STEP));
-            });
+            while (condition.test(i, END)) {
+                list.add(i);
+                i += STEP;
+            }
 
             return new For<>(list, new ArrayList<>());
         }).orElseThrow(e -> new RuntimeException("Failed to build range", e));

@@ -15,13 +15,12 @@
  * You should have received a copy of the GNU Lesser General Public License
  * along with this library. If not, see <https://www.gnu.org/licenses/>.
  */
-package com.github.rickmvi.jtoolbox.debug;
+package com.github.rickmvi.jtoolbox.logger;
 
 import com.github.rickmvi.jtoolbox.control.For;
 import com.github.rickmvi.jtoolbox.control.If;
-import com.github.rickmvi.jtoolbox.debug.log.LogLevel;
+import com.github.rickmvi.jtoolbox.logger.log.LogLevel;
 
-import com.github.rickmvi.jtoolbox.util.constants.Constants;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
@@ -36,19 +35,23 @@ import org.jetbrains.annotations.NotNull;
  * Each color is associated with its respective ANSI code, which can be used to apply formatting to strings.
  * It also includes utility methods for retrieving colors by ordinal, resolving colors by ANSI code,
  * and mapping log levels to specific colors.
+ *
+ * @author Rick M. Viana
+ * @version 1.1
+ * @since 2025
  */
 @RequiredArgsConstructor(access = AccessLevel.PRIVATE)
 public enum AnsiColor {
-    BLACK   ( Constants.BLACK   ),
-    BLUE    ( Constants.BLUE    ),
-    BOLD    ( Constants.BOLD    ),
-    CYAN    ( Constants.CYAN    ),
-    GREEN   ( Constants.GREEN   ),
-    MAGENTA ( Constants.MAGENTA ),
-    RED     ( Constants.RED     ),
-    RESET   ( Constants.RESET   ),
-    WHITE   ( Constants.WHITE   ),
-    YELLOW  ( Constants.YELLOW  );
+    BLACK   ( "\u001B[30m" ),
+    BLUE    ( "\u001B[34m" ),
+    BOLD    ( "\u001B[1m"  ),
+    CYAN    ( "\u001B[36m" ),
+    GREEN   ( "\u001B[32m" ),
+    MAGENTA ( "\u001B[35m" ),
+    RED     ( "\u001B[31m" ),
+    RESET   ( "\u001B[0m"  ),
+    WHITE   ( "\u001B[37m" ),
+    YELLOW  ( "\u001B[33m" );
 
     @Getter(value = AccessLevel.PUBLIC)
     private final String code;
@@ -56,7 +59,7 @@ public enum AnsiColor {
 
     @Contract(pure = true)
     public static @NotNull AnsiColor valueOf(int ordinal) {
-        If.Throws(
+        If.ThrowWhen(
                 ordinal < 0 || ordinal >= VALUES.length,
                 () -> new IndexOutOfBoundsException("Invalid ordinal: " + ordinal)
         );
@@ -72,7 +75,7 @@ public enum AnsiColor {
             case WARN  -> YELLOW.getCode();
             case ERROR -> RED.getCode();
             case FATAL -> BOLD.getCode() + RED.getCode();
-            default ->    RESET.getCode();
+            default    -> RESET.getCode();
         };
     }
 

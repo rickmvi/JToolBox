@@ -143,7 +143,7 @@ public interface If {
      * @throws RuntimeException The supplied exception if the condition is true.
      */
     @Contract("true, _ -> fail")
-    static void throwWhen(boolean condition, @NotNull Supplier<? extends RuntimeException> exceptionSupplier) {
+    static void ThrowWhen(boolean condition, @NotNull Supplier<? extends RuntimeException> exceptionSupplier) {
         if (condition) throw exceptionSupplier.get();
     }
 
@@ -159,16 +159,34 @@ public interface If {
         return supplyTrue(condition, whenTrue).getOptional();
     }
 
+    /**
+     * Returns a message supplied by the provided {@code messageSupplier} if it is not {@code null},
+     * otherwise returns the {@code defaultMessage}.
+     *
+     * @param messageSupplier A {@link Supplier} that provides the message. If {@code null},
+     *                        the {@code defaultMessage} will be returned instead.
+     * @param defaultMessage  The default message to return if {@code messageSupplier} is {@code null}.
+     * @return The message provided by {@code messageSupplier} if it is not {@code null}, or
+     *         {@code defaultMessage} otherwise.
+     * @throws NullPointerException If {@code messageSupplier} is not {@code null} but its
+     *                               {@code get()} method returns {@code null}.
+     */
     static String MessageOrDefault(Supplier<String> messageSupplier, String defaultMessage) {
         return Objects.isNull(messageSupplier) ? defaultMessage : messageSupplier.get();
     }
 
     /**
-     * @deprecated Use {@link If#throwWhen(boolean, Supplier)} for consistency.
+     * Throws a {@link RuntimeException} if the specified condition is {@code true}.
+     * This method is deprecated and should be replaced by {@link #ThrowWhen(boolean, Supplier)}.
+     *
+     * @param condition The condition that, if {@code true}, triggers the exception.
+     * @param exceptionSupplier A supplier for the exception to be thrown.
+     * @throws RuntimeException The exception provided by {@code exceptionSupplier} if {@code condition} is {@code true}.
+     * @deprecated Use {@link #ThrowWhen(boolean, Supplier)} instead.
      */
     @Deprecated
     @Contract("true, _ -> fail")
     static void Throws(boolean condition, Supplier<? extends RuntimeException> exceptionSupplier) {
-        throwWhen(condition, exceptionSupplier);
+        ThrowWhen(condition, exceptionSupplier);
     }
 }

@@ -17,7 +17,7 @@
  */
 package com.github.rickmvi.jtoolbox.util.convert;
 
-import com.github.rickmvi.jtoolbox.util.SafeRun;
+import com.github.rickmvi.jtoolbox.util.TypeConverter;
 
 import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.Nullable;
@@ -33,7 +33,7 @@ import java.util.Optional;
  * such as {@code int}, {@code long}, {@code double}, and {@code float} with
  * support for default fallback values and lazy fallback suppliers.
  * <p>
- * All parsing operations use the {@link SafeRun} utility for safe conversions,
+ * All parsing operations use the {@link TypeConverter} utility for safe conversions,
  * avoiding unchecked exceptions and enabling use of {@link Optional} where appropriate.
  * <p>
  * Methods are overloaded to support:
@@ -53,16 +53,15 @@ public class NumberParser extends TypeAdapter {
     }
 
     public static byte toByte(@Nullable String value, byte fallback) {
-        return SafeRun.convert(value, Byte::parseByte).orElse(fallback);
+        return TypeConverter.convert(value, Byte::parseByte).orElse(fallback);
     }
 
     public static byte toByte(@Nullable String value, @NotNull Supplier<Byte> fallback) {
-        return SafeRun.convert(value, Byte::parseByte).orElseGet(fallback);
+        return TypeConverter.convert(value, Byte::parseByte).orElseGet(fallback);
     }
 
-    @Contract("null -> !null")
     public static Optional<Byte> toByteOptional(@Nullable String value) {
-        return SafeRun.convert(value, Byte::parseByte);
+        return TypeConverter.convert(value, Byte::parseByte);
     }
 
     public static short toShort(@Nullable String value) {
@@ -70,16 +69,15 @@ public class NumberParser extends TypeAdapter {
     }
 
     public static short toShort(@Nullable String value, short fallback) {
-        return SafeRun.convert(value, Short::parseShort).orElse(fallback);
+        return TypeConverter.convert(value, Short::parseShort).orElse(fallback);
     }
 
     public static short toShort(@Nullable String value, Supplier<Short> fallback) {
-        return SafeRun.convert(value, Short::parseShort).orElseGet(fallback);
+        return TypeConverter.convert(value, Short::parseShort).orElseGet(fallback);
     }
 
-    @Contract("null -> !null")
     public static Optional<Short> toShortOptional(@Nullable String value) {
-        return SafeRun.convert(value, Short::parseShort);
+        return TypeConverter.convert(value, Short::parseShort);
     }
 
     public static int toInt(@Nullable String value) {
@@ -87,16 +85,16 @@ public class NumberParser extends TypeAdapter {
     }
 
     public static int toInt(@Nullable String value, int fallback) {
-        return SafeRun.convert(value, Integer::parseInt).orElse(fallback);
+        return TypeConverter.convert(value, Integer::parseInt).orElse(fallback);
     }
 
     public static int toInt(@Nullable String value, @NotNull Supplier<Integer> fallback) {
-        return SafeRun.convert(value, Integer::parseInt).orElseGet(fallback);
+        return TypeConverter.convert(value, Integer::parseInt).orElseGet(fallback);
         
     }
 
     public static Optional<Integer> toIntOptional(@Nullable String value) {
-        return SafeRun.convert(value, Integer::parseInt);
+        return TypeConverter.convert(value, Integer::parseInt);
     }
 
     public static long toLong(@Nullable String value) {
@@ -104,15 +102,15 @@ public class NumberParser extends TypeAdapter {
     }
 
     public static long toLong(@Nullable String value, long fallback) {
-        return SafeRun.convert(value, Long::parseLong).orElse(fallback);
+        return TypeConverter.convert(value, Long::parseLong).orElse(fallback);
     }
 
     public static long toLong(@Nullable String value, @NotNull Supplier<Long> fallback) {
-        return SafeRun.convert(value, Long::parseLong).orElseGet(fallback);
+        return TypeConverter.convert(value, Long::parseLong).orElseGet(fallback);
     }
 
     public static Optional<Long> toLongOptional(@Nullable String value) {
-        return SafeRun.convert(value, Long::parseLong);
+        return TypeConverter.convert(value, Long::parseLong);
     }
 
     public static double toDouble(@Nullable String value) {
@@ -120,15 +118,15 @@ public class NumberParser extends TypeAdapter {
     }
 
     public static double toDouble(@Nullable String value, double fallback) {
-        return SafeRun.convert(value, Double::parseDouble).orElse(fallback);
+        return TypeConverter.convert(value, Double::parseDouble).orElse(fallback);
     }
 
     public static double toDouble(@Nullable String value, @NotNull Supplier<Double> fallback) {
-        return SafeRun.convert(value, Double::parseDouble).orElseGet(fallback);
+        return TypeConverter.convert(value, Double::parseDouble).orElseGet(fallback);
     }
 
     public static Optional<Double> toDoubleOptional(@Nullable String value) {
-        return SafeRun.convert(value, Double::parseDouble);
+        return TypeConverter.convert(value, Double::parseDouble);
     }
 
     public static float toFloat(@Nullable String value) {
@@ -136,15 +134,15 @@ public class NumberParser extends TypeAdapter {
     }
 
     public static float toFloat(@Nullable String value, float fallback) {
-        return SafeRun.convert(value, Float::parseFloat).orElse(fallback);
+        return TypeConverter.convert(value, Float::parseFloat).orElse(fallback);
     }
 
     public static float toFloat(@Nullable String value, @NotNull Supplier<Float> fallback) {
-        return SafeRun.convert(value, Float::parseFloat).orElseGet(fallback);
+        return TypeConverter.convert(value, Float::parseFloat).orElseGet(fallback);
     }
 
     public static Optional<Float> toFloatOptional(@Nullable String value) {
-        return SafeRun.convert(value, Float::parseFloat);
+        return TypeConverter.convert(value, Float::parseFloat);
     }
 
 }

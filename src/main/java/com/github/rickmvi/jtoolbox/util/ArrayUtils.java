@@ -1,5 +1,8 @@
 package com.github.rickmvi.jtoolbox.util;
 
+import org.jetbrains.annotations.ApiStatus;
+
+@ApiStatus.Internal
 public abstract class ArrayUtils {
 
     public static boolean isEmpty(byte[] array) {

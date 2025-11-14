@@ -89,9 +89,10 @@ import java.util.concurrent.ThreadLocalRandom;
  * @since 2025
  */
 @Deprecated
+@ApiStatus.Internal
 @UtilityClass
 @SuppressWarnings("unused")
-public class MathUtils {
+public final class MathUtils {
 
     public static double random() {
         return Math.random();

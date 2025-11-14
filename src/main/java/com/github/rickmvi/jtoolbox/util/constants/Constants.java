@@ -5,32 +5,6 @@ import org.jetbrains.annotations.ApiStatus;
 @ApiStatus.Internal
 public class Constants {
 
-    // --- Regex ---
-    public static final String GENERIC            = "\\{}";
-    public static final String TOKENS_COMMUM      = "\\{(\\d+)(?::(dc|dp|i|p|sc|e|U|lc))?}";
-    public static final String ADVANCED_TOKEN     = "\\{(\\d+):([^}]+)}";
-    public static final String NEW_LINE           = "\\$N:(\\d+)";
-
-    // --- Number Formats ---
-    public static final String DECIMAL_COMMA  = "#,##0.00";
-    public static final String DECIMAL_POINT  = "###0.00";
-    public static final String INTEGER        = "#,##0";
-    public static final String PERCENT        = "#0.00%";
-    public static final String SCIENTIFIC     = "00.#######E0";
-    public static final String SCIENTIFIC_EXP = "##0.######E0";
-
-    // --- Colors ---
-    public static final String BLACK   = "\u001B[30m";
-    public static final String BLUE    = "\u001B[34m";
-    public static final String BOLD    = "\u001B[1m";
-    public static final String CYAN    = "\u001B[36m";
-    public static final String GREEN   = "\u001B[32m";
-    public static final String MAGENTA = "\u001B[35m";
-    public static final String RED     = "\u001B[31m";
-    public static final String RESET   = "\u001B[0m";
-    public static final String WHITE   = "\u001B[37m";
-    public static final String YELLOW  = "\u001B[33m";
-
     // --- Generic Messages ---
     public static final String NON_NEGATIVE   = "Value must be non-negative.";
     public static final String POSITIVE_VALUE = "Value must be positive.";

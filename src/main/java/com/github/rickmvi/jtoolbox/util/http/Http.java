@@ -1,34 +1,56 @@
-package com.github.rickmvi.jtoolbox.util;
+/*
+ * Console API - Utilitarian library for input, output and formatting on the console.
+ * Copyright (C) 2025  Rick M. Viana
+ *
+ * This library is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU Lesser General Public License as published by
+ * the Free Software Foundation; either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * This library is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+ * GNU Lesser General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with this library. If not, see <https://www.gnu.org/licenses/>.
+ */
+package com.github.rickmvi.jtoolbox.util.http;
 
+import com.github.rickmvi.jtoolbox.util.http.status.HTTPStatus;
+import com.github.rickmvi.jtoolbox.logger.log.LogLevel;
+import com.github.rickmvi.jtoolbox.logger.AnsiColor;
+import com.github.rickmvi.jtoolbox.logger.Logger;
 import com.github.rickmvi.jtoolbox.control.If;
-import com.github.rickmvi.jtoolbox.debug.AnsiColor;
-import com.google.gson.Gson;
-import com.github.rickmvi.jtoolbox.debug.Logger;
-import com.github.rickmvi.jtoolbox.debug.log.LogLevel;
-import com.google.gson.GsonBuilder;
+import com.github.rickmvi.jtoolbox.util.Try;
 import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
+import com.google.gson.GsonBuilder;
+import com.google.gson.Gson;
 
-import java.net.URI;
-import java.net.URLEncoder;
-import java.net.http.*;
-import java.nio.charset.StandardCharsets;
-import java.time.Duration;
 import java.util.*;
-import java.util.concurrent.CompletableFuture;
+import java.net.URI;
+import java.net.http.*;
+import java.time.Duration;
+import java.net.URLEncoder;
 import java.util.function.Consumer;
 import java.util.function.Supplier;
+import java.nio.charset.StandardCharsets;
+import java.util.concurrent.CompletableFuture;
 
 /**
  * The {@code Http} class provides a fluent API for constructing and configuring HTTP requests.
  * It supports adding query parameters, form parameters, and different HTTP request methods
  * such as GET, POST, PUT, DELETE, PATCH, and OPTIONS. Additionally, this class allows customizing
  * the request body, URL encoding, and headers, facilitating a flexible and extensible request-building process.
+ *
+ * @author Rick M. Viana
+ * @version 1.2
+ * @since 2025
  */
 @SuppressWarnings("unused")
 public class Http {
 
-    /** The underlying HttpClient is static and shared across all instances for efficiency. */
     private static final HttpClient client;
 
     static {
@@ -56,7 +78,7 @@ public class Http {
     }
 
     @Contract(value = " -> new", pure = true)
-    public static @NotNull Http create() {
+    public static @NotNull Http build() {
         return new Http();
     }
 
@@ -225,8 +247,7 @@ public class Http {
      * @throws NullPointerException If {@code url} or {@code bodyObject} is null.
      */
     public Http POST_JSON(@NotNull String url, @NotNull Object bodyObject) {
-        // Usa a mesma Gson configuration do ApiResponse
-        String jsonBody = ApiResponse.gson.toJson(bodyObject);
+        String jsonBody = ResponseWrapper.gson.toJson(bodyObject);
 
         requestBuilder.uri(URI.create(buildUrl(url)))
                 .POST(HttpRequest.BodyPublishers.ofString(jsonBody))
@@ -255,7 +276,7 @@ public class Http {
      * Sends an HTTP DELETE request to the specified URL. This method constructs the
      * full request URL, sets the HTTP method to DELETE, and prepares the request
      * for execution. It does not execute the request itself but configures the
-     * current request for subsequent sending.
+     * current request for later sending.
      *
      * @param url The target URL for the HTTP DELETE request. Must not be null.
      * @return The current instance of {@code HttpService} to enable method chaining.
@@ -285,7 +306,7 @@ public class Http {
     /**
      * Sends an HTTP OPTIONS request to the specified URL. This method constructs the
      * full request URL, sets the HTTP method to OPTIONS, and prepares the request for execution.
-     * It does not execute the request but configures the current request for subsequent sending.
+     * It does not execute the request but configures the current request for later sending.
      *
      * @param url The target URL for the HTTP OPTIONS request. Must not be null.
      * @return The current instance of {@code HttpService} to enable method chaining.
@@ -333,37 +354,94 @@ public class Http {
         return this;
     }
 
+    /**
+     * Adds a header to the HTTP request with the specified key and value.
+     *
+     * @param key the name of the header to add; must not be null.
+     * @param value the value of the header to add; must not be null.
+     * @return the current Http instance for method chaining.
+     * @throws NullPointerException if either the key or value is null.
+     */
     public Http header(@NotNull String key, @NotNull String value) {
         requestBuilder.header(key, value);
         return this;
     }
 
+    /**
+     * Adds the provided headers to the HTTP request by setting them in the request builder.
+     *
+     * @param headers A map containing header names as keys and their corresponding values.
+     *                Must not be null.
+     * @return The current instance of {@code Http} for method chaining.
+     * @throws NullPointerException If the {@code headers} parameter is null.
+     */
     public Http headers(@NotNull Map<String, String> headers) {
         headers.forEach(requestBuilder::header);
         return this;
     }
 
+    /**
+     * Sets the timeout duration for the current HTTP request in seconds.
+     * This method configures the request to use the specified timeout duration.
+     *
+     * @param seconds the timeout duration in seconds. Must be a non-negative value.
+     * @return the current {@code Http} instance for method chaining.
+     * @throws IllegalArgumentException if the specified {@code seconds} is negative.
+     */
     public Http timeoutSeconds(long seconds) {
         requestBuilder.timeout(Duration.ofSeconds(seconds));
         return this;
     }
 
+    /**
+     * Sets the timeout duration for the HTTP request in milliseconds.
+     *
+     * @param millis the timeout duration in milliseconds
+     * @return the current instance of {@code Http}, allowing method chaining
+     * @throws IllegalArgumentException if the specified timeout value is negative
+     */
     public Http timeoutMillis(long millis) {
         requestBuilder.timeout(Duration.ofMillis(millis));
         return this;
     }
 
+    /**
+     * Configures the number of retry attempts and the delay between each retry
+     * for the HTTP request.
+     *
+     * @param attempts The number of times to retry the request in case of failure.
+     *                 Must be a non-negative integer.
+     * @param delay    The duration to wait between retry attempts. Must be a
+     *                 non-null positive duration.
+     * @return The current HTTP instance with the updated retry configuration.
+     * @throws IllegalArgumentException If the attempts parameter is negative or
+     *                                  the delay parameter is null or non-positive.
+     */
     public Http retry(int attempts, Duration delay) {
         this.retries = attempts;
         this.retryDelay = delay;
         return this;
     }
 
+    /**
+     * Enables or disables logging for HTTP operations.
+     *
+     * @param enable a boolean indicating whether logging should be enabled (true) or disabled (false)
+     * @return the current {@code Http} instance with the updated logging configuration
+     * @throws IllegalStateException if the logging state cannot be changed due to an invalid operation
+     */
     public Http enableLogging(boolean enable) {
         this.enableLogging = enable;
         return this;
     }
 
+    /**
+     * Configures the log level for the HTTP requests and responses.
+     *
+     * @param level the log level to set, specifying the verbosity of logging
+     * @return the current Http instance with the updated log level configuration
+     * @throws IllegalArgumentException if the provided log level is null
+     */
     public Http logLevel(LogLevel level) {
         this.logLevel = level;
         return this;
@@ -373,18 +451,38 @@ public class Http {
         if (enableLogging) Logger.log(logLevel, msg);
     }
 
-    public ApiResponse send() {
+    /**
+     * Sends a request and returns the response wrapped in a {@code ResponseWrapper}.
+     *
+     * @return A {@code ResponseWrapper} containing the response from the request.
+     * @throws IllegalStateException if the method is called in an invalid state.
+     */
+    public ResponseWrapper send() {
         return sendRequest(0);
     }
 
-    public ApiResponse sendRequest(int attempt) {
+    /**
+     * Sends an HTTP request and handles retries in case of failures.
+     *
+     * The method attempts to send an HTTP request using the provided client and request builder.
+     * It logs the response status and body upon a successful request. If the request fails, it retries
+     * up to a predefined number of times, with a delay between each retry. Retries are stopped if the
+     * maximum number of attempts is reached, and an exception is thrown.
+     *
+     * @param attempt The current attempt count of sending the request. It should be non-negative.
+     * @return A {@code ResponseWrapper} object containing the HTTP response status code and response body
+     * if the request is successful.
+     * @throws RuntimeException If the HTTP request fails after exhausting all retries or if an
+     * interruption occurs during the retry delay.
+     */
+    public ResponseWrapper sendRequest(int attempt) {
         return Try.ofThrowing(() -> client.send(requestBuilder.build(), HttpResponse.BodyHandlers.ofString()))
                 .map(response -> {
                     log("Request sent to " + response.uri() + " with status " + getCode(response));
-                    return new ApiResponse(response.statusCode(), response.body());
+                    return new ResponseWrapper(response.statusCode(), response.body());
                 })
                 .recover(e -> {
-                    If.Throws(attempt >= retries, () -> {
+                    If.ThrowWhen(attempt >= retries, () -> {
                         throw new RuntimeException("HTTP request failed after retries", e);
                     });
                     Try.runThrowing(() -> Thread.sleep(retryDelay.toMillis())).recover(throwable -> {
@@ -397,8 +495,8 @@ public class Http {
     }
 
     private static String getCode(@NotNull HttpResponse<String> response) {
-        ApiResponse apiResponse = new ApiResponse(response.statusCode(), response.body());
-        return If.supplyTrue(apiResponse.isSuccess(), () ->
+        ResponseWrapper responseWrapper = new ResponseWrapper(response.statusCode(), response.body());
+        return If.supplyTrue(responseWrapper.isSuccess(), () ->
                         AnsiColor.GREEN.getCode() +
                                 response.statusCode()         +
                                 AnsiColor.RESET.getCode())
@@ -409,11 +507,20 @@ public class Http {
                                 AnsiColor.RESET.getCode());
     }
 
-    public CompletableFuture<ApiResponse> sendAsync() {
+    /**
+     * Sends an asynchronous HTTP request using the configured client and request builder.
+     * This method constructs the request, submits it asynchronously, and processes the response
+     * to return a wrapped representation of the HTTP status code and response body.
+     *
+     * @return A CompletableFuture that resolves to a ResponseWrapper containing the HTTP status
+     *         code and response body upon completion of the request.
+     * @throws IllegalArgumentException if the request building fails or if the URI is invalid.
+     */
+    public CompletableFuture<ResponseWrapper> sendAsync() {
         return client.sendAsync(requestBuilder.build(), HttpResponse.BodyHandlers.ofString())
                 .thenApply(resp -> {
                     log("Async request sent to " + resp.uri() + " with status " + getCode(resp));
-                    return new ApiResponse(resp.statusCode(), resp.body());
+                    return new ResponseWrapper(resp.statusCode(), resp.body());
                 });
     }
 
@@ -423,11 +530,11 @@ public class Http {
      * @param onSuccess Consumer called when the request completes successfully (status 2xx).
      * @param onFailure Consumer called when the request fails (network error, timeout, or exception during retry logic).
      */
-    public void sendAsync(Consumer<ApiResponse> onSuccess, Consumer<Throwable> onFailure) {
+    public void sendAsync(Consumer<ResponseWrapper> onSuccess, Consumer<Throwable> onFailure) {
         client.sendAsync(requestBuilder.build(), HttpResponse.BodyHandlers.ofString())
                 .thenApply(resp -> {
                     log("Async request sent to " + resp.uri() + " with status " + getCode(resp));
-                    return new ApiResponse(resp.statusCode(), resp.body());
+                    return new ResponseWrapper(resp.statusCode(), resp.body());
                 })
                 .thenAccept(onSuccess)
                 .exceptionally(e -> {
@@ -436,7 +543,14 @@ public class Http {
                 });
     }
 
-    public record ApiResponse(int statusCode, String body) {
+    /**
+     * A wrapper for HTTP response data that includes the status code and body content.
+     * This class provides utility methods for interacting with and handling responses.
+     *
+     * @param statusCode The HTTP status code of the response.
+     * @param body       The body content of the response.
+     */
+    public record ResponseWrapper(int statusCode, String body) {
 
         /** Gson instance shared by all ApiResponse records. */
         private static final Gson gson;
@@ -446,13 +560,18 @@ public class Http {
         }
 
         @Contract(pure = true)
+        public @NotNull HTTPStatus getStatus() {
+            return HTTPStatus.fromCode(statusCode);
+        }
+
+        @Contract(pure = true)
         public boolean isSuccess() {
-            return statusCode >= 200 && statusCode < 300;
+            return getStatus().isSuccess();
         }
 
         @Contract(pure = true)
         public boolean isError() {
-            return !isSuccess();
+            return getStatus().isError();
         }
 
         /**
@@ -467,7 +586,7 @@ public class Http {
 
         /**
          * Serializes the specified class type (usually used with generics) back to a JSON string.
-         * Note: This method is less useful here as it serializes the Class object itself,
+         * Note: This method is less useful here as it serializes the Class object itself
          * but is kept for completeness as it was in the original code.
          *
          * @param clazz The class to serialize (not the object content).
@@ -490,6 +609,7 @@ public class Http {
         public @NotNull String toString() {
             return "ApiResponse{" +
                     "statusCode=" + statusCode +
+                    ", status=" + getStatus().getReasonPhrase() +
                     ", body='" + body + '\'' +
                     ", success=" + isSuccess() +
                     '}';

@@ -15,7 +15,7 @@
  * You should have received a copy of the GNU Lesser General Public License
  * along with this library. If not, see <https://www.gnu.org/licenses/>.
  */
-package com.github.rickmvi.jtoolbox.collections.array;
+package com.github.rickmvi.jtoolbox.collections;
 
 import com.github.rickmvi.jtoolbox.control.Switch;
 import lombok.Getter;
@@ -29,7 +29,7 @@ import java.util.stream.Stream;
 import static com.github.rickmvi.jtoolbox.control.If.when;
 
 /**
- * AdaptiveArray is a versatile and dynamic collection that adapts its internal storage
+ * Dynamic is a versatile and dynamic collection that adapts its internal storage
  * between different data structures (ARRAY, LINKED, or SET) to optimize performance based
  * on usage patterns.
  * <p>
@@ -38,7 +38,7 @@ import static com.github.rickmvi.jtoolbox.control.If.when;
  * removing, merging, filtering, mapping, sorting, reversing, and retrieving elements.
  * The class also offers functional-style utilities for stream operations and iteration.
  * <p>
- * AdaptiveArray can automatically optimize its internal storage after multiple
+ * Dynamic can automatically optimize its internal storage after multiple
  * modifications, ensuring efficient memory usage and performance.
  *
  * <h2>Storage Modes</h2>
@@ -59,7 +59,7 @@ import static com.github.rickmvi.jtoolbox.control.If.when;
  * <ul>
  * <li>{@link #add(Object)} / {@link #addAll(Object[])} - Add elements to the collection.</li>
  * <li>{@link #remove(Object)} / {@link #removeIf(Predicate)} - Remove elements based on value or condition.</li>
- * <li>{@link #merge(AdaptiveArray)} - Merge another AdaptiveArray into this one.</li>
+ * <li>{@link #merge(Dynamic)} - Merge another Dynamic into this one.</li>
  * <li>{@link #contains(Object)} - Checks if an element exists, using binary search if sorted.</li>
  * <li>{@link #find(Predicate)}, {@link #findFirst()}, {@link #findAny()} - Retrieve elements based on conditions.</li>
  * </ul>
@@ -67,7 +67,7 @@ import static com.github.rickmvi.jtoolbox.control.If.when;
  * <h2>Transformation and Filtering</h2>
  * <ul>
  * <li>{@link #map(Function)} - Transforms elements to another type.</li>
- * <li>{@link #filter(Predicate)} - Returns a new AdaptiveArray containing only elements matching a predicate.</li>
+ * <li>{@link #filter(Predicate)} - Returns a new Dynamic containing only elements matching a predicate.</li>
  * <li>{@link #distinct()} - Removes duplicate elements.</li>
  * <li>{@link #distinctBy(Function)} - Removes duplicates based on a key extractor.</li>
  * <li>{@link #reverse()} - Reverses the order of elements.</li>
@@ -81,8 +81,8 @@ import static com.github.rickmvi.jtoolbox.control.If.when;
  *
  * <h2>Conversion and Access</h2>
  * <ul>
- * <li>{@link #get(int)} - Retrieves element by index (not supported in SET mode).</li>
- * <li>{@link #set(int, Object)} - Replaces element by index (not supported in SET mode).</li>
+ * <li>{@link #get(int)} - Retrieves an element by index (not supported in SET mode).</li>
+ * <li>{@link #set(int, Object)} - Replaces an element by index (not supported in SET mode).</li>
  * <li>{@link #toList()} - Returns a List of elements.</li>
  * <li>{@link #toSet()} - Returns a Set of elements.</li>
  * <li>{@link #toArray(IntFunction)} - Returns an array of elements.</li>
@@ -101,13 +101,13 @@ import static com.github.rickmvi.jtoolbox.control.If.when;
  * mode when certain thresholds are exceeded to maintain performance efficiency.</p>
  *
  * @param <T> The type of elements stored in this AdaptiveArray.
- * @author Rick
- * @version 1.1
+ * @author Rick M. Viana
+ * @version 1.2
  * @since 2025
  */
 
 @SuppressWarnings({"unused", "unchecked"})
-public class AdaptiveArray<T> implements Iterable<T> {
+public class Dynamic<T> implements Iterable<T> {
 
     public enum StorageMode { ARRAY, LINKED, SET }
 
@@ -119,7 +119,7 @@ public class AdaptiveArray<T> implements Iterable<T> {
     @Getter
     private StorageMode mode;
 
-    private AdaptiveArray(Collection<T> initial, boolean allowDuplicates, StorageMode mode) {
+    private Dynamic(Collection<T> initial, boolean allowDuplicates, StorageMode mode) {
         this.allowDuplicates = allowDuplicates;
         this.mode = mode;
         this.elements = createStorage(mode);
@@ -130,12 +130,12 @@ public class AdaptiveArray<T> implements Iterable<T> {
     }
 
     @SafeVarargs
-    public static <T> @NotNull AdaptiveArray<T> of(T... items) {
-        return new AdaptiveArray<>(Arrays.asList(items), true, StorageMode.ARRAY);
+    public static <T> @NotNull Dynamic<T> of(T... items) {
+        return new Dynamic<>(Arrays.asList(items), true, StorageMode.ARRAY);
     }
 
-    public static <T> @NotNull AdaptiveArray<T> empty() {
-        return new AdaptiveArray<>(Collections.emptyList(), true, StorageMode.ARRAY);
+    public static <T> @NotNull Dynamic<T> empty() {
+        return new Dynamic<>(Collections.emptyList(), true, StorageMode.ARRAY);
     }
 
     private @NotNull Collection<T> createStorage(@NotNull StorageMode mode) {
@@ -146,9 +146,7 @@ public class AdaptiveArray<T> implements Iterable<T> {
         };
     }
 
-    /**
-     * Helper to retrieve the internal storage as a List, throwing an exception if in SET mode.
-     */
+    /** Helper to retrieve the internal storage as a List, throwing an exception if in SET mode. */
     private List<T> requireList() {
         if (elements instanceof List) {
             return (List<T>) elements;
@@ -162,7 +160,7 @@ public class AdaptiveArray<T> implements Iterable<T> {
      * @param mode The new storage mode to use.
      * @return This AdaptiveArray instance.
      */
-    public AdaptiveArray<T> use(StorageMode mode) {
+    public Dynamic<T> use(StorageMode mode) {
         if (this.mode != StorageMode.SET && this.mode != mode) {
             Collection<T> newStorage = createStorage(mode);
             newStorage.addAll(elements);
@@ -178,7 +176,7 @@ public class AdaptiveArray<T> implements Iterable<T> {
      * @param allow true to allow duplicates, false to enforce uniqueness (switches to SET mode).
      * @return This AdaptiveArray instance.
      */
-    public AdaptiveArray<T> allowDuplicates(boolean allow) {
+    public Dynamic<T> allowDuplicates(boolean allow) {
         this.allowDuplicates = allow;
         applyDuplicateRule();
         return this;
@@ -197,9 +195,10 @@ public class AdaptiveArray<T> implements Iterable<T> {
         }
     }
 
-    /** Adds an element, respecting the allowDuplicates rule. */
-    public AdaptiveArray<T> add(T element) {
-        when(allowDuplicates || !elements.contains(element))
+    /** Adds an element respecting the allowDuplicates rule. */
+    public Dynamic<T> add(T element) {
+        when(allowDuplicates)
+                .or(!elements.contains(element))
                 .apply(() -> {
                     elements.add(element);
                     sorted = false;
@@ -210,12 +209,12 @@ public class AdaptiveArray<T> implements Iterable<T> {
     }
 
     @SafeVarargs
-    public final AdaptiveArray<T> addAll(T @NotNull ... items) {
+    public final Dynamic<T> addAll(T @NotNull ... items) {
         for (T item : items) add(item);
         return this;
     }
 
-    public AdaptiveArray<T> remove(T element) {
+    public Dynamic<T> remove(T element) {
         if (elements.remove(element)) {
             modificationCount++;
             autoOptimize();
@@ -223,7 +222,7 @@ public class AdaptiveArray<T> implements Iterable<T> {
         return this;
     }
 
-    public AdaptiveArray<T> removeIf(Predicate<T> filter) {
+    public Dynamic<T> removeIf(Predicate<T> filter) {
         if (elements.removeIf(filter)) {
             modificationCount++;
             autoOptimize();
@@ -273,7 +272,7 @@ public class AdaptiveArray<T> implements Iterable<T> {
         return removed;
     }
 
-    public AdaptiveArray<T> merge(@NotNull AdaptiveArray<T> other) {
+    public Dynamic<T> merge(@NotNull Dynamic<T> other) {
         elements.addAll(other.elements);
         if (!allowDuplicates) {
             applyDuplicateRule();
@@ -281,7 +280,7 @@ public class AdaptiveArray<T> implements Iterable<T> {
         return this;
     }
 
-    public AdaptiveArray<T> sort(Comparator<T> comparator) {
+    public Dynamic<T> sort(Comparator<T> comparator) {
         List<T> sortedList = getElementsAsList().get();
         sortedList.sort(comparator);
         elements.clear();
@@ -290,7 +289,7 @@ public class AdaptiveArray<T> implements Iterable<T> {
         return this;
     }
 
-    public AdaptiveArray<T> sortIfComparable() {
+    public Dynamic<T> sortIfComparable() {
         if (!elements.isEmpty() && elements.iterator().next() instanceof Comparable) {
             List<T> sortedList = getElementsAsList().get();
             Collections.sort((List<? extends Comparable>) sortedList);
@@ -322,29 +321,29 @@ public class AdaptiveArray<T> implements Iterable<T> {
         return elements.stream().findAny();
     }
 
-    public <R> AdaptiveArray<R> map(Function<T, R> mapper) {
-        return new AdaptiveArray<>(
+    public <R> Dynamic<R> map(Function<T, R> mapper) {
+        return new Dynamic<>(
                 elements.stream().map(mapper).collect(Collectors.toList()),
                 allowDuplicates,
                 mode
         );
     }
 
-    public AdaptiveArray<T> filter(Predicate<T> filter) {
-        return new AdaptiveArray<>(
+    public Dynamic<T> filter(Predicate<T> filter) {
+        return new Dynamic<>(
                 elements.stream().filter(filter).collect(Collectors.toList()),
                 allowDuplicates,
                 mode
         );
     }
 
-    public AdaptiveArray<T> distinct() {
-        return new AdaptiveArray<>(new LinkedHashSet<>(elements), false, StorageMode.SET);
+    public Dynamic<T> distinct() {
+        return new Dynamic<>(new LinkedHashSet<>(elements), false, StorageMode.SET);
     }
 
-    public <K> AdaptiveArray<T> distinctBy(Function<T, K> keyExtractor) {
+    public <K> Dynamic<T> distinctBy(Function<T, K> keyExtractor) {
         Set<K> seen = new HashSet<>();
-        return new AdaptiveArray<>(
+        return new Dynamic<>(
                 elements.stream()
                         .filter(e -> seen.add(keyExtractor.apply(e)))
                         .collect(Collectors.toList()),
@@ -353,7 +352,7 @@ public class AdaptiveArray<T> implements Iterable<T> {
         );
     }
 
-    public AdaptiveArray<T> reverse() {
+    public Dynamic<T> reverse() {
         if (!(elements instanceof List)) {
             elements = getElementsAsList().get();
         }
@@ -365,8 +364,8 @@ public class AdaptiveArray<T> implements Iterable<T> {
         return () -> new ArrayList<>(elements);
     }
 
-    public AdaptiveArray<T> copy() {
-        return new AdaptiveArray<>(getElementsAsList().get(), allowDuplicates, mode);
+    public Dynamic<T> copy() {
+        return new Dynamic<>(getElementsAsList().get(), allowDuplicates, mode);
     }
 
     public List<T> toList() { return getElementsAsList().get(); }
@@ -381,7 +380,7 @@ public class AdaptiveArray<T> implements Iterable<T> {
 
     public boolean isEmpty() { return elements.isEmpty(); }
 
-    public AdaptiveArray<T> forEachDo(Consumer<T> action) {
+    public Dynamic<T> forEachDo(Consumer<T> action) {
         elements.forEach(action);
         return this;
     }
