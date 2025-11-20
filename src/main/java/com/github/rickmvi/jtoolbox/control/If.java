@@ -18,7 +18,8 @@ import java.util.function.Supplier;
  * mapping, optional conversion, and exception handling.
  *
  * @author Rick
- * @since 1.3
+ * @version 1.3
+ * @since 2025
  */
 public interface If {
 
@@ -38,11 +39,12 @@ public interface If {
         private final Runnable action;
 
         public void orElse(Runnable elseAction) {
-            if (condition) {
-                if (action != null) action.run();
-            } else {
+            if (!condition) {
                 elseAction.run();
+                return;
             }
+
+            if (action != null) action.run();
         }
 
         public void run() {
@@ -50,11 +52,10 @@ public interface If {
         }
 
         public void orElseThrow(@NotNull Supplier<? extends RuntimeException> exceptionSupplier) {
-            if (condition) {
-                if (action != null) action.run();
-            } else {
+            if (!condition) {
                 throw exceptionSupplier.get();
             }
+            if (action != null) action.run();
         }
 
         public Runner apply(Runnable action) {
@@ -107,9 +108,7 @@ public interface If {
         }
 
         public <R> Suppliers<R> flatMap(@NotNull Function<T, Suppliers<R>> mapper) {
-            if (condition) {
-                return mapper.apply(supplier.get());
-            }
+            if (condition) return mapper.apply(supplier.get());
             return new Suppliers<>(false, null);
         }
 
@@ -117,9 +116,7 @@ public interface If {
             return new Suppliers<>(this.condition, supplier);
         }
 
-        /**
-         * Inverts the stored condition.
-         */
+        /** Inverts the stored condition. */
         public Suppliers<T> negate() {
             return new Suppliers<>(!this.condition, this.supplier);
         }

@@ -19,10 +19,10 @@ package com.github.rickmvi.jtoolbox.util.serializable;
 
 import com.github.rickmvi.jtoolbox.file.File;
 import com.github.rickmvi.jtoolbox.text.Stringifier;
+import com.github.rickmvi.jtoolbox.util.Json;
 import com.github.rickmvi.jtoolbox.util.Try;
 
 import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
 import com.google.gson.JsonSyntaxException;
 
 import lombok.Getter;
@@ -49,7 +49,7 @@ import static com.github.rickmvi.jtoolbox.text.StringFormatter.format;
  * pre-configured Gson instance for human-readable data exchange, typically used for
  * configuration or API communication.</p>
  *
- * <h2>Binary & Base64 Serialization</h2>
+ * <h2>Binary e Base64 Serialization</h2>
  * <p>Methods like {@link #serializeToBytes(Object)} and {@link #deserializeFromBase64(String, Class)}
  * utilize standard Java object streams to efficiently handle objects implementing {@link java.io.Serializable}.
  * This is useful for deep cloning, transferring objects over sockets, or storing complex application state.</p>
@@ -94,7 +94,8 @@ import static com.github.rickmvi.jtoolbox.text.StringFormatter.format;
  *
  * @see com.google.gson.Gson
  * @see java.io.Serializable
- * @since 1.1
+ * @version 1.2
+ * @since 2025
  * @author Rick M. Viana
  */
 @UtilityClass
@@ -104,10 +105,7 @@ public final class Serializer {
     private static final Gson instance;
 
     static {
-        instance = new GsonBuilder()
-                .setPrettyPrinting()
-                .serializeNulls()
-                .create();
+        instance = Json.build();
     }
 
     public static @NotNull String serialize(Object object) {
@@ -146,7 +144,6 @@ public final class Serializer {
         }
     }
 
-    @SuppressWarnings("unchecked")
     public static <T> T deserializeFromBytes(byte @NotNull [] bytes, @NotNull Class<T> type)
             throws IOException, ClassNotFoundException {
 
@@ -155,7 +152,7 @@ public final class Serializer {
 
             Object obj = ois.readObject();
 
-            return (T) obj;
+            return type.cast(obj);
         }
     }
 
@@ -169,7 +166,6 @@ public final class Serializer {
     }
 
     public static <T> T loadFromBinaryFile(@NotNull String filePath, @NotNull Class<T> type) {
-
         byte[] bytes = File.readBytes(filePath);
         return Try.ofThrowing(() -> deserializeFromBytes(bytes, type)).orThrow();
     }
@@ -180,7 +176,6 @@ public final class Serializer {
     }
 
     public static <T> T deserializeFromBase64(@NotNull String base64String, @NotNull Class<T> type) {
-
         byte[] bytes = Base64.getDecoder().decode(base64String);
         return Try.ofThrowing(() -> deserializeFromBytes(bytes, type)).orThrow();
     }

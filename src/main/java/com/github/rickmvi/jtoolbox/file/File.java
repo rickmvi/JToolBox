@@ -18,7 +18,7 @@
 package com.github.rickmvi.jtoolbox.file;
 
 import com.github.rickmvi.jtoolbox.file.util.Directory;
-import com.github.rickmvi.jtoolbox.file.util.FileUtil;
+import com.github.rickmvi.jtoolbox.file.util.FileHandler;
 import com.github.rickmvi.jtoolbox.file.util.PathUtil;
 import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
@@ -30,20 +30,20 @@ import java.nio.file.Path;
  * for common file system and path manipulation operations.
  * <p>
  * This interface acts as a facade, aggregating functionalities from core utilities
- * such as {@link PathUtil}, {@link FileUtil}, and {@link Directory}, offering
+ * such as {@link PathUtil}, {@link FileHandler}, and {@link Directory}, offering
  * a simplified and expressive entry point for file-related tasks.
  *
  * @see PathUtil
- * @see FileUtil
+ * @see FileHandler
  * @see Directory
  * @author Rick M. Viana
- * @version 1.0
+ * @version 1.1
  * @since 2025
  */
 public interface File {
 
     /**
-     * Creates a {@link FileUtil} object for the specified file path.
+     * Creates a {@link FileHandler} object for the specified file path.
      *
      * @param filePath the path of the file for which the {@code FileUtil} object is to be created.
      *                 This must not be {@code null}.
@@ -51,8 +51,8 @@ public interface File {
      * @throws IllegalArgumentException if the given file path is invalid or cannot be resolved.
      */
     @Contract("_ -> new")
-    static @NotNull FileUtil at(String filePath) {
-        return FileUtil.at(filePath);
+    static @NotNull FileHandler at(String filePath) {
+        return FileHandler.at(filePath);
     }
 
     /**
@@ -135,7 +135,7 @@ public interface File {
      * @throws NullPointerException if the {@code fileName} parameter is {@code null}.
      */
     static @NotNull String getExtension(String fileName) {
-        return FileUtil.getExtension(fileName);
+        return FileHandler.getExtension(fileName);
     }
 
     /**
@@ -151,7 +151,7 @@ public interface File {
      *                                  specified algorithm is unsupported.
      */
     static String getFileHash(String filePath, String algorithm) {
-        return FileUtil.getFileHash(filePath, algorithm);
+        return FileHandler.getFileHash(filePath, algorithm);
     }
 
     /**
@@ -163,7 +163,7 @@ public interface File {
      * @throws IllegalArgumentException if the file path is invalid or the file cannot be read.
      */
     static String read(String filePath) {
-        return FileUtil.at(filePath).readAllText();
+        return FileHandler.at(filePath).readAllText();
     }
 
     /**
@@ -175,7 +175,7 @@ public interface File {
      * @throws IllegalArgumentException if the file path is invalid or the file cannot be read.
      */
     static byte[] readBytes(String filePath) {
-        return FileUtil.at(filePath).readAllBytes();
+        return FileHandler.at(filePath).readAllBytes();
     }
 
     /**
@@ -189,7 +189,24 @@ public interface File {
      * @throws IllegalArgumentException if the file path is invalid or cannot be resolved.
      */
     static void write(String filePath, String content) {
-        FileUtil.at(filePath).write(content);
+        FileHandler.at(filePath).write(content);
+    }
+
+    /**
+     * Writes the specified content to the file at the given file path.
+     * If the file does not exist, it will be created. If the file already exists, the behavior is determined
+     * by the {@code append} parameter.
+     *
+     * @param filePath the path to the file where the content is to be written. This must not be {@code null}
+     *                 or reference an invalid file path.
+     * @param content the content to be written to the file. This must not be {@code null}.
+     * @param append a boolean flag indicating whether the content should be appended to the file 
+     *               if it already exists. If {@code true}, the content is appended to the end of the file;
+     *               if {@code false}, the existing file content is overwritten.
+     * @throws IllegalArgumentException if the file path is invalid or cannot be resolved.
+     */
+    static void write(String filePath, String content, boolean append) {
+        FileHandler.at(filePath).write(content, append);
     }
 
 }

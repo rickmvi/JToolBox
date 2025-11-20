@@ -173,8 +173,8 @@ public class Stringifier {
                 caseType(CharSequence.class, charSequence -> charSequence.charAt(index)).
                 caseDefault(v -> {
                     throw new IllegalArgumentException("Cannot get char at index " + index + " from " + v);
-                }).
-                get();
+                })
+                .get();
     }
 
     public static int length(Object o) {
@@ -185,8 +185,8 @@ public class Stringifier {
                 caseType(CharSequence.class, CharSequence::length).
                 caseDefault(v -> {
                     throw new IllegalArgumentException("Cannot get length from " + v);
-                }).
-                get();
+                })
+                .get();
     }
 
     public static String trim(Object o) {
@@ -197,12 +197,25 @@ public class Stringifier {
                 caseType(CharSequence.class, charSequence -> charSequence.toString().trim()).
                 caseDefault(v -> {
                     throw new IllegalArgumentException("Cannot trim " + v);
-                }).
-                get();
+                })
+                .get();
     }
 
     public static String name(Object var1) {
         Objects.requireNonNull(var1, "Object %s is Null".formatted(var1));
         return Stringifier.valueOf(Stringifier.toString(var1));
     }
+
+    public static @NotNull String format(String format, Object... args) {
+        return StringFormatter.format(format, args);
+    }
+
+    public static boolean isEmpty(String value) {
+        return value == null || value.isEmpty();
+    }
+
+    public static boolean isBlank(String value) {
+        return value == null || value.isBlank();
+    }
+
 }

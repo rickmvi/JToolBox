@@ -49,8 +49,8 @@ public final class Numbers extends NumberParser {
     }
 
     @SuppressWarnings("unchecked")
-    public static <N extends Number> N castNumber(BigDecimal value, N example) {
-        return Switch.onNumber(example)
+    public static <N extends Number> N castNumber(BigDecimal value, N number) {
+        return Switch.onNumber(number)
                 .caseType(Integer.class, v -> (N) Integer.valueOf(value.intValue()))
                 .caseType(Long.class,      v -> (N) Long.valueOf(value.longValue()))
                 .caseType(Float.class,     v -> (N) Float.valueOf(value.floatValue()))

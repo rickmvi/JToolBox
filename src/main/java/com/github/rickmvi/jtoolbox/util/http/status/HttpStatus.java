@@ -19,7 +19,7 @@ import java.util.Arrays;
  * @since 2025
  */
 @RequiredArgsConstructor(access = AccessLevel.PRIVATE)
-public enum HTTPStatus {
+public enum HttpStatus {
 
     // 1xx Informational
     CONTINUE                       (100, "Continue"),
@@ -133,7 +133,7 @@ public enum HTTPStatus {
      * @return the {@code HTTPStatus} corresponding to the given code, or {@code UNKNOWN_STATUS} if no match is found
      * @throws IllegalArgumentException if the {@code code} parameter is negative
      */
-    public static @NotNull HTTPStatus fromCode(int code) {
+    public static @NotNull HttpStatus fromCode(int code) {
         return Arrays.stream(values())
                 .filter(status -> Numbers.equals(status.getCode(), code))
                 .findFirst()

@@ -17,8 +17,11 @@
  */
 package com.github.rickmvi.jtoolbox.collections;
 
+import com.github.rickmvi.jtoolbox.control.If;
 import com.github.rickmvi.jtoolbox.control.Switch;
+import lombok.AccessLevel;
 import lombok.Getter;
+import lombok.Setter;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.*;
@@ -61,6 +64,7 @@ import static com.github.rickmvi.jtoolbox.control.If.when;
  * <li>{@link #remove(Object)} / {@link #removeIf(Predicate)} - Remove elements based on value or condition.</li>
  * <li>{@link #merge(Dynamic)} - Merge another Dynamic into this one.</li>
  * <li>{@link #contains(Object)} - Checks if an element exists, using binary search if sorted.</li>
+ * <li>{@link #getByValue(Object)} - Retrieves the first element matching a specific value (O(n)).</li>
  * <li>{@link #find(Predicate)}, {@link #findFirst()}, {@link #findAny()} - Retrieve elements based on conditions.</li>
  * </ul>
  *
@@ -100,13 +104,17 @@ import static com.github.rickmvi.jtoolbox.control.If.when;
  * <p>The collection tracks modifications and automatically optimizes its storage
  * mode when certain thresholds are exceeded to maintain performance efficiency.</p>
  *
- * @param <T> The type of elements stored in this AdaptiveArray.
+ * @param <T> The type of elements stored in this SmartCollection.
  * @author Rick M. Viana
  * @version 1.2
  * @since 2025
+ *
+ * @see com.github.rickmvi.jtoolbox.control.If
  */
 
 @SuppressWarnings({"unused", "unchecked"})
+@Getter(value = AccessLevel.PRIVATE)
+@Setter(value = AccessLevel.PRIVATE)
 public class Dynamic<T> implements Iterable<T> {
 
     public enum StorageMode { ARRAY, LINKED, SET }
@@ -131,7 +139,7 @@ public class Dynamic<T> implements Iterable<T> {
 
     @SafeVarargs
     public static <T> @NotNull Dynamic<T> of(T... items) {
-        return new Dynamic<>(Arrays.asList(items), true, StorageMode.ARRAY);
+        return new Dynamic<>(Arrays.asList(items), true, StorageMode.LINKED);
     }
 
     public static <T> @NotNull Dynamic<T> empty() {
@@ -148,9 +156,7 @@ public class Dynamic<T> implements Iterable<T> {
 
     /** Helper to retrieve the internal storage as a List, throwing an exception if in SET mode. */
     private List<T> requireList() {
-        if (elements instanceof List) {
-            return (List<T>) elements;
-        }
+        if (elements instanceof List) return (List<T>) elements;
         throw new UnsupportedOperationException("Indexed operations are not supported in SET storage mode (duplicates disallowed).");
     }
 
@@ -214,6 +220,15 @@ public class Dynamic<T> implements Iterable<T> {
         return this;
     }
 
+    /**
+     * Removes the first occurrence of the specified element from this collection, if it is present.
+     * <p>
+     * If the collection does not contain the element, it remains unchanged and the operation succeeds silently.
+     * This method respects the underlying storage mode's behavior regarding element removal.
+     *
+     * @param element the element to be removed from this collection.
+     * @return This {@code Dynamic} instance for method chaining.
+     */
     public Dynamic<T> remove(T element) {
         if (elements.remove(element)) {
             modificationCount++;
@@ -222,6 +237,18 @@ public class Dynamic<T> implements Iterable<T> {
         return this;
     }
 
+    /**
+     * Removes elements from the collection that satisfy the given predicate.
+     * <p>
+     * If any elements are removed, the internal state is updated, and the
+     * storage may be optimized automatically based on modification count
+     * and size heuristics.
+     *
+     * @param filter A predicate to test each element. Only elements that return
+     *               {@code true} for this predicate will be removed.
+     * @return This {@code Dynamic} instance for method chaining.
+     * @throws NullPointerException if the provided filter is {@code null}.
+     */
     public Dynamic<T> removeIf(Predicate<T> filter) {
         if (elements.removeIf(filter)) {
             modificationCount++;
@@ -232,6 +259,8 @@ public class Dynamic<T> implements Iterable<T> {
 
     /**
      * Retrieves the element at the specified position in this list.
+     * <p>
+     * This operation is typically O(1) in ARRAY mode and O(n) in LINKED mode.
      *
      * @param index The index of the element to return.
      * @return The element at the specified index.
@@ -239,7 +268,24 @@ public class Dynamic<T> implements Iterable<T> {
      * @throws IndexOutOfBoundsException if the index is out of range.
      */
     public T get(int index) {
+        assertIndexInRange(index);
         return requireList().get(index);
+    }
+
+    /**
+     * Retrieves the first occurrence of the specified element by value, wrapped in an Optional.
+     * <p>
+     * The search is performed by iterating through the collection and comparing elements
+     * using the {@code equals} method. This operation is O(n) in complexity.
+     * If the element is not found, an empty Optional is returned.
+     *
+     * @param element The element whose first occurrence should be found.
+     * @return An Optional containing the first matching element, or an empty Optional if not found.
+     */
+    public Optional<T> getByValue(@NotNull T element) {
+        return elements.stream()
+                .filter(e -> Objects.equals(e, element))
+                .findFirst();
     }
 
     /**
@@ -252,6 +298,7 @@ public class Dynamic<T> implements Iterable<T> {
      * @throws IndexOutOfBoundsException if the index is out of range.
      */
     public T set(int index, T element) {
+        assertIndexInRange(index);
         T oldValue = requireList().set(index, element);
         modificationCount++;
         return oldValue;
@@ -266,10 +313,19 @@ public class Dynamic<T> implements Iterable<T> {
      * @throws IndexOutOfBoundsException if the index is out of range.
      */
     public T remove(int index) {
+        assertIndexInRange(index);
         T removed = requireList().remove(index);
         modificationCount++;
         autoOptimize();
         return removed;
+    }
+
+    private void assertIndexInRange(int index) {
+        If.ThrowWhen(IndexOutOfBounds(index), () -> new IndexOutOfBoundsException("Index: " + index + ", Size: " + size()));
+    }
+
+    private boolean IndexOutOfBounds(int index) {
+        return index < 0 || index >= size();
     }
 
     public Dynamic<T> merge(@NotNull Dynamic<T> other) {
@@ -385,13 +441,16 @@ public class Dynamic<T> implements Iterable<T> {
         return this;
     }
 
+    public String join(CharSequence separator) {
+        return elements.stream().map(Object::toString).collect(Collectors.joining(separator));
+    }
+
     @Override
     public @NotNull Iterator<T> iterator() { return elements.iterator(); }
 
     @Override
     public String toString() {
-        return String.format("AdaptiveArray[mode=%s, size=%d, duplicates=%b, elements=%s]",
-                mode, elements.size(), allowDuplicates, Arrays.deepToString(elements.toArray()));
+        return String.format("elements=%s", Arrays.deepToString(elements.toArray()));
     }
 
     /** Automatically changes storage mode based on modification count and size heuristics. */

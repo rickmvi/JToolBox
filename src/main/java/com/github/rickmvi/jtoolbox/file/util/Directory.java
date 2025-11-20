@@ -45,7 +45,7 @@ import java.util.stream.Stream;
  *     .deleteRecursively();
  * }</pre>
  *
- * @see FileUtil
+ * @see FileHandler
  * @author Rick M. Viana
  * @version 1.0
  * @since 2025
@@ -55,12 +55,21 @@ public class Directory {
     @Getter
     private final Path directory;
 
-    private Directory(String dirPath) {
+    private Directory(@NotNull String dirPath) {
         this.directory = Paths.get(dirPath);
     }
 
+    /**
+     * Creates a new {@code Directory} instance associated with the specified file path.
+     * The created {@code Directory} object allows various directory operations
+     * such as creation, listing its files, or deleting it recursively.
+     *
+     * @param dirPath the path of the directory to associate this instance with; must not be null
+     * @return a {@code Directory} instance initialized with the specified path; never null
+     * @throws NullPointerException if {@code dirPath} is null
+     */
     @Contract("_ -> new")
-    public static @NotNull Directory at(String dirPath) {
+    public static @NotNull Directory at(@NotNull String dirPath) {
         return new Directory(dirPath);
     }
 

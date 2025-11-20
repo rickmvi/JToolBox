@@ -4,7 +4,7 @@ plugins {
 }
 
 group = "io.github.rickmvi"
-version = "1.10.35"
+version = "1.10.46"
 
 repositories {
     mavenCentral()
@@ -19,7 +19,9 @@ dependencies {
 
     implementation(libs.gson)
     implementation(libs.annotations)
-    implementation(libs.dotenv)
+    implementation(dependencyNotation = libs.dotenv)
+    implementation(libs.yaml)
+    implementation(libs.reflection)
 }
 
 tasks.test {

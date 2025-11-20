@@ -6,6 +6,8 @@ gson             = "2.13.2"
 jackson          = "2.20.0"
 jacksonannotaion = "3.0-rc5"
 dotenv           = "5.2.2"
+yaml             = "2.5"
+reflection       = "0.10.2"
 
 [libraries]
 junit            = { module = "org.junit:junit-bom",                            version.ref = "junit"            }
@@ -16,3 +18,5 @@ gson             = { module = "com.google.code.gson:gson",                      
 jackson          = { module = "com.fasterxml.jackson.core:jackson-core",        version.ref = "jackson"          }
 jacksonannotaion = { module = "com.fasterxml.jackson.core:jackson-annotations", version.ref = "jacksonannotaion" }
 dotenv           = { module = "io.github.cdimascio:java-dotenv",                version.ref = "dotenv"           }
+yaml             = { module = "org.yaml:snakeyaml",                             version.ref = "yaml"             }
+reflection       = { module = "org.reflections:reflections",                    version.ref = "reflection"       }

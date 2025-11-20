@@ -35,9 +35,11 @@ import java.util.concurrent.CompletableFuture;
  * }</pre>
  *
  * @author Rick
- * @since 1.3
+ * @version 1.3
+ * @since 2025
  */
 @RequiredArgsConstructor(access = AccessLevel.PRIVATE)
+@SuppressWarnings({"unused", "WeakerAccess"})
 public final class For<T> {
 
     private final Iterable<T> source;

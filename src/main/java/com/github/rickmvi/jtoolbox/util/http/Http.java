@@ -17,15 +17,15 @@
  */
 package com.github.rickmvi.jtoolbox.util.http;
 
-import com.github.rickmvi.jtoolbox.util.http.status.HTTPStatus;
+import com.github.rickmvi.jtoolbox.util.http.status.HttpStatus;
 import com.github.rickmvi.jtoolbox.logger.log.LogLevel;
 import com.github.rickmvi.jtoolbox.logger.AnsiColor;
 import com.github.rickmvi.jtoolbox.logger.Logger;
 import com.github.rickmvi.jtoolbox.control.If;
+import com.github.rickmvi.jtoolbox.util.Json;
 import com.github.rickmvi.jtoolbox.util.Try;
 import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
-import com.google.gson.GsonBuilder;
 import com.google.gson.Gson;
 
 import java.util.*;
@@ -49,7 +49,7 @@ import java.util.concurrent.CompletableFuture;
  * @since 2025
  */
 @SuppressWarnings("unused")
-public class Http {
+public class Http implements AutoCloseable {
 
     private static final HttpClient client;
 
@@ -543,6 +543,11 @@ public class Http {
                 });
     }
 
+    @Override
+    public void close() {
+        client.close();
+    }
+
     /**
      * A wrapper for HTTP response data that includes the status code and body content.
      * This class provides utility methods for interacting with and handling responses.
@@ -556,12 +561,12 @@ public class Http {
         private static final Gson gson;
 
         static {
-            gson = build();
+            gson = Json.build();
         }
 
         @Contract(pure = true)
-        public @NotNull HTTPStatus getStatus() {
-            return HTTPStatus.fromCode(statusCode);
+        public @NotNull HttpStatus getStatus() {
+            return HttpStatus.fromCode(statusCode);
         }
 
         @Contract(pure = true)
@@ -613,13 +618,6 @@ public class Http {
                     ", body='" + body + '\'' +
                     ", success=" + isSuccess() +
                     '}';
-        }
-
-        @Contract(" -> new")
-        private static @NotNull Gson build() {
-            return new GsonBuilder()
-                    .serializeNulls()
-                    .create();
         }
     }
 

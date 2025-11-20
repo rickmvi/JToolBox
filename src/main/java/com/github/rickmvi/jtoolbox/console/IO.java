@@ -40,15 +40,15 @@ import java.util.function.Consumer;
  *
  * <h2>Usage Examples:</h2>
  * <pre>{@code
- * Output.print("Hello, World!");
- * Output.write("Line with newline");
- * Output.formatted("Hello, %s!", "Joao");
- * Output.formatted("Hello, {}!", "Maria");
- * Output.formatted("Hello, {1:U}!", "Maria", "Joao");
- * Output.newline();
- * Output.to(System.err, "Error message");
- * Output.withOut(out -> out.println("Custom output logic"));
- * Output.withErr(err -> err.println("Custom error logic"));
+ * IO.print("Hello, World!");
+ * IO.println("Line with newline");
+ * IO.format("Hello, %s!", "Joao");
+ * IO.format("Hello, {}!", "Maria");
+ * IO.format("Hello, {1:U}!", "Maria", "Joao");
+ * IO.newline();
+ * IO.to(System.err, "Error message");
+ * IO.withOut(out -> out.println("Custom output logic"));
+ * IO.withErr(err -> err.println("Custom error logic"));
  * }</pre>
  *
  * <p>

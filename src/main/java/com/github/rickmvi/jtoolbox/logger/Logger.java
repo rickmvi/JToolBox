@@ -72,18 +72,22 @@ public class Logger {
     public static void log(LogLevel level, String message) {
         if (!ENABLED_LEVELS.contains(level) || level == LogLevel.OFF) return;
 
+        String time        = DateTime.now().format(DateTime.DatePattern.DD_MM_YYYY_HH_MM_SS);
+
         String coloredLevel = colorize(level.name(), AnsiColor.getColor(level));
 
-        IO.format("[{}] [{}] {}$n", TIME, coloredLevel, message);
+        IO.format("[{}] {} [{}] {}$n", time, coloredLevel, Thread.currentThread().getName(), message);
     }
 
     public static void log(LogLevel level, String template, Object... args) {
         if (!ENABLED_LEVELS.contains(level) || level == LogLevel.OFF) return;
 
+        String time        = DateTime.now().format(DateTime.DatePattern.DD_MM_YYYY_HH_MM_SS);
+
         String coloredLevel = colorize(level.name(), AnsiColor.getColor(level));
         String message      = StringFormatter.format(template, args);
 
-        IO.format("[{}] [{}] {}$n", TIME, coloredLevel, message);
+        IO.format("[{}] {} [{}] {}$n", time, coloredLevel, Thread.currentThread().getName(), message);
     }
 
     public static void log(LogLevel level, String message, @NotNull Throwable t) {

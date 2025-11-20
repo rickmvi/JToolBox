@@ -20,6 +20,7 @@ package com.github.rickmvi.jtoolbox.collections.array;
 import com.github.rickmvi.jtoolbox.collections.Dynamic;
 import com.github.rickmvi.jtoolbox.control.For;
 import com.github.rickmvi.jtoolbox.control.If;
+import lombok.EqualsAndHashCode;
 import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.NotNull;
 import lombok.experimental.UtilityClass;
@@ -123,6 +124,7 @@ import static com.github.rickmvi.jtoolbox.text.StringFormatter.format;
  * @apiNote Provides a functional abstraction over native arrays for use within the Console API ecosystem.
  */
 @UtilityClass
+@EqualsAndHashCode
 @SuppressWarnings({"unused", "WeakerAccess"})
 public class Array {
 
@@ -139,6 +141,7 @@ public class Array {
 
     /* ==================================== ADD METHOD ========================================= */
 
+    @Deprecated
     public static <T> T @NotNull [] add(T @NotNull [] array, int index, T element) {
         If.ThrowWhen(index < 0 || index > array.length, () ->
                 new IndexOutOfBoundsException(format("Index: {}, Length: {}", index, length(array))));
@@ -152,6 +155,12 @@ public class Array {
                 length(array) - index);
         result[index] = element;
         return result;
+    }
+
+    public static <T> T[] add(T[] array, T element) {
+        return adapt(array)
+                .add(element)
+                .toArray(size -> Arrays.copyOf(array, size));
     }
 
     /* ==================================== CONCAT METHOD ========================================= */
@@ -224,7 +233,8 @@ public class Array {
                 .toArray(size -> Arrays.copyOf(array, size));
     }
 
-    public static <T> T @NotNull [] removeAll(T @NotNull [] array, T @NotNull [] elements) {
+    @SafeVarargs
+    public static <T> T @NotNull [] removeAll(T @NotNull [] array, T @NotNull ... elements) {
         return adapt(array)
                 .removeIf(new HashSet<>(Arrays.asList(elements))::contains)
                 .toArray(size -> Arrays.copyOf(array, size));
@@ -240,22 +250,19 @@ public class Array {
 
     /* ==================================== REVERSE METHOD'S ========================================= */
 
-    public static <T> @NotNull T @NotNull [] reversed(T @NotNull [] array) {
-        T[] result = Arrays.copyOf(array, array.length);
-        For.range(0, length(array) / 2).forEach(i -> {
-            T t = result[i];
-            result[i] = result[length(array) - i - 1];
-            result[length(array) - i - 1] = t;
-        });
-        return result;
+    public static <T> @NotNull T @NotNull [] reverse(T @NotNull [] array) {
+        return adapt(array)
+                .reverse()
+                .toArray(size -> Arrays.copyOf(array, size));
     }
 
     public static <T> void reverseInPlace(T @NotNull [] array) {
-        For.range(0, length(array) / 2).forEach(i -> {
-            T t = array[i];
-            array[i] = array[length(array) - i - 1];
-            array[length(array) - i - 1] = t;
-        });
+        For.range(0, length(array) / 2)
+                .forEach(i -> {
+                    T t = array[i];
+                    array[i] = array[length(array) - i - 1];
+                    array[length(array) - i - 1] = t;
+                });
     }
 
     /* =================================== FILTER METHOD ======================================= */
@@ -269,9 +276,9 @@ public class Array {
     /* ==================================== MAP METHOD ========================================= */
 
     public static <T, R> R[] map(T @NotNull [] array, @NotNull Function<T, R> mapper, @NotNull IntFunction<R[]> generator) {
-        R[] result = generator.apply(array.length);
-        For.range(0, length(array) - 1).forEach(i -> result[i] = mapper.apply(array[i]));
-        return result;
+        return adapt(array)
+                .map(mapper)
+                .toArray(generator);
     }
     /* ================================== DISTINCT METHOD ======================================= */
 
@@ -294,9 +301,7 @@ public class Array {
     /* ==================================== JOIN METHOD'S ========================================= */
 
     public static @NotNull String join(Object @NotNull [] array, @NotNull String delimiter) {
-        return String.join(delimiter, Arrays.stream(array)
-                .map(String::valueOf)
-                .toArray(String[]::new));
+        return adapt(array).join(delimiter);
     }
 
     /* ================================ To List / Set METHOD'S ==================================== */
@@ -316,6 +321,10 @@ public class Array {
     }
 
     public static void sort(int @NotNull ... array) {
+        Arrays.sort(array);
+    }
+
+    public static void sort(long @NotNull ... array) {
         Arrays.sort(array);
     }
 

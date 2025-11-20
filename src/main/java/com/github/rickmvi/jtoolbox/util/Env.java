@@ -17,14 +17,18 @@
  */
 package com.github.rickmvi.jtoolbox.util;
 
+import io.github.cdimascio.dotenv.DotenvBuilder;
 import com.github.rickmvi.jtoolbox.control.If;
 import io.github.cdimascio.dotenv.Dotenv;
-import io.github.cdimascio.dotenv.DotenvBuilder;
+
+import lombok.AccessLevel;
+import lombok.Getter;
 import lombok.experimental.UtilityClass;
-import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Contract;
 
 import java.util.Objects;
+import java.util.Optional;
 
 /**
  * Utility class for managing and accessing application environment variables,
@@ -36,13 +40,20 @@ import java.util.Objects;
  * The underlying library is configured to ignore the .env file if it is missing.
  *
  * @author Rick M. Viana
- * @version 1.2
+ * @version 1.3
  * @since 2025
  */
 @UtilityClass
 public final class Env {
 
-    private static Dotenv dotenv;
+    private static Dotenv                     dotenv;
+    private static final String              FAILURE;
+    private static final String DEFAULT_ENV_FILENAME;
+
+    static {
+        FAILURE = "Dotenv was not loaded. Use Env.builder().directory(...).filename(...).load() first.";
+        DEFAULT_ENV_FILENAME = ".env";
+    }
 
     /**
      * Creates a new {@link EnvBuilder} instance to configure and load environment variables.
@@ -64,9 +75,28 @@ public final class Env {
      * has not been called).
      */
     public static String get(String key) {
-        If.ThrowWhen(dotenv == null, () ->
-                new IllegalStateException("Dotenv was not loaded. Use Env.builder().load() first."));
+        ensureDotenvLoaded();
         return dotenv.get(Objects.requireNonNull(key));
+    }
+
+    /**
+     * Retrieves an {@link Optional} containing the value of the environment variable
+     * specified by the provided key, or an empty {@link Optional} if the variable
+     * is not found or the value is null.
+     *
+     * @param key the name of the environment variable to retrieve. Must not be null.
+     * @return an {@link Optional} containing the variable value if it exists and is not null,
+     *         otherwise an empty {@link Optional}.
+     * @throws IllegalStateException if the environment configuration has not been loaded.
+     * @throws NullPointerException if the provided key is null.
+     */
+    public static @NotNull Optional<String> optional(String key) {
+        ensureDotenvLoaded();
+        return Optional.ofNullable(dotenv.get(Objects.requireNonNull(key)));
+    }
+
+    private static void ensureDotenvLoaded() {
+        If.ThrowWhen(dotenv == null, () -> new IllegalStateException(FAILURE));
     }
 
     /**
@@ -75,6 +105,8 @@ public final class Env {
      * Allows customization of the directory and file name before loading.
      */
     public static class EnvBuilder {
+
+        @Getter(value = AccessLevel.PRIVATE)
         private final DotenvBuilder dotenvBuilder;
 
         EnvBuilder() {
@@ -90,8 +122,8 @@ public final class Env {
          * @throws NullPointerException if the directory path is null.
          */
         public EnvBuilder directory(String path) {
-            this.dotenvBuilder.directory(Objects.requireNonNull(path, "The directory path cannot be null."));
-            this.dotenvBuilder.filename(".env");
+            this.getDotenvBuilder().directory(Objects.requireNonNull(path, "The directory path cannot be null."));
+            this.getDotenvBuilder().filename(DEFAULT_ENV_FILENAME);
             return this;
         }
 
@@ -103,7 +135,7 @@ public final class Env {
          * @throws NullPointerException if the file name is null.
          */
         public EnvBuilder filename(String name) {
-            this.dotenvBuilder.filename(Objects.requireNonNull(name, "The file name cannot be null."));
+            this.getDotenvBuilder().filename(Objects.requireNonNull(name, "The file name cannot be null."));
             return this;
         }
 
@@ -112,7 +144,7 @@ public final class Env {
          * This method must be called to initialize the {@code Env} utility class.
          */
         public void load() {
-            Env.dotenv = this.dotenvBuilder.load();
+            Env.dotenv = this.getDotenvBuilder().load();
         }
 
         /**
@@ -121,7 +153,10 @@ public final class Env {
          * This method is equivalent to {@code Env.builder().directory("./").filename(".env").load()}.
          */
         public void fastload() {
-            Env.dotenv = this.dotenvBuilder.directory("./").filename(".env").load();
+            Env.dotenv = this.getDotenvBuilder()
+                    .directory("./")
+                    .filename(DEFAULT_ENV_FILENAME)
+                    .load();
         }
     }
 }
