@@ -22,7 +22,6 @@ import lombok.Getter;
 import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
 
-import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.Comparator;
@@ -45,7 +44,7 @@ import java.util.stream.Stream;
  *     .deleteRecursively();
  * }</pre>
  *
- * @see FileHandler
+ * @see Files
  * @author Rick M. Viana
  * @version 1.0
  * @since 2025
@@ -74,27 +73,27 @@ public class Directory {
     }
 
     public Directory createIfNotExists() {
-        if (Files.notExists(directory)) {
-            Try.runThrowing(() -> Files.createDirectories(directory)).orThrow();
+        if (java.nio.file.Files.notExists(directory)) {
+            Try.runThrowing(() -> java.nio.file.Files.createDirectories(directory)).orThrow();
         }
         return this;
     }
 
     public boolean exists() {
-        return Files.exists(directory);
+        return java.nio.file.Files.exists(directory);
     }
 
     public List<Path> listFiles() {
-        try (Stream<Path> paths = Try.ofThrowing(() -> Files.list(directory)).orThrow()) {
+        try (Stream<Path> paths = Try.ofThrowing(() -> java.nio.file.Files.list(directory)).orThrow()) {
             return paths.collect(Collectors.toList());
         }
     }
 
     public Directory deleteRecursively() {
-        if (Files.exists(directory)) {
-            try (Stream<Path> walk = Try.ofThrowing(() -> Files.walk(directory)).orThrow()) {
+        if (java.nio.file.Files.exists(directory)) {
+            try (Stream<Path> walk = Try.ofThrowing(() -> java.nio.file.Files.walk(directory)).orThrow()) {
                 walk.sorted(Comparator.reverseOrder())
-                        .forEach(path -> Try.runThrowing(() -> Files.deleteIfExists(path)));
+                        .forEach(path -> Try.runThrowing(() -> java.nio.file.Files.deleteIfExists(path)));
             }
         }
         return this;

@@ -1,10 +1,12 @@
+import org.gradle.api.tasks.JavaExec
+
 plugins {
     id("java")
     id("com.vanniktech.maven.publish") version "0.34.0"
 }
 
 group = "io.github.rickmvi"
-version = "1.10.46"
+version = "1.10.52"
 
 repositories {
     mavenCentral()
@@ -19,22 +21,29 @@ dependencies {
 
     implementation(libs.gson)
     implementation(libs.annotations)
-    implementation(dependencyNotation = libs.dotenv)
     implementation(libs.yaml)
-    implementation(libs.reflection)
+
+    implementation("com.h2database:h2:2.1.214")
 }
 
 tasks.test {
     useJUnitPlatform()
 }
 
+// Task para executar o exemplo de DB (runner)
+tasks.register<JavaExec>("runExample") {
+    group = "application"
+    description = "Executa o runner de exemplo que demonstra CRUD via JdbcTemplate"
+    classpath = sourceSets["main"].runtimeClasspath
+    mainClass.set("com.github.rickmvi.jtoolbox.jdbc.runner.DbExampleRunner")
+}
 
 mavenPublishing {
     coordinates(group.toString(), "jtoolbox", version.toString())
 
     pom {
         name.set("JToolBox")
-        description.set("Console and formatting utility library")
+        description.set("Framework Java de produtividade com Injeção de Dependência (IoC), Web Services simplificados e um conjunto de utilidades essenciais para desenvolvimento moderno.")
         inceptionYear.set("2025")
         url.set("https://github.com/rickmvi/JToolBox")
 

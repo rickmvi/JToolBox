@@ -23,7 +23,7 @@ This repository contains multiple utility modules grouped by responsibility — 
 
 ---
 
- **Table of contents**
+**Table of contents**
 
 - Project overview
 - Key modules & features
@@ -66,7 +66,7 @@ Add the library from Maven Central (example with Gradle Kotlin DSL):
 
 ```gradle
 dependencies {
-    implementation("io.github.rickmvi:jtoolbox:1.10.51")
+    implementation("io.github.rickmvi:jtoolbox:1.10.52")
 }
 ```
 
@@ -77,7 +77,7 @@ If you prefer to import project sources directly, include the module in your mul
 Console formatting
 
 ```java
-import com.github.rickmvi.formatter.Formatted;
+import com.github.rickmvi.formatted.Formatted;
 
 String out = Formatted.format("Hello {}, you are {} years old", "Alice", 30);
 System.out.println(out);
@@ -86,11 +86,10 @@ System.out.println(out);
 Safe console input
 
 ```java
-import com.github.rickmvi.console.ScannerUtils;
+import com.github.rickmvi.console.Scan;
 
-ScannerUtils.init();
-int age = ScannerUtils.nextInt();
-ScannerUtils.close();
+int age = Scan.readInt();
+Scan.close();
 ```
 
 JDBC (builder-style connection)
@@ -146,4 +145,3 @@ Author: *Rick M. Viana*
 Email: *rickmviana.dev@outlook.com*
 
 ---
-

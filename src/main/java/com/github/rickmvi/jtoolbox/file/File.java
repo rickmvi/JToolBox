@@ -18,8 +18,8 @@
 package com.github.rickmvi.jtoolbox.file;
 
 import com.github.rickmvi.jtoolbox.file.util.Directory;
-import com.github.rickmvi.jtoolbox.file.util.FileHandler;
-import com.github.rickmvi.jtoolbox.file.util.PathUtil;
+import com.github.rickmvi.jtoolbox.file.util.Files;
+import com.github.rickmvi.jtoolbox.file.util.Paths;
 import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
 
@@ -30,11 +30,11 @@ import java.nio.file.Path;
  * for common file system and path manipulation operations.
  * <p>
  * This interface acts as a facade, aggregating functionalities from core utilities
- * such as {@link PathUtil}, {@link FileHandler}, and {@link Directory}, offering
+ * such as {@link Paths}, {@link Files}, and {@link Directory}, offering
  * a simplified and expressive entry point for file-related tasks.
  *
- * @see PathUtil
- * @see FileHandler
+ * @see Paths
+ * @see Files
  * @see Directory
  * @author Rick M. Viana
  * @version 1.1
@@ -43,7 +43,7 @@ import java.nio.file.Path;
 public interface File {
 
     /**
-     * Creates a {@link FileHandler} object for the specified file path.
+     * Creates a {@link Files} object for the specified file path.
      *
      * @param filePath the path of the file for which the {@code FileUtil} object is to be created.
      *                 This must not be {@code null}.
@@ -51,8 +51,8 @@ public interface File {
      * @throws IllegalArgumentException if the given file path is invalid or cannot be resolved.
      */
     @Contract("_ -> new")
-    static @NotNull FileHandler at(String filePath) {
-        return FileHandler.at(filePath);
+    static @NotNull Files at(String filePath) {
+        return Files.at(filePath);
     }
 
     /**
@@ -77,7 +77,7 @@ public interface File {
      * @throws IllegalArgumentException if the specified path is invalid or cannot be resolved.
      */
     static @NotNull Path get(String path) {
-        return PathUtil.get(path);
+        return Paths.get(path);
     }
 
     /**
@@ -91,7 +91,7 @@ public interface File {
      * @throws NullPointerException if the {@code first} parameter or any of the {@code more} parameters are {@code null}.
      */
     static @NotNull Path combine(String first, String... more) {
-        return PathUtil.combine(first, more);
+        return Paths.combine(first, more);
     }
 
     /**
@@ -105,12 +105,12 @@ public interface File {
      * @throws NullPointerException if the {@code path} parameter is {@code null}.
      */
     static @NotNull Path toAbsolutePath(Path path) {
-        return PathUtil.toAbsolutePath(path);
+        return Paths.toAbsolutePath(path);
     }
 
     /**
      * Extracts the file name from the given {@link Path}.
-     * This method uses {@link PathUtil#getFileName(Path)} internally to retrieve the file name.
+     * This method uses {@link Paths#getFileName(Path)} internally to retrieve the file name.
      *
      * @param path the {@link Path} from which to extract the file name.
      *             This must not be {@code null}.
@@ -119,7 +119,7 @@ public interface File {
      * @throws NullPointerException if the {@code path} parameter is {@code null}.
      */
     static String getFileName(Path path) {
-        return PathUtil.getFileName(path);
+        return Paths.getFileName(path);
     }
 
     /**
@@ -135,7 +135,7 @@ public interface File {
      * @throws NullPointerException if the {@code fileName} parameter is {@code null}.
      */
     static @NotNull String getExtension(String fileName) {
-        return FileHandler.getExtension(fileName);
+        return Files.getExtension(fileName);
     }
 
     /**
@@ -151,7 +151,7 @@ public interface File {
      *                                  specified algorithm is unsupported.
      */
     static String getFileHash(String filePath, String algorithm) {
-        return FileHandler.getFileHash(filePath, algorithm);
+        return Files.getFileHash(filePath, algorithm);
     }
 
     /**
@@ -163,7 +163,7 @@ public interface File {
      * @throws IllegalArgumentException if the file path is invalid or the file cannot be read.
      */
     static String read(String filePath) {
-        return FileHandler.at(filePath).readAllText();
+        return Files.at(filePath).readAllText();
     }
 
     /**
@@ -175,7 +175,7 @@ public interface File {
      * @throws IllegalArgumentException if the file path is invalid or the file cannot be read.
      */
     static byte[] readBytes(String filePath) {
-        return FileHandler.at(filePath).readAllBytes();
+        return Files.at(filePath).readAllBytes();
     }
 
     /**
@@ -189,7 +189,7 @@ public interface File {
      * @throws IllegalArgumentException if the file path is invalid or cannot be resolved.
      */
     static void write(String filePath, String content) {
-        FileHandler.at(filePath).write(content);
+        Files.at(filePath).write(content);
     }
 
     /**
@@ -206,7 +206,7 @@ public interface File {
      * @throws IllegalArgumentException if the file path is invalid or cannot be resolved.
      */
     static void write(String filePath, String content, boolean append) {
-        FileHandler.at(filePath).write(content, append);
+        Files.at(filePath).write(content, append);
     }
 
 }

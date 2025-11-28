@@ -127,7 +127,7 @@ public class Dynamic<T> implements Iterable<T> {
     @Getter
     private StorageMode mode;
 
-    private Dynamic(Collection<T> initial, boolean allowDuplicates, StorageMode mode) {
+    private Dynamic(Collection<? extends T> initial, boolean allowDuplicates, StorageMode mode) {
         this.allowDuplicates = allowDuplicates;
         this.mode = mode;
         this.elements = createStorage(mode);
@@ -135,6 +135,22 @@ public class Dynamic<T> implements Iterable<T> {
         if (!allowDuplicates) {
             applyDuplicateRule();
         }
+    }
+
+    public static <T> @NotNull Dynamic<T> from(@NotNull Collection<? extends T> collection) {
+        if (collection instanceof Set) {
+            return new Dynamic<>(collection, false, StorageMode.SET);
+        }
+
+        if (collection instanceof LinkedList) {
+            return new Dynamic<>(collection, true, StorageMode.LINKED);
+        }
+        return new Dynamic<>(collection, true, StorageMode.ARRAY);
+    }
+
+    public static <T> @NotNull Dynamic<T> from(@NotNull Collection<? extends T> collection, boolean allowDuplicates) {
+        StorageMode mode = (!allowDuplicates) ? StorageMode.SET : StorageMode.ARRAY;
+        return new Dynamic<>(collection, allowDuplicates, mode);
     }
 
     @SafeVarargs
