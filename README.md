@@ -40,7 +40,7 @@ JToolbox groups small utilities into coherent packages. The goal is not to repla
 
 Key modules & notable packages
 
-- console — Console I/O helpers, formatting, safe Scanner utilities (e.g., `ScannerUtils`, `Out`, `Formatted`).
+- console — Console I/O helpers, formatting, safe Scanner utilities (e.g., `Scan`, `IO`).
 - jdbc — Lightweight JDBC utilities and helpers (connection builders, `JdbcTemplate`, named-parameter support, row mapping helpers).
 - collections — Small collection helpers and lightweight wrappers.
 - datetime — Simple date/time helpers.
@@ -66,7 +66,7 @@ Add the library from Maven Central (example with Gradle Kotlin DSL):
 
 ```gradle
 dependencies {
-    implementation("io.github.rickmvi:jtoolbox:1.10.51")
+    implementation("io.github.rickmvi:jtoolbox:1.10.52")
 }
 ```
 
@@ -77,20 +77,27 @@ If you prefer to import project sources directly, include the module in your mul
 Console formatting
 
 ```java
-import com.github.rickmvi.formatter.Formatted;
+import static com.github.rickmvi.text.StringFormatter;
+import com.github.rickmvi.console.IO
 
-String out = Formatted.format("Hello {}, you are {} years old", "Alice", 30);
-System.out.println(out);
+String out = format("Hello {}, you are {} years old", "Alice", 30);
+IO.println(out);
 ```
 
 Safe console input
 
 ```java
-import com.github.rickmvi.console.ScannerUtils;
+import com.github.rickmvi.console.util.Scan;
 
-ScannerUtils.init();
-int age = ScannerUtils.nextInt();
-ScannerUtils.close();
+int age = Scan.readInt();
+Scan.close();
+```
+
+```java
+import com.github.rickmvi.console.util.Scan;
+
+int age = Scan.readIntPrompt("Enter your age:");
+Scan.close();
 ```
 
 JDBC (builder-style connection)
