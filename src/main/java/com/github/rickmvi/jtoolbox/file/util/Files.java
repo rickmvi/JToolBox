@@ -17,19 +17,27 @@
  */
 package com.github.rickmvi.jtoolbox.file.util;
 
+import com.github.rickmvi.jtoolbox.text.Stringifier;
 import com.github.rickmvi.jtoolbox.util.Try;
 import lombok.Getter;
 import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
 
+import java.io.*;
 import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.*;
+import java.nio.file.attribute.*;
 import java.security.MessageDigest;
-import java.util.HexFormat;
-import java.util.List;
-import java.util.Objects;
+import java.time.Instant;
+import java.util.*;
+import java.util.function.Consumer;
+import java.util.function.Predicate;
+import java.util.regex.Pattern;
+import java.util.stream.Collectors;
 import java.util.stream.Stream;
+import java.util.zip.GZIPInputStream;
+import java.util.zip.GZIPOutputStream;
 
 /**
  * <h2>FileHandler</h2>
@@ -41,39 +49,37 @@ import java.util.stream.Stream;
  * <p>This class simplifies file handling by wrapping NIO methods in a high-level API.
  * Designed to be part of the JToolbox library for easy, modern file manipulation.</p>
  *
- * <h3>Example 1:</h3>
+ * <h3>Example 1: Basic Operations</h3>
  * <pre>{@code
  * FileHandler
- * .at("data/output.txt")
- * .createDirectoriesIfNeeded()
- * .createIfNotExists()
- * .write("Hello, World!")
- * .append("\nMore text here.")
- * .copyTo("backup/output_copy.txt")
- * .delete();
+ *     .at("data/output.txt")
+ *     .createDirectoriesIfNeeded()
+ *     .createIfNotExists()
+ *     .write("Hello, World!")
+ *     .append("\nMore text here.")
+ *     .copyTo("backup/output_copy.txt")
+ *     .delete();
  * }</pre>
  *
- * <h3>Example 2:</h3>
+ * <h3>Example 2: File Metadata</h3>
  * <pre>{@code
  * String ext = FileHandler.getExtension("report.pdf"); // "pdf"
  * String mime = FileHandler.getMimeType("report.pdf"); // "application/pdf"
  * String hash = FileHandler.getFileHash("data/output.txt", "SHA-256");
  * }</pre>
  *
- * <h3>Example 3:</h3>
+ * <h3>Example 3: Advanced Operations</h3>
  * <pre>{@code
- * // 1. Renomeia o arquivo, retornando uma nova instância FileHandler para o novo caminho
- * FileHandler renamedFile = FileHandler
- * .at("logs/temp.log")
- * .createIfNotExists()
- * .write("Line 1\nLine 2\nLine 3")
- * .renameTo("logs/app.log");
- * * // 2. Lê todas as linhas do arquivo renomeado
- * List<String> allLines = renamedFile.readAllLines(); // ["Line 1", "Line 2", "Line 3"]
- * * // 3. Processa o conteúdo como um Stream (ótimo para arquivos grandes)
- * long lineCount = renamedFile.lines().count(); // 3
- * * // 4. Limpa o novo arquivo
- * renamedFile.delete();
+ * FileHandler
+ *     .at("data/large.txt")
+ *     .filter(line -> line.contains("ERROR"))
+ *     .saveTo("errors.txt")
+ *     .compress("errors.txt.gz");
+ *
+ * FileHandler
+ *     .at("config.json")
+ *     .setReadOnly()
+ *     .setLastModifiedTime(Instant.now());
  * }</pre>
  *
  * @see Directory
@@ -81,14 +87,15 @@ import java.util.stream.Stream;
  * @see java.nio.file.Files
  *
  * @author Rick M. Viana
- * @version 1.1
+ * @version 2.0
  * @since 2025
  */
+@SuppressWarnings("unused")
 public class Files {
 
     @Getter
-    private final Path path;
-    private Charset charset = StandardCharsets.UTF_8;
+    private final Path    path;
+    private       Charset charset = StandardCharsets.UTF_8;
 
     private Files(String filePath) {
         this.path = Paths.get(filePath);
@@ -96,14 +103,6 @@ public class Files {
 
     /**
      * Creates a new {@code FileHandler} instance for the specified file path.
-     * This method initializes a {@code FileHandler} to provide operations on the
-     * file located at the given {@code filePath}.
-     *
-     * @param filePath the path to the file for which the {@code FileHandler}
-     *                 instance is to be created. This should represent an
-     *                 existing or intended file location.
-     * @return a {@code FileHandler} instance configured for the given file path.
-     * @throws NullPointerException if {@code filePath} is {@code null}.
      */
     @Contract("_ -> new")
     public static @NotNull Files at(String filePath) {
@@ -111,18 +110,22 @@ public class Files {
     }
 
     /**
-     * Sets the character set to be used for file operations, such as reading and writing.
-     * The specified {@code charset} will override any previously configured character set for this {@code FileHandler}.
-     * This method follows a fluent interface design, allowing method chaining.
-     *
-     * @param charset the {@code Charset} to be used for file operations; must not be {@code null}.
-     * @return the current {@code FileHandler} instance.
-     * @throws NullPointerException if the provided {@code charset} is {@code null}.
+     * Creates a new {@code FileHandler} instance for the specified Path.
+     */
+    @Contract("_ -> new")
+    public static @NotNull Files at(Path path) {
+        return new Files(Objects.requireNonNull(path).toString());
+    }
+
+    /**
+     * Sets the character set to be used for file operations.
      */
     public Files charset(Charset charset) {
         this.charset = charset;
         return this;
     }
+
+    // ==================== CREATION & DELETION ====================
 
     public Files createIfNotExists() {
         if (java.nio.file.Files.notExists(path)) {
@@ -137,38 +140,61 @@ public class Files {
         return this;
     }
 
-    /**
-     * Writes the specified content to the file using the specified mode (overwrite or append).
-     *
-     * @param content the content to write.
-     * @param append if true, the content is appended to the end of the file; if false, the file is overwritten.
-     * @return the current {@code FileHandler} instance.
-     */
+
+    public Files create() {
+        return createDirectoriesIfNeeded().createIfNotExists();
+    }
+
+    public Files delete() {
+        Try.runThrowing(() -> java.nio.file.Files.deleteIfExists(path)).orThrow();
+        return this;
+    }
+
+    public Files deleteIf(@NotNull Predicate<Path> condition) {
+        if (condition.test(path)) {
+            delete();
+        }
+        return this;
+    }
+
+    public Files clear() {
+        return write("");
+    }
+
     public Files write(@NotNull String content, boolean append) {
         StandardOpenOption mode = append ? StandardOpenOption.APPEND : StandardOpenOption.TRUNCATE_EXISTING;
         Try.runThrowing(() -> java.nio.file.Files.writeString(path, content, charset, StandardOpenOption.CREATE, mode)).orThrow();
         return this;
     }
 
-    /**
-     * Writes the specified content to the file, overwriting existing content (default behavior).
-     *
-     * @param content the content to write.
-     * @return the current {@code FileHandler} instance.
-     */
     public Files write(@NotNull String content) {
         return write(content, false);
     }
 
-    /**
-     * Appends the specified content to the end of the file.
-     *
-     * @param content the content to append.
-     * @return the current {@code FileHandler} instance.
-     */
     public Files append(@NotNull String content) {
         return write(content, true);
     }
+
+    public Files writeLines(List<String> lines) {
+        Try.runThrowing(() -> java.nio.file.Files.write(path, lines, charset)).orThrow();
+        return this;
+    }
+
+    public Files writeBytes(byte[] bytes) {
+        Try.runThrowing(() -> java.nio.file.Files.write(path, bytes)).orThrow();
+        return this;
+    }
+
+    public Files writeObject(Serializable object) {
+        Try.runThrowing(() -> {
+            try (ObjectOutputStream oos = new ObjectOutputStream(java.nio.file.Files.newOutputStream(path))) {
+                oos.writeObject(object);
+            }
+        }).orThrow();
+        return this;
+    }
+
+    // ==================== READ OPERATIONS ====================
 
     public String readAllText() {
         return Try.ofThrowing(() -> java.nio.file.Files.readString(path, charset)).orThrow();
@@ -182,66 +208,181 @@ public class Files {
         return Try.ofThrowing(() -> java.nio.file.Files.readAllLines(path, charset)).orThrow();
     }
 
-    /**
-     * Streams the lines of the file specified by the {@code path} field using the given {@code charset}.
-     * This method provides a lazy and memory-efficient way to process the lines of the file as a stream.
-     *
-     * @return a {@link Stream} of strings, where each string represents a line from the file.
-     * @throws RuntimeException if an error occurs while opening the file or reading its lines.
-     */
     public Stream<String> lines() {
         return Try.ofThrowing(() -> java.nio.file.Files.lines(path, charset)).orThrow();
     }
 
     /**
-     * Copies the current file to the specified target path.
-     * The file at the target path will be replaced if it already exists.
-     *
-     * @param targetPath the path to which the file should be copied.
-     *                   This should include the full target location, including the file name.
-     * @return the current {@code FileHandler} instance.
-     * @throws RuntimeException if an error occurs during the file copy operation.
+     * Reads an object from the file using deserialization.
      */
+    @SuppressWarnings("unchecked")
+    public <T> T readObject(Class<T> type) {
+        return Try.ofThrowing(() -> {
+            try (ObjectInputStream ois = new ObjectInputStream(java.nio.file.Files.newInputStream(path))) {
+                return (T) ois.readObject();
+            }
+        }).orThrow();
+    }
+
+    /**
+     * Reads the first N lines from the file.
+     */
+    public List<String> readFirstLines(int n) {
+        return lines().limit(n).collect(Collectors.toList());
+    }
+
+    /**
+     * Reads the last N lines from the file (useful for log files).
+     */
+    public List<String> readLastLines(int n) {
+        List<String> allLines = readAllLines();
+        int size = allLines.size();
+        return allLines.subList(Math.max(0, size - n), size);
+    }
+
+    // ==================== FILTERING & PROCESSING ====================
+
+    /**
+     * Filters lines based on a predicate and returns them as a list.
+     */
+    public List<String> filter(Predicate<String> predicate) {
+        return lines().filter(predicate).collect(Collectors.toList());
+    }
+
+    /**
+     * Filters lines and saves them to a new file.
+     */
+    public Files filterAndSave(Predicate<String> predicate, String targetPath) {
+        List<String> filtered = filter(predicate);
+        Files.at(targetPath).writeLines(filtered);
+        return this;
+    }
+
+    /**
+     * Searches for lines matching a regex pattern.
+     */
+    public List<String> grep(String regex) {
+        Pattern pattern = Pattern.compile(regex);
+        return filter(line -> pattern.matcher(line).find());
+    }
+
+    /**
+     * Replaces all occurrences of a pattern with a replacement string.
+     */
+    public Files replaceAll(String regex, String replacement) {
+        String content = readAllText();
+        String replaced = content.replaceAll(regex, replacement);
+        return write(replaced);
+    }
+
+    /**
+     * Processes each line with a consumer function.
+     */
+    public Files processLines(Consumer<String> processor) {
+        lines().forEach(processor);
+        return this;
+    }
+
+    /**
+     * Counts the number of lines in the file.
+     */
+    public long countLines() {
+        return lines().count();
+    }
+
+    /**
+     * Counts occurrences of a specific string in the file.
+     */
+    public long count(String searchString) {
+        return lines()
+                .mapToLong(line -> (line.length() - line.replace(searchString, "").length()) / searchString.length())
+                .sum();
+    }
+
+    // ==================== FILE OPERATIONS ====================
+
     public Files copyTo(String targetPath) {
         Try.runThrowing(() -> java.nio.file.Files.copy(path, Paths.get(targetPath), StandardCopyOption.REPLACE_EXISTING)).orThrow();
         return this;
     }
 
     /**
-     * Moves the current file to the specified target path. If a file already exists at the target path,
-     * it will be replaced.
-     *
-     * @param targetPath the path to which the file should be moved. This should be the full
-     *                   target location, including file name if applicable.
-     * @return the current {@code FileHandler} instance, representing the file at its new location.
-     * @throws RuntimeException if an error occurs while moving the file.
+     * Copies the file only if the target doesn't exist.
      */
+    public Files copyToIfNotExists(String targetPath) {
+        Path target = Paths.get(targetPath);
+        if (java.nio.file.Files.notExists(target)) {
+            copyTo(targetPath);
+        }
+        return this;
+    }
+
     public Files moveTo(String targetPath) {
         Try.runThrowing(() -> java.nio.file.Files.move(path, Paths.get(targetPath), StandardCopyOption.REPLACE_EXISTING)).orThrow();
         return this;
     }
 
-    /**
-     * Renames the file to the specified new file name within the same directory.
-     * This method returns a new {@code FileHandler} instance representing the new file path.
-     *
-     * @param newFileName the new name for the file (e.g., "report-new.pdf").
-     * @return a new {@code FileHandler} instance representing the renamed file.
-     * @throws IllegalArgumentException if the file cannot be renamed.
-     */
     public Files renameTo(String newFileName) {
         Path parent = path.getParent();
         Path newPath = (parent != null) ? parent.resolve(newFileName) : Paths.get(newFileName);
-
         Try.runThrowing(() -> java.nio.file.Files.move(path, newPath, StandardCopyOption.REPLACE_EXISTING)).orThrow();
-
         return Files.at(newPath.toString());
     }
 
-    public Files delete() {
-        Try.runThrowing(() -> java.nio.file.Files.deleteIfExists(path)).orThrow();
+    /**
+     * Creates a backup copy of the file with a timestamp.
+     */
+    public Files backup() {
+        String backupName = Stringifier.format("{}.{}.bak", getFileName(), System.currentTimeMillis());
+        copyTo(path.getParent().resolve(backupName).toString());
         return this;
     }
+
+    /**
+     * Creates a hard link to this file.
+     */
+    public Files createHardLink(String linkPath) {
+        Try.runThrowing(() -> java.nio.file.Files.createLink(Paths.get(linkPath), path)).orThrow();
+        return this;
+    }
+
+    /**
+     * Creates a symbolic link to this file.
+     */
+    public Files createSymbolicLink(String linkPath) {
+        Try.runThrowing(() -> java.nio.file.Files.createSymbolicLink(Paths.get(linkPath), path)).orThrow();
+        return this;
+    }
+
+    // ==================== COMPRESSION ====================
+
+    /**
+     * Compresses the file using GZIP.
+     */
+    public Files compress(String targetPath) {
+        Try.runThrowing(() -> {
+            try (InputStream in = java.nio.file.Files.newInputStream(path);
+                 GZIPOutputStream out = new GZIPOutputStream(java.nio.file.Files.newOutputStream(Paths.get(targetPath)))) {
+                in.transferTo(out);
+            }
+        }).orThrow();
+        return this;
+    }
+
+    /**
+     * Decompresses a GZIP file.
+     */
+    public Files decompress(String targetPath) {
+        Try.runThrowing(() -> {
+            try (GZIPInputStream in = new GZIPInputStream(java.nio.file.Files.newInputStream(path));
+                 OutputStream out = java.nio.file.Files.newOutputStream(Paths.get(targetPath))) {
+                in.transferTo(out);
+            }
+        }).orThrow();
+        return this;
+    }
+
+    // ==================== ATTRIBUTES & METADATA ====================
 
     public boolean exists() {
         return java.nio.file.Files.exists(path);
@@ -252,47 +393,207 @@ public class Files {
     }
 
     /**
-     * Extracts and returns the file extension from the provided file name.
-     * If the file name does not contain a period (`.`), an empty string is returned.
-     *
-     * @param fileName the name of the file from which the extension is to be extracted; must not be null.
-     * @return the file extension as a non-null string. Returns an empty string if no extension is present.
-     * @throws NullPointerException if {@code fileName} is null.
+     * Returns human-readable file size (e.g., "1.5 MB").
      */
+    public String sizeFormatted() {
+        long size = size();
+        if (size < 1024) return size + " B";
+        if (size < 1024 * 1024) return String.format("%.2f KB", size / 1024.0);
+        if (size < 1024 * 1024 * 1024) return String.format("%.2f MB", size / (1024.0 * 1024));
+        return String.format("%.2f GB", size / (1024.0 * 1024 * 1024));
+    }
+
+    public boolean isRegularFile() {
+        return java.nio.file.Files.isRegularFile(path);
+    }
+
+    public boolean isDirectory() {
+        return java.nio.file.Files.isDirectory(path);
+    }
+
+    public boolean isSymbolicLink() {
+        return java.nio.file.Files.isSymbolicLink(path);
+    }
+
+    public boolean isHidden() {
+        return Try.ofThrowing(() -> java.nio.file.Files.isHidden(path)).orElse(false);
+    }
+
+    public boolean isReadable() {
+        return java.nio.file.Files.isReadable(path);
+    }
+
+    public boolean isWritable() {
+        return java.nio.file.Files.isWritable(path);
+    }
+
+    public boolean isExecutable() {
+        return java.nio.file.Files.isExecutable(path);
+    }
+
+    /**
+     * Gets the file name without path.
+     */
+    public String getFileName() {
+        return path.getFileName().toString();
+    }
+
+    /**
+     * Gets the file name without extension.
+     */
+    public String getFileNameWithoutExtension() {
+        String name = getFileName();
+        int dotIndex = name.lastIndexOf('.');
+        return dotIndex > 0 ? name.substring(0, dotIndex) : name;
+    }
+
+    /**
+     * Gets the file extension.
+     */
+    public String getExtension() {
+        return getExtension(getFileName());
+    }
+
+    /**
+     * Gets the absolute path as a string.
+     */
+    public String getAbsolutePath() {
+        return path.toAbsolutePath().toString();
+    }
+
+    /**
+     * Gets the parent directory path.
+     */
+    public String getParent() {
+        Path parent = path.getParent();
+        return parent != null ? parent.toString() : null;
+    }
+
+    /**
+     * Gets the last modified time.
+     */
+    public Instant getLastModifiedTime() {
+        return Try.ofThrowing(() -> java.nio.file.Files.getLastModifiedTime(path).toInstant()).orThrow();
+    }
+
+    /**
+     * Sets the last modified time.
+     */
+    public Files setLastModifiedTime(Instant instant) {
+        Try.runThrowing(() -> java.nio.file.Files.setLastModifiedTime(path, FileTime.from(instant))).orThrow();
+        return this;
+    }
+
+    /**
+     * Gets the creation time.
+     */
+    public Instant getCreationTime() {
+        return Try.ofThrowing(() -> {
+            BasicFileAttributes attrs = java.nio.file.Files.readAttributes(path, BasicFileAttributes.class);
+            return attrs.creationTime().toInstant();
+        }).orThrow();
+    }
+
+    /**
+     * Gets the owner of the file.
+     */
+    public String getOwner() {
+        return Try.ofThrowing(() -> java.nio.file.Files.getOwner(path).getName()).orThrow();
+    }
+
+    /**
+     * Sets the owner of the file.
+     */
+    public Files setOwner(String owner) {
+        Try.runThrowing(() -> {
+            UserPrincipal user = path.getFileSystem().getUserPrincipalLookupService().lookupPrincipalByName(owner);
+            java.nio.file.Files.setOwner(path, user);
+        }).orThrow();
+        return this;
+    }
+
+    /**
+     * Gets POSIX file permissions (Unix/Linux).
+     */
+    public Set<PosixFilePermission> getPosixPermissions() {
+        return Try.ofThrowing(() -> java.nio.file.Files.getPosixFilePermissions(path)).orThrow();
+    }
+
+    /**
+     * Sets POSIX file permissions (Unix/Linux).
+     */
+    public Files setPosixPermissions(Set<PosixFilePermission> permissions) {
+        Try.runThrowing(() -> java.nio.file.Files.setPosixFilePermissions(path, permissions)).orThrow();
+        return this;
+    }
+
+    /**
+     * Sets the file to read-only.
+     */
+    public Files setReadOnly() {
+        Try.runThrowing(() -> {
+            File file = path.toFile();
+            file.setWritable(false);
+            file.setExecutable(false);
+        }).orThrow();
+        return this;
+    }
+
+    /**
+     * Makes the file writable.
+     */
+    public Files setWritable() {
+        Try.runThrowing(() -> path.toFile().setWritable(true)).orThrow();
+        return this;
+    }
+
+    /**
+     * Makes the file executable.
+     */
+    public Files setExecutable() {
+        Try.runThrowing(() -> path.toFile().setExecutable(true)).orThrow();
+        return this;
+    }
+
+    // ==================== COMPARISON ====================
+
+    /**
+     * Compares this file with another file byte by byte.
+     */
+    public boolean contentEquals(String otherPath) {
+        return Try.ofThrowing(() -> {
+            byte[] content1 = readAllBytes();
+            byte[] content2 = Files.at(otherPath).readAllBytes();
+            return Arrays.equals(content1, content2);
+        }).orElse(false);
+    }
+
+    /**
+     * Checks if this file is newer than another file.
+     */
+    public boolean isNewerThan(String otherPath) {
+        return getLastModifiedTime().isAfter(Files.at(otherPath).getLastModifiedTime());
+    }
+
+    /**
+     * Checks if this file is older than another file.
+     */
+    public boolean isOlderThan(String otherPath) {
+        return getLastModifiedTime().isBefore(Files.at(otherPath).getLastModifiedTime());
+    }
+
+    // ==================== STATIC UTILITIES ====================
+
     public static @NotNull String getExtension(@NotNull String fileName) {
         int index = fileName.lastIndexOf('.');
         return (index == -1) ? "" : fileName.substring(index + 1);
     }
 
-    /**
-     * Determines the MIME type of a file based on its file path.
-     * This method utilizes the {@code Files.probeContentType()} method to identify
-     * the content type of the file.
-     *
-     * @param filePath the path to the file whose MIME type is to be determined.
-     *                 The file path should point to an existing and accessible file.
-     * @return a {@code String} representing the MIME type of the file.
-     *         For example, "text/plain" or "image/jpeg".
-     * @throws NullPointerException if the {@code filePath} is {@code null}.
-     * @throws RuntimeException if an underlying error occurs while probing
-     *         the content type, such as an I/O error or unsupported content type.
-     */
     public static String getMimeType(String filePath) {
         Path path = Paths.get(filePath);
         return Try.ofThrowing(() -> java.nio.file.Files.probeContentType(path)).orThrow();
     }
 
-    /**
-     * Generates a hash value for the specified file using the given hash algorithm.
-     *
-     * @param filePath the path to the file whose hash is to be generated.
-     *                 The file path must point to an existing, readable file.
-     * @param algorithm the name of the hash algorithm to be used (e.g., "SHA-256", "MD5").
-     *                  Refer to the {@link MessageDigest} documentation for supported algorithms.
-     * @return a string representing the hash value of the file in hexadecimal format.
-     * @throws IllegalArgumentException if an error occurs while reading the file or generating the hash,
-     *                                  or if the specified algorithm is invalid.
-     */
     public static String getFileHash(String filePath, String algorithm) {
         return Try.ofThrowing(() -> {
             Path path = Paths.get(filePath);
@@ -301,5 +602,22 @@ public class Files {
             byte[] hash = digest.digest(data);
             return HexFormat.of().formatHex(hash);
         }).orElseThrow(e -> new IllegalArgumentException("Error generating hash: " + e.getMessage(), e));
+    }
+
+    /**
+     * Creates a temporary file.
+     */
+    public static Files createTemp(String prefix, String suffix) {
+        return Try.ofThrowing(() -> {
+            Path temp = java.nio.file.Files.createTempFile(prefix, suffix);
+            return Files.at(temp);
+        }).orThrow();
+    }
+
+    /**
+     * Checks if two files are the same (same inode on Unix).
+     */
+    public static boolean isSameFile(String path1, String path2) {
+        return Try.ofThrowing(() -> java.nio.file.Files.isSameFile(Paths.get(path1), Paths.get(path2))).orElse(false);
     }
 }

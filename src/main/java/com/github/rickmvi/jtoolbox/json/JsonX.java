@@ -6,7 +6,9 @@ import com.google.gson.Gson;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonParser;
 import com.google.gson.reflect.TypeToken;
+import lombok.AccessLevel;
 import lombok.Getter;
+import lombok.RequiredArgsConstructor;
 import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
@@ -19,16 +21,12 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 
 @Getter
+@RequiredArgsConstructor(access = AccessLevel.PRIVATE)
 public class JsonX {
 
-    private final Gson gson;
+    private final Gson        gson;
 
     private final JsonXConfig config;
-
-    private JsonX(Gson gson, JsonXConfig config) {
-        this.gson = gson;
-        this.config = config;
-    }
 
     @Contract(value = "_, _ -> new", pure = true)
     @ApiStatus.Internal

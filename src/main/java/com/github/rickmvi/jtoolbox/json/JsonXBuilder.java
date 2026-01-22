@@ -14,11 +14,11 @@ import java.time.format.DateTimeFormatter;
 public class JsonXBuilder {
 
     private final GsonBuilder gsonBuilder;
-    private boolean serializeNulls = false;
-    private Charset charset = StandardCharsets.UTF_8;
-    private boolean java8TimeSupport = false;
-    private String java8DatePattern = "yyyy-MM-dd";
-    private String java8DateTimePattern = "yyyy-MM-dd'T'HH:mm:ss";
+    private boolean           serializeNulls       = false;
+    private Charset           charset              = StandardCharsets.UTF_8;
+    private boolean           java8TimeSupport     = false;
+    private String            java8DatePattern     = "yyyy-MM-dd";
+    private String            java8DateTimePattern = "yyyy-MM-dd'T'HH:mm:ss";
 
     public JsonXBuilder() {
         this.gsonBuilder = new GsonBuilder();

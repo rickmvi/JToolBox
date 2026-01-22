@@ -18,6 +18,7 @@
 package com.github.rickmvi.jtoolbox.console.util;
 
 import com.github.rickmvi.jtoolbox.console.IO;
+import com.github.rickmvi.jtoolbox.control.If;
 import com.github.rickmvi.jtoolbox.util.Numbers;
 import com.github.rickmvi.jtoolbox.util.convert.BooleanParser;
 import com.github.rickmvi.jtoolbox.util.convert.CharacterParser;
@@ -31,19 +32,17 @@ import lombok.Setter;
 
 import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
-import com.github.rickmvi.jtoolbox.control.If;
 
 import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.util.Locale;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.Scanner;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.function.Function;
 import java.util.function.IntPredicate;
 import java.util.function.Predicate;
-
-import static com.github.rickmvi.jtoolbox.control.If.when;
 
 /**
  * Internal implementation of the {@link InputScan} interface.
@@ -218,7 +217,7 @@ public class Scanf implements InputScan, AutoCloseable {
     }
 
     private void ensureScannerInitialized() {
-        If.isTrue(scanner.isEmpty(), this::instance).run();
+        If.whenEmpty(scanner).then(this::instance).execute();
     }
 
     @Override
@@ -230,8 +229,8 @@ public class Scanf implements InputScan, AutoCloseable {
     }
 
     private <T> T readValueUntil(String prompt, Function<String, T> parser, @NotNull Predicate<T> validator) {
-        If.ThrowWhen(prompt == null, () -> new IllegalArgumentException("prompt cannot be null"));
-        If.ThrowWhen(parser == null, () -> new IllegalArgumentException("parser cannot be null"));
+        Objects.requireNonNull(prompt, "prompt cannot be null");
+        Objects.requireNonNull(parser, "parser cannot be null");
 
         ensureScannerInitialized();
 
@@ -247,10 +246,10 @@ public class Scanf implements InputScan, AutoCloseable {
             T parsedValue = safeParser.apply(readLine());
             value.set(parsedValue);
 
-            when(value.get() != null)
+            If.whenNotNull(value.get())
                     .and(!validator.test(value.get()))
-                    .apply(() -> IO.err("Value does not meet validation criteria. Try again."))
-                    .run();
+                    .then(() -> IO.err("Value does not meet validation criteria. Try again."))
+                    .execute();
 
             IO.newline();
         } while (value.get() == null || !validator.test(value.get()));
@@ -259,7 +258,10 @@ public class Scanf implements InputScan, AutoCloseable {
     }
 
     private static void displayPrompt(String prompt) {
-        If.isTrue(prompt != null && !prompt.isEmpty(), () -> IO.format("{0} ", prompt)).run();
+        If.whenNotNull(prompt)
+                .and(!prompt.isEmpty())
+                .then(() -> IO.format("{0}> ", prompt))
+                .execute();
     }
 
     @Override
@@ -372,16 +374,14 @@ public class Scanf implements InputScan, AutoCloseable {
     public String readUntil(String prompt, Predicate<String> validator) {
         ensureScannerInitialized();
         if (prompt == null || prompt.isEmpty()) return "";
-        If.ThrowWhen(validator == null, () -> new IllegalArgumentException("validator cannot be null"));
+        Objects.requireNonNull(validator, "validator cannot be null");
 
         AtomicReference<String> input = new AtomicReference<>("");
         do {
             displayPrompt(prompt);
             input.set(readLine());
 
-            If.isTrue(!validator.test(input.get()),
-                    () -> IO.err("Value does not meet validation criteria. Try again.")).run();
-
+            If.onlyIf(!validator.test(input.get()), () -> IO.err("Value does not meet validation criteria. Try again."));
             IO.newline();
         } while (!validator.test(input.get()));
 

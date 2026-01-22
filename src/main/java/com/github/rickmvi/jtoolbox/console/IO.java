@@ -17,9 +17,10 @@
  */
 package com.github.rickmvi.jtoolbox.console;
 
+import com.github.rickmvi.jtoolbox.control.If;
 import com.github.rickmvi.jtoolbox.text.Stringifier;
 import com.github.rickmvi.jtoolbox.text.StringFormatter;
-import com.github.rickmvi.jtoolbox.control.If;
+import com.github.rickmvi.jtoolbox.control.Condition;
 import com.github.rickmvi.jtoolbox.util.Numbers;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -35,7 +36,7 @@ import java.util.function.Consumer;
  * them without throwing exceptions.
  * <p>
  * This interface is designed to simplify console I/O in a fluent and safe manner,
- * integrating with {@link If} for conditional execution and {@link Stringifier} /
+ * integrating with {@link Condition} for conditional execution and {@link Stringifier} /
  * {@link StringFormatter} for conversion and formatting.
  *
  * <h2>Usage Examples:</h2>
@@ -57,15 +58,16 @@ import java.util.function.Consumer;
  *
  * @see StringFormatter
  * @see Stringifier
- * @see If
+ * @see Condition
  * @author Rick M. Viana
  * @since 1.7
  */
 public interface IO {
 
     static void print(Object o) {
-        If.isTrue(o != null, () -> System.out.print(Stringifier.toString(o)))
-                .orElse(IO::newline);
+        If.whenNotNull(o)
+                .then(() -> System.out.print(Stringifier.toString(o)))
+                .otherwise(IO::newline);
     }
     
     static void print() {
@@ -73,8 +75,9 @@ public interface IO {
     }
 
     static void printf(Object o, Object... args) {
-        If.isTrue(o != null, () -> System.out.printf(Stringifier.toString(o), args))
-                .orElse(IO::newline);
+        If.whenNotNull(o)
+                .then(() -> System.out.printf(Stringifier.toString(o), args))
+                .otherwise(IO::newline);
     }
 
     static void printf() {
@@ -82,8 +85,9 @@ public interface IO {
     }
 
     static void println(Object o) {
-        If.isTrue(o != null, () -> System.out.println(Stringifier.toString(o)))
-                .orElse(IO::newline);
+        If.whenNotNull(o)
+                .then(() -> System.out.println(Stringifier.toString(o)))
+                .otherwise(IO::newline);
     }
 
     static void println() {
@@ -91,8 +95,9 @@ public interface IO {
     }
 
     static void format(Object format, Object @Nullable ... args) {
-        If.isTrue(format != null, () -> print(StringFormatter.format(Stringifier.toString(format), args)))
-                .orElse(IO::newline);
+        If.whenNotNull(format)
+                .then(() -> println(StringFormatter.format(Stringifier.toString(format), args)))
+                .otherwise(IO::newline);
     }
 
     static void format() {
@@ -100,8 +105,9 @@ public interface IO {
     }
 
     static void interpolated(String format, Object @Nullable ... args) {
-        If.isTrue(format != null, () -> println(StringFormatter.interpolate(format, args)))
-                .orElse(IO::newline);
+        If.whenNotNull(format)
+                .then(() -> println(StringFormatter.interpolate(format, args)))
+                .otherwise(IO::newline);
     }
 
     static void interpolated() {
@@ -118,8 +124,9 @@ public interface IO {
     }
 
     static void to(PrintStream stream, Object text) {
-        If.isTrue(text != null, () -> stream.print(Stringifier.toString(text)))
-                .orElseThrow(() -> new IllegalArgumentException("Text cannot be null"));
+        If.whenNotNull(stream)
+                .then(() -> stream.print(Stringifier.toString(text)))
+                .orThrow(() -> new IllegalArgumentException("Stream cannot be null"));
     }
 
     static void err(String text) {

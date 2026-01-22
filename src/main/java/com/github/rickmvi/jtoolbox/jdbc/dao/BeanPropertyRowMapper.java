@@ -20,7 +20,7 @@ public class BeanPropertyRowMapper<T> implements RowMapper<T> {
     }
 
     @Override
-    public T mapRow(ResultSet rs) throws SQLException {
+    public T mapRow(ResultSet rs) {
         try {
 
             try {

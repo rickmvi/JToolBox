@@ -19,6 +19,7 @@ package com.github.rickmvi.jtoolbox.collections.array;
 
 import com.github.rickmvi.jtoolbox.collections.Dynamic;
 import com.github.rickmvi.jtoolbox.control.For;
+import com.github.rickmvi.jtoolbox.control.Condition;
 import com.github.rickmvi.jtoolbox.control.If;
 import lombok.EqualsAndHashCode;
 import org.jetbrains.annotations.ApiStatus;
@@ -126,7 +127,7 @@ import static com.github.rickmvi.jtoolbox.text.StringFormatter.format;
 @UtilityClass
 @EqualsAndHashCode
 @SuppressWarnings({"unused", "WeakerAccess"})
-public class Array {
+public class  Array {
 
     @SafeVarargs
     @ApiStatus.Internal
@@ -143,8 +144,9 @@ public class Array {
 
     @Deprecated
     public static <T> T @NotNull [] add(T @NotNull [] array, int index, T element) {
-        If.ThrowWhen(index < 0 || index > array.length, () ->
-                new IndexOutOfBoundsException(format("Index: {}, Length: {}", index, length(array))));
+        If.throwIf(index < 0 || index > array.length,
+                () -> new IndexOutOfBoundsException(format("Index: {}, Length: {}", index, length(array))));
+
         T[] result = Arrays.copyOf(array, array.length + 1);
 
         System.arraycopy(
@@ -212,7 +214,7 @@ public class Array {
     /* =================================== COPY RANGE METHOD ======================================== */
 
     public static <T> T @NotNull [] copyRange(T @NotNull [] array, int from, int to) {
-        If.ThrowWhen(from < 0 || to > array.length || from > to,
+        Condition.ThrowWhen(from < 0 || to > array.length || from > to,
                 () -> new IndexOutOfBoundsException(format("Invalid range: {} to {}", from, to)));
         return Arrays.copyOfRange(array, from, to);
     }
@@ -220,7 +222,7 @@ public class Array {
     /* =================================== REMOVER METHOD'S ======================================== */
 
     public static <T> T @NotNull [] remove(T @NotNull [] array, int index) {
-        If.ThrowWhen(index < 0 || index >= length(array), () ->
+        Condition.ThrowWhen(index < 0 || index >= length(array), () ->
                 new IndexOutOfBoundsException(format("Index: {}, Length: {}", index, length(array))));
         T[] result = Arrays.copyOf(array, array.length - 1);
         System.arraycopy(array, index + 1, result, index, array.length - index - 1);
@@ -252,7 +254,7 @@ public class Array {
 
     public static <T> @NotNull T @NotNull [] reverse(T @NotNull [] array) {
         return adapt(array)
-                .reverse()
+                .reversed()
                 .toArray(size -> Arrays.copyOf(array, size));
     }
 
@@ -353,7 +355,7 @@ public class Array {
     /* ==================================== REPEAT METHOD ========================================= */
 
     public static <T> T[] repeat(T value, int times, @NotNull IntFunction<T[]> generator) {
-        If.ThrowWhen(times < 0, () -> new IllegalArgumentException("times: " + times));
+        If.throwIf(times < 0, () -> new IllegalArgumentException("times: " + times));
         T[] array = generator.apply(times);
         Arrays.fill(array, value);
         return array;

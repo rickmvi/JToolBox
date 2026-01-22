@@ -166,7 +166,7 @@ public final class Switch<T, R> {
                 localMatched = true;
             }
 
-            If.ThrowWhen(!localMatched && tempResult.get() == null,
+            Condition.ThrowWhen(!localMatched && tempResult.get() == null,
                     () -> new IllegalStateException("No case matched and no default provided"));
 
             matched = localMatched;

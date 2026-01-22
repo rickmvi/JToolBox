@@ -102,7 +102,7 @@ public final class For<T> {
 
     private static <N extends Number & Comparable<N>> @NotNull For<N> rangeInternal(N start, N end, N step) {
         return Try.of(() -> {
-            If.ThrowWhen(Numbers.isZero(step), () -> new IllegalArgumentException("Step cannot be zero"));
+            Condition.ThrowWhen(Numbers.isZero(step), () -> new IllegalArgumentException("Step cannot be zero"));
 
             List<N> list = new ArrayList<>();
 
@@ -121,7 +121,7 @@ public final class For<T> {
         }).orElseThrow(e -> new RuntimeException("Failed to build numeric range", e));
     }
 
-    public @NotNull For<Integer> conditional(@NotNull BiPredicate<Integer, Integer> predicate) {
+    public @NotNull For<Integer> when(@NotNull BiPredicate<Integer, Integer> predicate) {
         condition = predicate;
         return rebuildRange();
     }
@@ -133,7 +133,7 @@ public final class For<T> {
 
     private static @NotNull For<Integer> buildRange() {
         return Try.of(() -> {
-            If.ThrowWhen(Numbers.isZero(STEP), () -> {
+            Condition.ThrowWhen(Numbers.isZero(STEP), () -> {
                 throw new IllegalArgumentException("Step cannot be 0");
             });
 
@@ -233,7 +233,7 @@ public final class For<T> {
     }
 
     public void forEach(Consumer<T> action) {
-        Try.run(() -> If.isTrue(repeatUntil != null, () -> repeatStream(build(), action))
+        Try.run(() -> Condition.isTrue(repeatUntil != null, () -> repeatStream(build(), action))
                 .orElse(() -> build().forEach(action))
         ).onFailure(this::handleError);
     }
@@ -307,7 +307,7 @@ public final class For<T> {
     }
 
     private void handleError(Throwable t) {
-        If.isTrue(errorHandler != null, () -> errorHandler.accept(t))
+        Condition.isTrue(errorHandler != null, () -> errorHandler.accept(t))
                 .orElse(() -> Logger.error("Error in For pipeline: {}", t));
     }
 

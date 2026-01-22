@@ -21,7 +21,7 @@ import com.github.rickmvi.jtoolbox.text.StringFormatter;
 import com.github.rickmvi.jtoolbox.logger.log.LogLevel;
 import com.github.rickmvi.jtoolbox.datetime.DateTime;
 import com.github.rickmvi.jtoolbox.console.IO;
-import com.github.rickmvi.jtoolbox.control.If;
+import com.github.rickmvi.jtoolbox.control.Condition;
 import lombok.AccessLevel;
 
 import lombok.Getter;
@@ -55,7 +55,7 @@ public class Logger {
     private static final Set<LogLevel> ENABLED_LEVELS;
 
     static {
-        TIME = DateTime.now().format(DateTime.DatePattern.DD_MM_YYYY_HH_MM_SS);
+        TIME = DateTime.now().format(DateTime.Format.DASH_DATETIME);
         ENABLED_LEVELS = EnumSet.complementOf(EnumSet.of(LogLevel.OFF));
     }
 
@@ -72,7 +72,7 @@ public class Logger {
     public static void log(LogLevel level, String message) {
         if (!ENABLED_LEVELS.contains(level) || level == LogLevel.OFF) return;
 
-        String time        = DateTime.now().format(DateTime.DatePattern.DD_MM_YYYY_HH_MM_SS);
+        String time        = DateTime.now().format(DateTime.Format.DASH_DATETIME);
 
         String coloredLevel = colorize(level.name(), AnsiColor.getColor(level));
 
@@ -82,7 +82,7 @@ public class Logger {
     public static void log(LogLevel level, String template, Object... args) {
         if (!ENABLED_LEVELS.contains(level) || level == LogLevel.OFF) return;
 
-        String time        = DateTime.now().format(DateTime.DatePattern.DD_MM_YYYY_HH_MM_SS);
+        String time        = DateTime.now().format(DateTime.Format.DASH_DATETIME);
 
         String coloredLevel = colorize(level.name(), AnsiColor.getColor(level));
         String message      = StringFormatter.format(template, args);
@@ -92,7 +92,7 @@ public class Logger {
 
     public static void log(LogLevel level, String message, @NotNull Throwable t) {
         log(level, message);
-        If.when(ENABLED_LEVELS.contains(level))
+        Condition.when(ENABLED_LEVELS.contains(level))
                 .and(level != LogLevel.OFF)
                 .apply(t::printStackTrace)
                 .run();
@@ -100,7 +100,7 @@ public class Logger {
 
     public static void log(LogLevel level, String template, @NotNull Throwable t, Object... args) {
         log(level, StringFormatter.format(template, args));
-        If.when(ENABLED_LEVELS.contains(level))
+        Condition.when(ENABLED_LEVELS.contains(level))
                 .and(level != LogLevel.OFF)
                 .apply(t::printStackTrace)
                 .run();

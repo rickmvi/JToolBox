@@ -1,6 +1,6 @@
 package com.github.rickmvi.jtoolbox.concurrent;
 
-import com.github.rickmvi.jtoolbox.control.If;
+import com.github.rickmvi.jtoolbox.control.Condition;
 import com.github.rickmvi.jtoolbox.logger.Logger;
 import com.github.rickmvi.jtoolbox.util.Try;
 import lombok.AccessLevel;
@@ -12,7 +12,7 @@ import org.jetbrains.annotations.Nullable;
 import java.util.concurrent.*;
 import java.util.function.Consumer;
 
-import static com.github.rickmvi.jtoolbox.control.If.when;
+import static com.github.rickmvi.jtoolbox.control.Condition.when;
 
 /**
  * A utility class for simplifying threading operations in Java. It provides
@@ -169,7 +169,7 @@ public class Threader {
         }
 
         private void validateThreadConfiguration() {
-            If.ThrowWhen(useDedicatedThread && isDaemon && name != null, () ->
+            Condition.ThrowWhen(useDedicatedThread && isDaemon && name != null, () ->
                     new IllegalStateException(
                             "Cannot set name and daemon property when using Simple Thread and Custom Name in current implementation."
                     )
@@ -177,7 +177,7 @@ public class Threader {
         }
 
         private @NotNull Future<T> startUsingExecutor() {
-            If.ThrowWhen(executor == null, () -> new IllegalStateException("Executor service is null."));
+            Condition.ThrowWhen(executor == null, () -> new IllegalStateException("Executor service is null."));
             Callable<T> namedTask = wrapTaskWithThreadRenaming(task, name);
             Future<T> future = executor.submit(namedTask);
 

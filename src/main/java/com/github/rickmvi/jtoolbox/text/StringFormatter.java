@@ -20,7 +20,7 @@ package com.github.rickmvi.jtoolbox.text;
 import com.github.rickmvi.jtoolbox.util.convert.NumberParser;
 import com.github.rickmvi.jtoolbox.collections.map.Mapping;
 import com.github.rickmvi.jtoolbox.logger.Logger;
-import com.github.rickmvi.jtoolbox.control.If;
+import com.github.rickmvi.jtoolbox.control.Condition;
 
 import com.github.rickmvi.jtoolbox.datetime.DateTime;
 import com.github.rickmvi.jtoolbox.util.Numbers;
@@ -140,7 +140,7 @@ public final class StringFormatter {
                 "$r", "\r",
                 "$t", "\t",
                 "$sp", " ",
-                "$tmp", DateTime.now().format(DateTime.DatePattern.DD_MM_YYYY_HH_MM_SS),
+                "$tmp", DateTime.now().format(DateTime.Format.DASH_DATETIME),
                 "$rand", Math.random() * 1024L
         );
     }
@@ -252,7 +252,7 @@ public final class StringFormatter {
             String replacement = matcher.group();
 
             int finalIndex = index;
-            If.ThrowWhen(index >= length(objects),
+            Condition.ThrowWhen(index >= length(objects),
                     () -> new ArrayIndexOutOfBoundsException(format(
                             "The index '{}' overlapping the maximum index '{}'",
                             finalIndex,
@@ -261,7 +261,7 @@ public final class StringFormatter {
 
             Object obj = objects[index];
 
-            If.ThrowWhen(obj == null, () -> new IllegalArgumentException(format(
+            Condition.ThrowWhen(obj == null, () -> new IllegalArgumentException(format(
                     "Invalid null value for placeholder '{}'", placeholder)
             ));
 

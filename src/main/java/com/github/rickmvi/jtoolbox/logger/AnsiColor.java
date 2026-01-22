@@ -18,7 +18,7 @@
 package com.github.rickmvi.jtoolbox.logger;
 
 import com.github.rickmvi.jtoolbox.control.For;
-import com.github.rickmvi.jtoolbox.control.If;
+import com.github.rickmvi.jtoolbox.control.Condition;
 import com.github.rickmvi.jtoolbox.logger.log.LogLevel;
 
 import lombok.AccessLevel;
@@ -59,7 +59,7 @@ public enum AnsiColor {
 
     @Contract(pure = true)
     public static @NotNull AnsiColor valueOf(int ordinal) {
-        If.ThrowWhen(
+        Condition.ThrowWhen(
                 ordinal < 0 || ordinal >= VALUES.length,
                 () -> new IndexOutOfBoundsException("Invalid ordinal: " + ordinal)
         );

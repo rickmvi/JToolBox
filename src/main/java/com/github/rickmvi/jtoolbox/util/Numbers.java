@@ -18,7 +18,7 @@
 package com.github.rickmvi.jtoolbox.util;
 
 import com.github.rickmvi.jtoolbox.util.convert.NumberParser;
-import com.github.rickmvi.jtoolbox.control.If;
+import com.github.rickmvi.jtoolbox.control.Condition;
 import com.github.rickmvi.jtoolbox.control.Switch;
 import com.github.rickmvi.jtoolbox.util.constants.Constants;
 import org.jetbrains.annotations.ApiStatus;
@@ -133,7 +133,7 @@ public final class Numbers extends NumberParser {
 
     @Contract(value = "_ -> param1", pure = true)
     public static byte requiredNonNegative(byte value) {
-        If.ThrowWhen(isNegative(value), Numbers::getValueCannotBeNegative);
+        Condition.ThrowWhen(isNegative(value), Numbers::getValueCannotBeNegative);
         return nonNegative(value);
     }
 
@@ -148,9 +148,9 @@ public final class Numbers extends NumberParser {
 
     @Contract(value = "_, _ -> param1", pure = true)
     public static byte requiredNonNegative(byte value, @Nullable Supplier<String> supplierMessage) {
-        If.ThrowWhen(isNegative(value), () -> {
+        Condition.ThrowWhen(isNegative(value), () -> {
             throw new IllegalArgumentException(
-                    If.MessageOrDefault(supplierMessage, Constants.NON_NEGATIVE));
+                    Condition.MessageOrDefault(supplierMessage, Constants.NON_NEGATIVE));
         });
         return nonNegative(value);
     }
@@ -162,7 +162,7 @@ public final class Numbers extends NumberParser {
 
     @Contract("_ -> param1")
     public static byte requiredPositive(byte value) {
-        If.ThrowWhen(isNonPositive(value), Numbers::getValueMustBePositive);
+        Condition.ThrowWhen(isNonPositive(value), Numbers::getValueMustBePositive);
         return nonNegativeNonZero(value);
     }
 
@@ -176,9 +176,9 @@ public final class Numbers extends NumberParser {
 
     @Contract("_, _ -> param1")
     public static byte requiredPositive(byte value, Supplier<String> supplierMessage) {
-        If.ThrowWhen(isNonPositive(value), () -> {
+        Condition.ThrowWhen(isNonPositive(value), () -> {
             throw new IllegalArgumentException(
-                    If.MessageOrDefault(supplierMessage, Constants.POSITIVE_VALUE));
+                    Condition.MessageOrDefault(supplierMessage, Constants.POSITIVE_VALUE));
         });
         return nonNegativeNonZero(value);
     }
@@ -284,7 +284,7 @@ public final class Numbers extends NumberParser {
 
     @Contract(value = "_ -> param1", pure = true)
     public static short requiredNonNegative(short value) {
-        If.ThrowWhen(isNegative(value), Numbers::getValueCannotBeNegative);
+        Condition.ThrowWhen(isNegative(value), Numbers::getValueCannotBeNegative);
         return nonNegative(value);
     }
 
@@ -299,9 +299,9 @@ public final class Numbers extends NumberParser {
 
     @Contract("_, _ -> param1")
     public static short requiredNonNegative(short value, Supplier<String> supplierMessage) {
-        If.ThrowWhen(isNegative(value), () -> {
+        Condition.ThrowWhen(isNegative(value), () -> {
             throw new IllegalArgumentException(
-                    If.MessageOrDefault(supplierMessage, Constants.NON_NEGATIVE));
+                    Condition.MessageOrDefault(supplierMessage, Constants.NON_NEGATIVE));
         });
         return nonNegative(value);
     }
@@ -313,7 +313,7 @@ public final class Numbers extends NumberParser {
 
     @Contract("_ -> param1")
     public static short requiredPositive(short value) {
-        If.ThrowWhen(isNonPositive(value), Numbers::getValueMustBePositive);
+        Condition.ThrowWhen(isNonPositive(value), Numbers::getValueMustBePositive);
         return nonNegativeNonZero(value);
     }
 
@@ -327,9 +327,9 @@ public final class Numbers extends NumberParser {
 
     @Contract("_, _ -> param1")
     public static short requiredPositive(short value, Supplier<String> supplierMessage) {
-        If.ThrowWhen(isNegative(value), () -> {
+        Condition.ThrowWhen(isNegative(value), () -> {
             throw new IllegalArgumentException(
-                    If.MessageOrDefault(supplierMessage, Constants.POSITIVE_VALUE));
+                    Condition.MessageOrDefault(supplierMessage, Constants.POSITIVE_VALUE));
         });
         return nonNegativeNonZero(value);
     }
@@ -432,7 +432,7 @@ public final class Numbers extends NumberParser {
 
     @Contract(value = "_ -> param1", pure = true)
     public static int requiredNonNegative(int value) {
-        If.ThrowWhen(isNegative(value), Numbers::getValueCannotBeNegative);
+        Condition.ThrowWhen(isNegative(value), Numbers::getValueCannotBeNegative);
         return nonNegative(value);
     }
 
@@ -446,9 +446,9 @@ public final class Numbers extends NumberParser {
 
     @Contract("_, _ -> param1")
     public static int requiredNonNegative(int value, Supplier<String> supplierMessage) {
-        If.ThrowWhen(isNegative(value), () -> {
+        Condition.ThrowWhen(isNegative(value), () -> {
             throw new IllegalArgumentException(
-                    If.MessageOrDefault(supplierMessage, Constants.NON_NEGATIVE));
+                    Condition.MessageOrDefault(supplierMessage, Constants.NON_NEGATIVE));
         });
         return nonNegative(value);
     }
@@ -460,7 +460,7 @@ public final class Numbers extends NumberParser {
 
     @Contract("_ -> param1")
     public static int requiredPositive(int value) {
-        If.ThrowWhen(isNonPositive(value), Numbers::getValueMustBePositive);
+        Condition.ThrowWhen(isNonPositive(value), Numbers::getValueMustBePositive);
         return nonNegativeNonZero(value);
     }
 
@@ -474,9 +474,9 @@ public final class Numbers extends NumberParser {
 
     @Contract("_, _ -> param1")
     public static int requiredPositive(int value, Supplier<String> supplierMessage) {
-        If.ThrowWhen(isNegative(value), () -> {
+        Condition.ThrowWhen(isNegative(value), () -> {
             throw new IllegalArgumentException(
-                    If.MessageOrDefault(supplierMessage, Constants.POSITIVE_VALUE));
+                    Condition.MessageOrDefault(supplierMessage, Constants.POSITIVE_VALUE));
         });
         return nonNegativeNonZero(value);
     }
@@ -583,7 +583,7 @@ public final class Numbers extends NumberParser {
 
     @Contract(value = "_ -> param1", pure = true)
     public static long requiredNonNegative(long value) {
-        If.ThrowWhen(isNegative(value), Numbers::getValueCannotBeNegative);
+        Condition.ThrowWhen(isNegative(value), Numbers::getValueCannotBeNegative);
         return nonNegative(value);
     }
 
@@ -598,9 +598,9 @@ public final class Numbers extends NumberParser {
 
     @Contract("_, _ -> param1")
     public static long requiredNonNegative(long value, Supplier<String> supplierMessage) {
-        If.ThrowWhen(isNegative(value), () -> {
+        Condition.ThrowWhen(isNegative(value), () -> {
             throw new IllegalArgumentException(
-                    If.MessageOrDefault(supplierMessage, Constants.NON_NEGATIVE));
+                    Condition.MessageOrDefault(supplierMessage, Constants.NON_NEGATIVE));
         });
         return nonNegative(value);
     }
@@ -612,7 +612,7 @@ public final class Numbers extends NumberParser {
 
     @Contract("_ -> param1")
     public static long requiredPositive(long value) {
-        If.ThrowWhen(isNonPositive(value), Numbers::getValueMustBePositive);
+        Condition.ThrowWhen(isNonPositive(value), Numbers::getValueMustBePositive);
         return nonNegativeNonZero(value);
     }
 
@@ -626,9 +626,9 @@ public final class Numbers extends NumberParser {
 
     @Contract("_, _ -> param1")
     public static long requiredPositive(long value, Supplier<String> supplierMessage) {
-        If.ThrowWhen(isNonPositive(value), () -> {
+        Condition.ThrowWhen(isNonPositive(value), () -> {
             throw new IllegalArgumentException(
-                    If.MessageOrDefault(supplierMessage, Constants.POSITIVE_VALUE));
+                    Condition.MessageOrDefault(supplierMessage, Constants.POSITIVE_VALUE));
         });
         return nonNegativeNonZero(value);
     }
@@ -734,7 +734,7 @@ public final class Numbers extends NumberParser {
 
     @Contract(value = "_ -> param1", pure = true)
     public static float requiredNonNegative(float value) {
-        If.ThrowWhen(isNegative(value), Numbers::getValueCannotBeNegative);
+        Condition.ThrowWhen(isNegative(value), Numbers::getValueCannotBeNegative);
         return nonNegative(value);
     }
 
@@ -749,10 +749,10 @@ public final class Numbers extends NumberParser {
 
     @Contract("_, _ -> param1")
     public static float requiredNonNegative(float value, Supplier<String> supplierMessage) {
-        If.ThrowWhen(isNegative(value), () -> {
+        Condition.ThrowWhen(isNegative(value), () -> {
             throw new
                     IllegalArgumentException(
-                    If.MessageOrDefault(supplierMessage, Constants.NON_NEGATIVE));
+                    Condition.MessageOrDefault(supplierMessage, Constants.NON_NEGATIVE));
         });
         return nonNegative(value);
     }
@@ -764,7 +764,7 @@ public final class Numbers extends NumberParser {
 
     @Contract("_ -> param1")
     public static float requiredPositive(float value) {
-        If.ThrowWhen(isNonPositive(value), Numbers::getValueMustBePositive);
+        Condition.ThrowWhen(isNonPositive(value), Numbers::getValueMustBePositive);
         return nonNegativeNonZero(value);
     }
 
@@ -778,9 +778,9 @@ public final class Numbers extends NumberParser {
 
     @Contract("_, _ -> param1")
     public static float requiredPositive(float value, Supplier<String> supplierMessage) {
-        If.ThrowWhen(isNonPositive(value), () -> {
+        Condition.ThrowWhen(isNonPositive(value), () -> {
             throw new IllegalArgumentException(
-                    If.MessageOrDefault(supplierMessage, Constants.POSITIVE_VALUE));
+                    Condition.MessageOrDefault(supplierMessage, Constants.POSITIVE_VALUE));
         });
         return nonNegativeNonZero(value);
     }
@@ -891,7 +891,7 @@ public final class Numbers extends NumberParser {
 
     @Contract("_ -> param1")
     public static double requiredNonNegative(double value) {
-        If.ThrowWhen(isNegative(value), Numbers::getValueCannotBeNegative);
+        Condition.ThrowWhen(isNegative(value), Numbers::getValueCannotBeNegative);
         return nonNegative(value);
     }
 
@@ -906,9 +906,9 @@ public final class Numbers extends NumberParser {
 
     @Contract("_, _ -> param1")
     public static double requiredNonNegative(double value, Supplier<String> supplierMessage) {
-        If.ThrowWhen(isNegative(value), () -> {
+        Condition.ThrowWhen(isNegative(value), () -> {
             throw new IllegalArgumentException(
-                    If.MessageOrDefault(supplierMessage, Constants.NON_NEGATIVE));
+                    Condition.MessageOrDefault(supplierMessage, Constants.NON_NEGATIVE));
         });
         return nonNegative(value);
     }
@@ -920,7 +920,7 @@ public final class Numbers extends NumberParser {
 
     @Contract("_ -> param1")
     public static double requiredPositive(double value) {
-        If.ThrowWhen(isNonPositive(value), Numbers::getValueMustBePositive);
+        Condition.ThrowWhen(isNonPositive(value), Numbers::getValueMustBePositive);
         return nonNegativeNonZero(value);
     }
 
@@ -934,9 +934,9 @@ public final class Numbers extends NumberParser {
 
     @Contract("_, _ -> param1")
     public static double requiredPositive(double value, Supplier<String> supplierMessage) {
-        If.ThrowWhen(isNonPositive(value), () -> {
+        Condition.ThrowWhen(isNonPositive(value), () -> {
             throw new IllegalArgumentException(
-                    If.MessageOrDefault(supplierMessage, Constants.POSITIVE_VALUE));
+                    Condition.MessageOrDefault(supplierMessage, Constants.POSITIVE_VALUE));
         });
         return nonNegativeNonZero(value);
     }

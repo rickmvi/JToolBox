@@ -1,6 +1,6 @@
 package com.github.rickmvi.jtoolbox.test;
 
-import com.github.rickmvi.jtoolbox.control.If;
+import com.github.rickmvi.jtoolbox.control.Condition;
 import com.github.rickmvi.jtoolbox.test.exceptions.AssertionException;
 import lombok.experimental.UtilityClass;
 import org.jetbrains.annotations.Contract;
@@ -26,7 +26,7 @@ public class AssertX {
         try {
             operation.getAsBoolean();
         } catch (Throwable e) {
-            If.ThrowWhen(!expectedType.isInstance(e), () -> new AssertionException("Expected exception of type " + expectedType.getName() + ", but was " + e.getClass().getName()));
+            Condition.ThrowWhen(!expectedType.isInstance(e), () -> new AssertionException("Expected exception of type " + expectedType.getName() + ", but was " + e.getClass().getName()));
             return expectedType.cast(e);
         }
         throw new AssertionException("Expected exception of type " + expectedType.getName() + ", but no exception was thrown");
