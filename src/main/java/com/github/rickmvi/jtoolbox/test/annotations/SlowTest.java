@@ -6,13 +6,9 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 /**
- * Marks a method as a test method.
+ * Indicates that a test may take longer to complete.
  */
 @Retention(RetentionPolicy.RUNTIME)
 @Target(ElementType.METHOD)
-public @interface JTest {
-    /**
-     * Optional timeout in milliseconds.
-     */
-    long timeout() default 0L;
+public @interface SlowTest {
 }

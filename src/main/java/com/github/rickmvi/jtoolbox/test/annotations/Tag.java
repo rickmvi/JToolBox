@@ -6,13 +6,10 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 /**
- * Marks a method as a test method.
+ * Tags tests for categorization and filtering.
  */
 @Retention(RetentionPolicy.RUNTIME)
-@Target(ElementType.METHOD)
-public @interface JTest {
-    /**
-     * Optional timeout in milliseconds.
-     */
-    long timeout() default 0L;
+@Target({ElementType.METHOD, ElementType.TYPE})
+public @interface Tag {
+    String[] value();
 }

@@ -1,4 +1,4 @@
-package com.github.rickmvi.jtoolbox.test;
+package com.github.rickmvi.jtoolbox.test.wrapper;
 
 import com.github.rickmvi.jtoolbox.test.exceptions.AssertionException;
 import lombok.AccessLevel;

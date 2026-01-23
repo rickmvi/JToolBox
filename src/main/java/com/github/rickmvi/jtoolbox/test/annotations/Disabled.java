@@ -6,13 +6,13 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 /**
- * Marks a method as a test method.
+ * Disables a test method or class.
  */
 @Retention(RetentionPolicy.RUNTIME)
-@Target(ElementType.METHOD)
-public @interface JTest {
+@Target({ElementType.METHOD, ElementType.TYPE})
+public @interface Disabled {
     /**
-     * Optional timeout in milliseconds.
+     * Optional reason for disabling.
      */
-    long timeout() default 0L;
+    String value() default "";
 }

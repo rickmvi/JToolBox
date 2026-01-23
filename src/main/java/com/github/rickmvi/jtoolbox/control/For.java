@@ -35,8 +35,8 @@ import java.util.concurrent.CompletableFuture;
  * }</pre>
  *
  * @author Rick
- * @version 1.3
- * @since 2025
+ * @version 2.0
+ * @since 2026
  */
 @RequiredArgsConstructor(access = AccessLevel.PRIVATE)
 @SuppressWarnings({"unused", "WeakerAccess"})

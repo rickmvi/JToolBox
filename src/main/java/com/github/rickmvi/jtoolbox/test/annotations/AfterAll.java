@@ -6,13 +6,9 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 /**
- * Marks a method as a test method.
+ * Executed once after all tests in the class.
  */
 @Retention(RetentionPolicy.RUNTIME)
 @Target(ElementType.METHOD)
-public @interface JTest {
-    /**
-     * Optional timeout in milliseconds.
-     */
-    long timeout() default 0L;
+public @interface AfterAll {
 }

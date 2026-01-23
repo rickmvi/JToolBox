@@ -18,7 +18,7 @@
 package com.github.rickmvi.jtoolbox.logger;
 
 import com.github.rickmvi.jtoolbox.control.For;
-import com.github.rickmvi.jtoolbox.control.Condition;
+import com.github.rickmvi.jtoolbox.control.If;
 import com.github.rickmvi.jtoolbox.logger.log.LogLevel;
 
 import lombok.AccessLevel;
@@ -37,8 +37,8 @@ import org.jetbrains.annotations.NotNull;
  * and mapping log levels to specific colors.
  *
  * @author Rick M. Viana
- * @version 1.1
- * @since 2025
+ * @version 2.0
+ * @since 2026
  */
 @RequiredArgsConstructor(access = AccessLevel.PRIVATE)
 public enum AnsiColor {
@@ -59,7 +59,7 @@ public enum AnsiColor {
 
     @Contract(pure = true)
     public static @NotNull AnsiColor valueOf(int ordinal) {
-        Condition.ThrowWhen(
+        If.throwIf(
                 ordinal < 0 || ordinal >= VALUES.length,
                 () -> new IndexOutOfBoundsException("Invalid ordinal: " + ordinal)
         );

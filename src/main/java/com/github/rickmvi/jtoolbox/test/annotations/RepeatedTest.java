@@ -6,13 +6,11 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 /**
- * Marks a method as a test method.
+ * Repeats a test a specified number of times.
  */
 @Retention(RetentionPolicy.RUNTIME)
 @Target(ElementType.METHOD)
-public @interface JTest {
-    /**
-     * Optional timeout in milliseconds.
-     */
-    long timeout() default 0L;
+public @interface RepeatedTest {
+    int value();
+    String name() default "";
 }

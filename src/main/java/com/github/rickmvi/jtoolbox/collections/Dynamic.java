@@ -19,7 +19,6 @@ package com.github.rickmvi.jtoolbox.collections;
 
 import com.github.rickmvi.jtoolbox.control.If;
 import com.github.rickmvi.jtoolbox.text.Stringifier;
-import com.github.rickmvi.jtoolbox.util.Try;
 import lombok.AccessLevel;
 import lombok.Getter;
 import org.jetbrains.annotations.NotNull;
@@ -702,7 +701,7 @@ public final class Dynamic<T> implements Iterable<T> {
         }
 
         if (storage instanceof List) {
-            return Optional.of(((List<T>) storage).get(0));
+            return Optional.of(((List<T>) storage).getFirst());
         } else {
             return Optional.of(storage.iterator().next());
         }
@@ -716,18 +715,19 @@ public final class Dynamic<T> implements Iterable<T> {
             return Optional.empty();
         }
 
-        if (storage instanceof List) {
-            List<T> list = (List<T>) storage;
-            return Optional.of(list.get(list.size() - 1));
-        } else if (storage instanceof LinkedList) {
-            return Optional.of(((LinkedList<T>) storage).getLast());
-        } else {
-            T last = null;
-            for (T element : storage) {
-                last = element;
-            }
-            return Optional.ofNullable(last);
+        if (storage instanceof List<T> list) {
+            return Optional.of(list.getLast());
         }
+
+        if (storage instanceof LinkedList) {
+            return Optional.of(((LinkedList<T>) storage).getLast());
+        }
+
+        T last = null;
+        for (T element : storage) {
+            last = element;
+        }
+        return Optional.ofNullable(last);
     }
 
     // ==================== QUERYING ====================

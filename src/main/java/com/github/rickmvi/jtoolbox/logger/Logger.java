@@ -17,6 +17,7 @@
  */
 package com.github.rickmvi.jtoolbox.logger;
 
+import com.github.rickmvi.jtoolbox.control.If;
 import com.github.rickmvi.jtoolbox.text.StringFormatter;
 import com.github.rickmvi.jtoolbox.logger.log.LogLevel;
 import com.github.rickmvi.jtoolbox.datetime.DateTime;
@@ -92,18 +93,18 @@ public class Logger {
 
     public static void log(LogLevel level, String message, @NotNull Throwable t) {
         log(level, message);
-        Condition.when(ENABLED_LEVELS.contains(level))
+        If.when(ENABLED_LEVELS.contains(level))
                 .and(level != LogLevel.OFF)
-                .apply(t::printStackTrace)
-                .run();
+                .then(t::printStackTrace)
+                .execute();
     }
 
     public static void log(LogLevel level, String template, @NotNull Throwable t, Object... args) {
         log(level, StringFormatter.format(template, args));
-        Condition.when(ENABLED_LEVELS.contains(level))
+        If.when(ENABLED_LEVELS.contains(level))
                 .and(level != LogLevel.OFF)
-                .apply(t::printStackTrace)
-                .run();
+                .then(t::printStackTrace)
+                .execute();
     }
 
     public static void trace(String message)   { log(LogLevel.TRACE, message); }

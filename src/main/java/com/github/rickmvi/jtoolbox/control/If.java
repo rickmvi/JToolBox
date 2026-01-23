@@ -74,7 +74,7 @@ import java.util.function.*;
  *
  * @author Rick M. Viana
  * @version 2.0
- * @since 2025
+ * @since 2026
  */
 @UtilityClass
 @SuppressWarnings("unused")
