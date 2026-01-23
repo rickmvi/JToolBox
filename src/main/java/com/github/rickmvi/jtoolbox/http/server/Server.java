@@ -1,6 +1,5 @@
 package com.github.rickmvi.jtoolbox.http.server;
 
-import com.github.rickmvi.jtoolbox.collections.Dynamic;
 import com.github.rickmvi.jtoolbox.logger.Logger;
 import com.github.rickmvi.jtoolbox.util.Try;
 import com.github.rickmvi.jtoolbox.http.HttpContext;
@@ -22,12 +21,9 @@ import java.util.concurrent.Executors;
 import java.util.function.Consumer;
 
 /**
- * Servidor HTTP melhorado com suporte a:
- * - Path parameters (/users/:id)
- * - Middlewares globais e por rota
- * - Error handlers customizados
- * - CORS configurável
- * - Grupos de rotas
+ * The {@code Server} class provides an abstraction for creating and managing an HTTP server.
+ * It supports request routing, middleware usage, CORS configuration, and custom error handlers.
+ * The server can be customized through builder-like methods and used to register routes for different HTTP methods.
  */
 public class Server {
 

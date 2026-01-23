@@ -13,8 +13,24 @@ import javax.tools.Diagnostic;
 import java.util.*;
 
 /**
- * Main annotation processor that delegates to specific handlers.
- * Fixed version addressing all architectural issues.
+ * The orchestrator of the JToolbox compile-time transformation logic.
+ * <p>This processor implements the standard Pluggable Annotation Processing API (JSR 269).
+ * Instead of containing specific generation logic, it maintains a registry of
+ * {@link AnnotationHandler} implementations, providing a clean separation of concerns.</p>
+ *
+ * <p><strong>Key Responsibilities:</strong></p>
+ * <ul>
+ * <li><strong>Environment Setup:</strong> Initializes the {@link ProcessingContext} with
+ * compiler utilities (Types, Elements, Filer).</li>
+ * <li><strong>Handler Registration:</strong> Maps annotation simple names to their
+ * respective logic handlers.</li>
+ * <li><strong>Round Management:</strong> Iterates through found annotations in each
+ * compilation round and triggers the appropriate handlers.</li>
+ * <li><strong>Error Reporting:</strong> Provides a centralized way to report compiler
+ * errors and warnings without breaking the whole process unless necessary.</li>
+ * </ul>
+ *
+ *
  *
  * @author Rick M. Viana
  * @version 2.0

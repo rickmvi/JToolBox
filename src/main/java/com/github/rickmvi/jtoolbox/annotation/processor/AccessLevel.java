@@ -4,62 +4,61 @@ import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
 
 /**
- * The {@code AccessLevel} enumeration defines various levels of access control
- * that can be applied to entities within the context of Java. Each level
- * corresponds to a specific modifier or accessibility rule.
- * <p>
- * This enumeration can be used to represent and translate access modifiers
- * into their respective string values for further processing or analysis.
+ * Defines the accessibility of generated members in the JToolbox framework.
+ *
+ * <p>This enum is used by the Annotation Processor to determine which
+ * access modifier keyword (if any) should be prepended to generated
+ * methods, fields, and classes.</p>
+ *
+ * <p><strong>Visibility Mapping:</strong></p>
+ * <ul>
+ * <li>{@code PUBLIC} -> {@code "public"}</li>
+ * <li>{@code PROTECTED} -> {@code "protected"}</li>
+ * <li>{@code PRIVATE} -> {@code "private"}</li>
+ * <li>{@code PACKAGE} -> Default (no modifier)</li>
+ * </ul>
+ *
+ *
+ *
+ * @author Rick M. Viana
+ * @version 1.0
+ * @since 1.0.0
  */
 public enum AccessLevel {
 
-    /**
-     * Represents the public access level in the {@link AccessLevel} enumeration.
-     * This level signifies that the associated entity is accessible from any other class.
-     */
+    /** Fully accessible from any package. */
     PUBLIC,
 
-    /**
-     * Represents the protected access level in the {@link AccessLevel} enumeration.
-     * This level signifies that the associated entity is accessible within its own package
-     * and by subclasses.
-     */
+    /** Accessible within the package and by subclasses. */
     PROTECTED,
 
     /**
-     * Represents the package-private access level in the {@link AccessLevel} enumeration.
-     * This level signifies that the associated entity is accessible only within its own package.
+     * Package-private visibility (Java's default).
+     * No keyword is generated.
      */
     PACKAGE,
 
-    /**
-     * Represents the private access level in the {@link AccessLevel} enumeration.
-     * This level signifies that the associated entity is accessible only within its
-     * own class.
-     */
+    /** Accessible only within the declaring class. */
     PRIVATE,
 
     /**
-     * Represents the module access level in the {@link AccessLevel} enumeration.
-     * This level signifies that the associated entity is accessible only within a specific module,
-     * adhering to the module boundaries defined in the Java Platform Module System (JPMS).
+     * Internal to the Java Module (JPMS).
+     * Note: In source generation, this often translates to package-private.
      */
     MODULE,
 
     /**
-     * Represents the absence of any access level in the {@link AccessLevel} enumeration.
-     * This level signifies that no access modifier is explicitly defined for the associated entity.
+     * Represents the absence of a modifier or a signal to skip generation.
      */
     NONE;
 
     /**
-     * Converts the current {@code AccessLevel} enum instance to its corresponding
-     * Java access modifier string representation.
+     * Translates the enum constant into a valid Java source code modifier.
      *
-     * @return the Java modifier string representing the current access level.
-     *         For {@code PUBLIC}, {@code PROTECTED}, and {@code PRIVATE}, the corresponding
-     *         strings "public", "protected", and "private" are returned. For {@code PACKAGE},
-     *         {@code MODULE}, and {@code NONE}, an empty string is returned.
+     * <p>This method uses the modern switch expression (Java 12+) to provide
+     * a clean mapping for the code generator.</p>
+     *
+     * @return the string keyword to be used in source generation.
      */
     @Contract(pure = true)
     public @NotNull String toJavaModifier() {
@@ -70,5 +69,4 @@ public enum AccessLevel {
             case PACKAGE, MODULE, NONE -> "";
         };
     }
-
 }

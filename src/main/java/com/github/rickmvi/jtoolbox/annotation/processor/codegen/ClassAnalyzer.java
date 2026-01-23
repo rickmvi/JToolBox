@@ -2,6 +2,7 @@ package com.github.rickmvi.jtoolbox.annotation.processor.codegen;
 
 import com.github.rickmvi.jtoolbox.annotation.processor.AnnotationProcessor.ProcessingContext;
 import com.github.rickmvi.jtoolbox.annotation.processor.annotations.NonNull;
+import lombok.Getter;
 
 import javax.lang.model.element.*;
 import javax.lang.model.type.DeclaredType;
@@ -15,6 +16,7 @@ import java.util.stream.Collectors;
  * Handles inheritance, field filtering, and validation.
  */
 public class ClassAnalyzer {
+    @Getter
     private final TypeElement            classElement;
     private final ProcessingContext      context;
     private final Map<String, FieldInfo> fieldMap;
@@ -66,10 +68,6 @@ public class ClassAnalyzer {
                 }
             }
         }
-    }
-
-    public TypeElement getClassElement() {
-        return classElement;
     }
 
     public List<FieldInfo> getAllFields() {
