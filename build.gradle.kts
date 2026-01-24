@@ -6,7 +6,7 @@ plugins {
 }
 
 group = "io.github.rickmvi"
-version = "1.10.52"
+version = "1.11.0"
 
 repositories {
     mavenCentral()
@@ -24,13 +24,18 @@ dependencies {
     implementation(libs.yaml)
 
     implementation("com.h2database:h2:2.1.214")
+
+    // ASM para manipulação de bytecode
+    implementation("org.ow2.asm:asm:9.6")
+    implementation("org.ow2.asm:asm-commons:9.6")
+    implementation("org.ow2.asm:asm-tree:9.6")
+    implementation("org.ow2.asm:asm-util:9.6")
 }
 
 tasks.test {
     useJUnitPlatform()
 }
 
-// Task para executar o exemplo de DB (runner)
 tasks.register<JavaExec>("runExample") {
     group = "application"
     description = "Executa o runner de exemplo que demonstra CRUD via JdbcTemplate"

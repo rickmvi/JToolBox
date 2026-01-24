@@ -1,1 +1,1 @@
-com.github.rickmvi.jtoolbox.annotation.processor.AnnotationProcessor
+com.github.rickmvi.jtoolbox.annotation.processor.BytecodeAnnotationProcessor
